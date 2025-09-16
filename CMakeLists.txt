@@ -13,6 +13,7 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 add_subdirectory(source/common)
 add_subdirectory(source/vector)
+add_subdirectory(source/figures)
 
 find_package(SFML 2.5.1 COMPONENTS graphics REQUIRED)
 
@@ -26,4 +27,5 @@ target_link_libraries(${CMAKE_PROJECT_NAME}
 
         common
         vector
+        figures
 )

@@ -40,8 +40,9 @@ class Vector2: public ParentT<T> {
         [[nodiscard]] Vector2<T, ParentT> Normal() const;
 };
 
-typedef Mephi::Vector2<float> Vector2f;
-typedef Mephi::Vector2<int>   Vector2i;
+typedef Mephi::Vector2<float>  Vector2f;
+typedef Mephi::Vector2<double> Vector2d;
+typedef Mephi::Vector2<int>    Vector2i;
 
 template <typename T, template<typename> typename ParentT = sf::Vector2>
 T operator ^(const Mephi::Vector2<T, ParentT>& left, const Mephi::Vector2<T, ParentT>& right) {
@@ -87,8 +88,9 @@ class Vector3: public ParentT<T> {
         [[nodiscard]] T Len()  const;
 };
 
-typedef Mephi::Vector3<float> Vector3f;
-typedef Mephi::Vector3<int>   Vector3i;
+typedef Mephi::Vector3<float>  Vector3f;
+typedef Mephi::Vector2<double> Vector3d;
+typedef Mephi::Vector3<int>    Vector3i;
 
 template <typename T, template<typename> typename ParentT = sf::Vector2>
 T operator ^(const Mephi::Vector3<T, ParentT>& left, const Mephi::Vector3<T, ParentT>& right) {
