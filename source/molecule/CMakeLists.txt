@@ -1,6 +1,7 @@
 add_library(molecule STATIC
     source/Molecule.cpp
     source/MoleculeCircle.cpp
+    source/MoleculeSquare.cpp
 )
 
 set_target_properties(molecule PROPERTIES FOLDER "source")

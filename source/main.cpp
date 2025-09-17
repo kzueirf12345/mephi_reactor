@@ -17,6 +17,7 @@
 #include "figures/Rect.hpp"
 #include "mephi/MephiManager.hpp"
 #include "molecule/MoleculeCircle.hpp"
+#include "molecule/MoleculeSquare.hpp"
 
 int main()
 {
@@ -57,9 +58,11 @@ int main()
         {}
     );
 
-    Mephi::MoleculeCircle molecule(Mephi::Vector2d(200, 200), Mephi::Vector2d(-10, 10), 1, sf::Color::Red, 10);
+    Mephi::MoleculeCircle molecule1(Mephi::Vector2d(200, 200), Mephi::Vector2d(-10, 10), 1, sf::Color::Red, 10);
+    Mephi::MoleculeSquare molecule2(Mephi::Vector2d(300, 250), Mephi::Vector2d(10, -10), 1, sf::Color::Red, 10);
 
-    manager.GetMolecules().push_back(std::make_unique<Mephi::MoleculeCircle>(molecule));
+    manager.GetMolecules().push_back(std::make_unique<Mephi::MoleculeCircle>(molecule1));
+    manager.GetMolecules().push_back(std::make_unique<Mephi::MoleculeSquare>(molecule2));
 
 
     while (window.isOpen())
