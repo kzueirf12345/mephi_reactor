@@ -55,6 +55,13 @@ Mephi::Vector2<T, ParentT> operator !(const Mephi::Vector2<T, ParentT>& right) {
 }
 
 template <typename T, template<typename> typename ParentT>
+Vector2<T, ParentT>& operator+=(Vector2<T, ParentT>& left, const Vector2<T, ParentT>& right) {
+    left.x += right.x;
+    left.y += right.y;
+    return left;
+}
+
+template <typename T, template<typename> typename ParentT>
 T Mephi::Vector2<T, ParentT>::Len2() const {
     return (*this) ^ (*this);
 }
@@ -67,7 +74,7 @@ T Mephi::Vector2<T, ParentT>::Len() const {
 template <typename T, template<typename> typename ParentT>
 Mephi::Vector2<T, ParentT> Mephi::Vector2<T, ParentT>::Normal() const {
     return Vector2<T, ParentT>(this->y, -this->x);
-}
+}\
 
 Common::Error TransformVector(Mephi::Vector2f& Vector, const Mephi::Transform Transform, 
                               const float AngleRadians = 0.01);

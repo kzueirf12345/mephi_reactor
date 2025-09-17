@@ -11,8 +11,11 @@
 #include <cmath>
 
 #include "common/ErrorHandle.hpp"
+#include "reactor/Reactor.hpp"
 #include "vector/Vector.hpp"
 #include "figures/Rect.hpp"
+#include "mephi/MephiManager.hpp"
+#include "molecule/MoleculeCircle.hpp"
 
 int main()
 {
@@ -30,13 +33,29 @@ int main()
 
     window.setFramerateLimit(FRAMERATE_LIMIT);
 
-    Mephi::Rect reactor(
-        Mephi::Vector2d(100, 100), 
-        Mephi::Vector2d(500, 500), 
-        sf::Color::Cyan, 
-        sf::Color::Black, 
-        5
+    Mephi::Reactor (
+        Mephi::Rect(
+            Mephi::Vector2d(100, 100), 
+            Mephi::Vector2d(500, 500), 
+            sf::Color::Cyan, 
+            sf::Color::Black, 
+            5
+        )
     );
+
+    Mephi::MephiManager manager(
+        Mephi::Reactor (
+            Mephi::Rect(
+                Mephi::Vector2d(100, 100), 
+                Mephi::Vector2d(500, 500), 
+                sf::Color::Cyan, 
+                sf::Color::Black, 
+                5
+            )
+        )
+    );
+
+    Mephi::MoleculeCircle molecule(Mephi::Vector2d(200, 200), Mephi::Vector2d(1, 1), 1, sf::Color::Red, 10);
 
     while (window.isOpen())
     {
@@ -50,7 +69,10 @@ int main()
 
         window.clear(WINDOW_BG_COLOR);
 
-        ERROR_HANDLE(reactor.Draw(window));
+        ERROR_HANDLE(manager.Draw(window));
+        ERROR_HANDLE(molecule.Draw(window));
+
+        ERROR_HANDLE(molecule.Update());
 
         window.display();
     }

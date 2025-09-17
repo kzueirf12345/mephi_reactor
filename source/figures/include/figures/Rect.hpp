@@ -22,10 +22,11 @@ class Rect {
         sf::Color outlineColor_;
         const double thickness_;
     public:
-        Rect(const Mephi::Vector2d& leftCorner, const Mephi::Vector2d& rightCorner, 
-             const sf::Color&    fillColor = sf::Color::Black, 
-             const sf::Color& outlineColor = sf::Color::Black,
-             const double thickness = 1)
+        Rect(const Mephi::Vector2d&  leftCorner, 
+             const Mephi::Vector2d& rightCorner, 
+             const sf::Color&         fillColor = sf::Color::Black, 
+             const sf::Color&      outlineColor = sf::Color::Black,
+             const double             thickness = 1)
             : leftCorner_{leftCorner}, rightCorner_{rightCorner}, fillColor_{fillColor}, 
               outlineColor_{outlineColor}, thickness_(thickness)
         {}
