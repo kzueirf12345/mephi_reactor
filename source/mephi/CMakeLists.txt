@@ -17,4 +17,5 @@ target_link_libraries(mephi
         vector
         figures
         reactor
+        molecule
 )

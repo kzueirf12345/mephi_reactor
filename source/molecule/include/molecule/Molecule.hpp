@@ -29,6 +29,16 @@ class Molecule {
 
         virtual Common::Error Draw(sf::RenderWindow& window) const = 0;
         virtual Common::Error Update() = 0;
+
+        virtual uint64_t  LeftX()     const noexcept = 0;
+        virtual uint64_t  RightX()    const noexcept = 0;
+        virtual uint64_t  TopY()      const noexcept = 0;
+        virtual uint64_t  BottomY()   const noexcept = 0;
+
+        [[nodiscard]] const Mephi::Vector2d& GetCoord() const noexcept {return coord_;}
+        [[nodiscard]]       Mephi::Vector2d& GetCoord()       noexcept {return coord_;}
+        [[nodiscard]] const Mephi::Vector2d& GetSpeed() const noexcept {return speed_;}
+        [[nodiscard]]       Mephi::Vector2d& GetSpeed()       noexcept {return speed_;}
 };
 
 }

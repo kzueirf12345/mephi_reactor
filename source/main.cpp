@@ -9,6 +9,7 @@
 #include <SFML/Window/WindowStyle.hpp>
 
 #include <cmath>
+#include <memory>
 
 #include "common/ErrorHandle.hpp"
 #include "reactor/Reactor.hpp"
@@ -22,7 +23,7 @@ int main()
     constexpr unsigned int WINDOW_WIDTH         = 2048;
     constexpr unsigned int WINDOW_HEIGHT        = 1024;
 
-    constexpr unsigned int FRAMERATE_LIMIT      = 20;
+    constexpr unsigned int FRAMERATE_LIMIT      = 50;
 
     const sf::Color WINDOW_BG_COLOR(240, 240, 240);
 
@@ -52,10 +53,14 @@ int main()
                 sf::Color::Black, 
                 5
             )
-        )
+        ), 
+        {}
     );
 
-    Mephi::MoleculeCircle molecule(Mephi::Vector2d(200, 200), Mephi::Vector2d(1, 1), 1, sf::Color::Red, 10);
+    Mephi::MoleculeCircle molecule(Mephi::Vector2d(200, 200), Mephi::Vector2d(-10, 10), 1, sf::Color::Red, 10);
+
+    manager.GetMolecules().push_back(std::make_unique<Mephi::MoleculeCircle>(molecule));
+
 
     while (window.isOpen())
     {
@@ -70,9 +75,7 @@ int main()
         window.clear(WINDOW_BG_COLOR);
 
         ERROR_HANDLE(manager.Draw(window));
-        ERROR_HANDLE(molecule.Draw(window));
-
-        ERROR_HANDLE(molecule.Update());
+        ERROR_HANDLE(manager.Update());
 
         window.display();
     }

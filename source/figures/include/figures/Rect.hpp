@@ -15,7 +15,7 @@ namespace Mephi
 {
 
 class Rect {
-    private:
+    protected:
         Mephi::Vector2d  leftCorner_;
         Mephi::Vector2d rightCorner_;
         sf::Color fillColor_;
@@ -33,6 +33,11 @@ class Rect {
 
         [[nodiscard]] sf::RectangleShape GetSFRect() const;
         Common::Error Draw(sf::RenderWindow& window) const;
+        
+        [[nodiscard]] const Mephi::Vector2d& GetLeftCorner()  const noexcept {return leftCorner_;}
+        [[nodiscard]]       Mephi::Vector2d& GetLeftCorner()        noexcept {return leftCorner_;}
+        [[nodiscard]] const Mephi::Vector2d& GetRightCorner() const noexcept {return rightCorner_;}
+        [[nodiscard]]       Mephi::Vector2d& GetRightCorner()       noexcept {return rightCorner_;}
 };
 
 }
