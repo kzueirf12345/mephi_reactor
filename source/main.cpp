@@ -12,6 +12,7 @@
 #include <memory>
 
 #include "common/ErrorHandle.hpp"
+#include "molecule/Molecule.hpp"
 #include "reactor/Reactor.hpp"
 #include "vector/Vector.hpp"
 #include "figures/Rect.hpp"
@@ -24,7 +25,7 @@ int main()
     constexpr unsigned int WINDOW_WIDTH         = 2048;
     constexpr unsigned int WINDOW_HEIGHT        = 1024;
 
-    constexpr unsigned int FRAMERATE_LIMIT      = 50;
+    constexpr unsigned int FRAMERATE_LIMIT      = 120;
 
     const sf::Color WINDOW_BG_COLOR(240, 240, 240);
 
@@ -57,13 +58,27 @@ int main()
         ), 
         {}
     );
+    // Создаем молекулы с разными позициями и скоростями внутри реактора
+    Mephi::MoleculeCircle molecule1(Mephi::Vector2d(200, 200), Mephi::Vector2d(-1.5, 1.5), 1, sf::Color::Red, 20);
+    Mephi::MoleculeCircle molecule2(Mephi::Vector2d(300, 300), Mephi::Vector2d(2.0, -1.0), 1, sf::Color::Red, 20);
+    Mephi::MoleculeCircle molecule3(Mephi::Vector2d(400, 400), Mephi::Vector2d(-1.0, -2.0), 1, sf::Color::Red, 20);
+    Mephi::MoleculeCircle molecule4(Mephi::Vector2d(250, 250), Mephi::Vector2d(2.5, .5), 1, sf::Color::Red, 20);
+    Mephi::MoleculeCircle molecule5(Mephi::Vector2d(350, 350), Mephi::Vector2d(-.5, -2.5), 1, sf::Color::Red, 20);
+    Mephi::MoleculeCircle molecule6(Mephi::Vector2d(450, 450), Mephi::Vector2d(1.5, 1.5), 1, sf::Color::Red, 20);
 
-    Mephi::MoleculeCircle molecule1(Mephi::Vector2d(200, 200), Mephi::Vector2d(-10, 10), 1, sf::Color::Red, 10);
-    Mephi::MoleculeSquare molecule2(Mephi::Vector2d(300, 250), Mephi::Vector2d(10, -10), 1, sf::Color::Red, 10);
-
+    // Добавляем молекулы в менеджер
     manager.GetMolecules().push_back(std::make_unique<Mephi::MoleculeCircle>(molecule1));
-    manager.GetMolecules().push_back(std::make_unique<Mephi::MoleculeSquare>(molecule2));
+    manager.GetMolecules().push_back(std::make_unique<Mephi::MoleculeCircle>(molecule2));
+    manager.GetMolecules().push_back(std::make_unique<Mephi::MoleculeCircle>(molecule3));
+    manager.GetMolecules().push_back(std::make_unique<Mephi::MoleculeCircle>(molecule4));
+    manager.GetMolecules().push_back(std::make_unique<Mephi::MoleculeCircle>(molecule5));
+    manager.GetMolecules().push_back(std::make_unique<Mephi::MoleculeCircle>(molecule6));
 
+    // Mephi::MoleculeCircle molecule1(Mephi::Vector2d(200, 200), Mephi::Vector2d(-15, 15), 1, sf::Color::Red, 10);
+    // Mephi::MoleculeSquare molecule2(Mephi::Vector2d(250, 250), Mephi::Vector2d(-10, 10), 1, sf::Color::Blue, 10);
+
+    // manager.GetMolecules().push_back(std::make_unique<Mephi::MoleculeCircle>(molecule1));
+    // manager.GetMolecules().push_back(std::make_unique<Mephi::MoleculeSquare>(molecule2));
 
     while (window.isOpen())
     {
@@ -79,6 +94,7 @@ int main()
 
         ERROR_HANDLE(manager.Draw(window));
         ERROR_HANDLE(manager.Update());
+        
 
         window.display();
     }

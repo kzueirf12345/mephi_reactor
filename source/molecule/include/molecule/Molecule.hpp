@@ -14,7 +14,7 @@
 
 namespace Mephi
 {
-
+    
 class Molecule {
     protected:
         Mephi::Vector2d coord_;
@@ -27,19 +27,26 @@ class Molecule {
             : coord_{startCoord}, speed_{startSpeed}, mass_{startMass}, color_{color}
         {}
 
+        [[nodiscard]] virtual size_t GetTypeId() const noexcept;
+
         virtual Common::Error Draw(sf::RenderWindow& window) const = 0;
         virtual Common::Error Update() = 0;
 
-        virtual uint64_t  LeftX()     const noexcept = 0;
-        virtual uint64_t  RightX()    const noexcept = 0;
-        virtual uint64_t  TopY()      const noexcept = 0;
-        virtual uint64_t  BottomY()   const noexcept = 0;
+        [[nodiscard]] virtual uint64_t  LeftX()     const noexcept = 0;
+        [[nodiscard]] virtual uint64_t  RightX()    const noexcept = 0;
+        [[nodiscard]] virtual uint64_t  TopY()      const noexcept = 0;
+        [[nodiscard]] virtual uint64_t  BottomY()   const noexcept = 0;
 
         [[nodiscard]] const Mephi::Vector2d& GetCoord() const noexcept {return coord_;}
         [[nodiscard]]       Mephi::Vector2d& GetCoord()       noexcept {return coord_;}
         [[nodiscard]] const Mephi::Vector2d& GetSpeed() const noexcept {return speed_;}
         [[nodiscard]]       Mephi::Vector2d& GetSpeed()       noexcept {return speed_;}
+        [[nodiscard]] const uint64_t&        GetMass()  const noexcept {return  mass_;}
+        [[nodiscard]]       uint64_t&        GetMass()        noexcept {return  mass_;}
 };
+
+bool IsIntersect(const Mephi::Molecule& molecule1, 
+                 const Mephi::Molecule& molecule2) noexcept;
 
 }
 #endif /*MEPHI_REACTOR_SOURCE_MOLEKULE_INCLUDE_MOLECULE_MOLECULE_HPP*/

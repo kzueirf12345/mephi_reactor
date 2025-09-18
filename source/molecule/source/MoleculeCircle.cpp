@@ -1,3 +1,5 @@
+#include <typeinfo>
+
 #include <SFML/Graphics/CircleShape.hpp>
 
 #include "molecule/MoleculeCircle.hpp"
