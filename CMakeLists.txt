@@ -17,8 +17,11 @@ add_subdirectory(source/figures)
 add_subdirectory(source/reactor)
 add_subdirectory(source/mephi)
 add_subdirectory(source/molecule)
+add_subdirectory(source/plot)
 
+find_package(X11                            REQUIRED)
 find_package(SFML 2.5.1 COMPONENTS graphics REQUIRED)
+
 
 add_executable(${CMAKE_PROJECT_NAME}
     source/main.cpp
@@ -27,6 +30,7 @@ add_executable(${CMAKE_PROJECT_NAME}
 target_link_libraries(${CMAKE_PROJECT_NAME} 
     PRIVATE
         sfml-graphics
+        ${X11_LIBRARIES}
 
         common
         vector
@@ -34,4 +38,5 @@ target_link_libraries(${CMAKE_PROJECT_NAME}
         reactor 
         mephi
         molecule
+        plot
 )

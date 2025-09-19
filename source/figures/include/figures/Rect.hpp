@@ -24,7 +24,7 @@ class Rect {
     public:
         Rect(const Mephi::Vector2d&  leftCorner, 
              const Mephi::Vector2d& rightCorner, 
-             const sf::Color&         fillColor = sf::Color::Black, 
+             const sf::Color&         fillColor = sf::Color(240, 240, 240), 
              const sf::Color&      outlineColor = sf::Color::Black,
              const double             thickness = 1)
             : leftCorner_{leftCorner}, rightCorner_{rightCorner}, fillColor_{fillColor}, 
@@ -34,10 +34,14 @@ class Rect {
         [[nodiscard]] sf::RectangleShape GetSFRect() const;
         Common::Error Draw(sf::RenderWindow& window) const;
         
-        [[nodiscard]] const Mephi::Vector2d& GetLeftCorner()  const noexcept {return leftCorner_;}
-        [[nodiscard]]       Mephi::Vector2d& GetLeftCorner()        noexcept {return leftCorner_;}
-        [[nodiscard]] const Mephi::Vector2d& GetRightCorner() const noexcept {return rightCorner_;}
-        [[nodiscard]]       Mephi::Vector2d& GetRightCorner()       noexcept {return rightCorner_;}
+        [[nodiscard]] const Mephi::Vector2d& GetLeftCorner()   const noexcept {return leftCorner_;}
+        [[nodiscard]]       Mephi::Vector2d& GetLeftCorner()         noexcept {return leftCorner_;}
+        [[nodiscard]] const Mephi::Vector2d& GetRightCorner()  const noexcept {return rightCorner_;}
+        [[nodiscard]]       Mephi::Vector2d& GetRightCorner()        noexcept {return rightCorner_;}
+        [[nodiscard]] const sf::Color&       GetFillColor()    const noexcept {return fillColor_;}
+        [[nodiscard]] const sf::Color&       GetOutlintColor() const noexcept {return outlineColor_;}
+        [[nodiscard]]       double           Width()           const noexcept {return rightCorner_.x - leftCorner_.x;}
+        [[nodiscard]]       double           Height()          const noexcept {return rightCorner_.y - leftCorner_.y;}
 };
 
 }
