@@ -28,6 +28,7 @@ class MephiManager{
     private:
         Mephi::Reactor reactor_;
         std::vector<std::unique_ptr<Mephi::Molecule>> molecules_;
+        size_t circleCnt_;
     
         static THandleIntercationFuncsTable handleIntercationFuncsTable_;
         Common::Error HandleInteraction_();
@@ -39,7 +40,7 @@ class MephiManager{
     public:
         explicit MephiManager(const Mephi::Reactor& reactor, 
                               std::vector<std::unique_ptr<Mephi::Molecule>> molecules = {}) 
-            : reactor_{reactor}, molecules_(std::move(molecules))
+            : reactor_{reactor}, molecules_(std::move(molecules)), circleCnt_(0)
         {}
 
         Common::Error Draw(sf::RenderWindow& window) const;
@@ -49,6 +50,7 @@ class MephiManager{
 
         [[nodiscard]]       Mephi::Reactor& GetReactor()                                        noexcept {return reactor_; }
         [[nodiscard]] const Mephi::Reactor& GetReactor()                                  const noexcept {return reactor_; }
+        [[nodiscard]]       size_t          GetCircleCnt()                                const noexcept {return circleCnt_;}
         [[nodiscard]]       std::vector<std::unique_ptr<Mephi::Molecule>>& GetMolecules()       noexcept {return molecules_; }
         [[nodiscard]] const std::vector<std::unique_ptr<Mephi::Molecule>>& GetMolecules() const noexcept {return molecules_; }
 } ;

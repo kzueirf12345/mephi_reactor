@@ -18,6 +18,7 @@ add_subdirectory(source/reactor)
 add_subdirectory(source/mephi)
 add_subdirectory(source/molecule)
 add_subdirectory(source/plot)
+add_subdirectory(source/threads)
 
 find_package(X11                            REQUIRED)
 find_package(SFML 2.5.1 COMPONENTS graphics REQUIRED)
@@ -39,4 +40,5 @@ target_link_libraries(${CMAKE_PROJECT_NAME}
         mephi
         molecule
         plot
+        threads
 )

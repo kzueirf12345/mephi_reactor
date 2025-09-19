@@ -109,6 +109,8 @@ Common::Error Mephi::MephiManager::HandleInteractionCC_(size_t& moleculeInd1, si
     std::swap(molecules_[moleculeInd2], molecules_.back());
     molecules_.pop_back();
 
+    circleCnt_ -= 2;
+
     return Common::Error::SUCCESS;
 }
 
@@ -141,6 +143,8 @@ Common::Error Mephi::MephiManager::HandleInteractionSS_(size_t& moleculeInd1, si
         )));
     }
 
+    circleCnt_ += sumMass;
+
     std::swap(molecules_[moleculeInd1], molecules_.back());
     // molecules_[moleculeInd1].reset();
     molecules_.pop_back();
@@ -161,6 +165,8 @@ Common::Error Mephi::MephiManager::HandleInteractionCS_(size_t& moleculeInd1, si
 
     std::swap(molecules_[moleculeInd1], molecules_.back());
     molecules_.pop_back();
+
+    --circleCnt_;
     
     return Common::Error::SUCCESS;
 }
@@ -169,6 +175,8 @@ Common::Error Mephi::MephiManager::GenerateMolecules(const size_t count)
 {
     std::random_device rd;
     std::mt19937 gen(rd());
+
+    circleCnt_ += count;
     
     std::uniform_real_distribution<double> distX(reactor_.GetLeftCorner().x, reactor_.GetRightCorner().x);
     std::uniform_real_distribution<double> distY(reactor_.GetLeftCorner().y, reactor_.GetRightCorner().y);

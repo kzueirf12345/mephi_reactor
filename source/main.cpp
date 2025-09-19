@@ -9,6 +9,7 @@
 #include <SFML/Window/WindowStyle.hpp>
 
 #include <cmath>
+#include <cstddef>
 #include <cstdlib>
 #include <thread>
 #include <X11/Xlib.h>
@@ -19,6 +20,9 @@
 #include "vector/Vector.hpp"
 #include "figures/Rect.hpp"
 #include "mephi/MephiManager.hpp"
+#include "threads/ThreadManager.hpp"
+
+Mephi::ThreadManager<size_t> ShareCircleCntManager;
 
 void ReactorThread();
 void PlotThread();
@@ -62,7 +66,7 @@ void ReactorThread() {
         {}
     );
 
-    manager.GenerateMolecules(1000);
+    manager.GenerateMolecules(100);
 
     while (window.isOpen())
     {
@@ -78,10 +82,13 @@ void ReactorThread() {
 
         manager.Draw(window);
         manager.Update();
+
+        ShareCircleCntManager.setData(manager.GetCircleCnt());
         
 
         window.display();
     }
+    ShareCircleCntManager.stop();
 }
 
 void PlotThread() {
@@ -100,10 +107,12 @@ void PlotThread() {
     Mephi::Plot plot(
         Mephi::Vector2d(100, 100),
         Mephi::Vector2d(500, 500),
-        100,
-        100,
+        1,
+        1,
         Mephi::Vector2d(200, 200)
     );
+
+    double ind = 0;
 
     while (window.isOpen())
     {
@@ -116,9 +125,16 @@ void PlotThread() {
         }
 
         window.clear(WINDOW_BG_COLOR);
+        
+        size_t curCircleCnt;
+        if (ShareCircleCntManager.getData(curCircleCnt)) {
+            plot.PushDot(Mephi::Vector2d(ind, curCircleCnt));
+        }
 
         plot.Draw(window);
 
         window.display();
+
+        ++ind;
     }
 }

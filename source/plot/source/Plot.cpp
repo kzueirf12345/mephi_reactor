@@ -1,4 +1,23 @@
 #include "plot/Plot.hpp"
+#include "common/ErrorHandle.hpp"
+#include "vector/Vector.hpp"
+#include <SFML/Graphics/Vertex.hpp>
+
+Mephi::Vector2d Mephi::Plot::Seg2Pix(const Mephi::Vector2d& segDot) const {
+    return Mephi::Vector2d(Mephi::Vector2d(segDot.x * scaleX_, -segDot.y * scaleY_) + originOffset_ + leftCorner_);
+}
+
+Mephi::Vector2d Mephi::Plot::Pix2Seg(const Mephi::Vector2d& pixDot) const {
+    return Mephi::Vector2d(
+        (pixDot.x - originOffset_.x) / scaleX_, 
+        (pixDot.y - originOffset_.y) / scaleY_
+    );
+}
+
+Common::Error Mephi::Plot::PushDot(const Mephi::Vector2d& segDot) {
+    dots_.append(static_cast<sf::Vector2f>(Seg2Pix(segDot)));
+    return Common::Error::SUCCESS;
+}
 
 sf::VertexArray Mephi::Plot::CreateAxis(const bool IsX) const
 {
@@ -17,22 +36,24 @@ sf::VertexArray Mephi::Plot::CreateAxis(const bool IsX) const
     return Axis;
 }
 
-Common::Error Mephi::Plot::Draw(sf::RenderWindow& Window) const {
+Common::Error Mephi::Plot::Draw(sf::RenderWindow& window) const {
 
-    Window.draw(GetSFRect());
+    window.draw(GetSFRect());
 
-    const sf::VertexArray xAxis = this->CreateAxis(true);
-    const sf::VertexArray yAxis = this->CreateAxis(false);
+    const sf::VertexArray xAxis = CreateAxis(true);
+    const sf::VertexArray yAxis = CreateAxis(false);
 
     if (leftCorner_.y < xAxis[0].position.y && xAxis[0].position.y < rightCorner_.y) {
-        Window.draw(xAxis);
+        window.draw(xAxis);
     }
     if (leftCorner_.x < yAxis[0].position.x && yAxis[0].position.x < rightCorner_.x) {
-        Window.draw(yAxis);
+        window.draw(yAxis);
     }
 
-    Window.draw(this->CreateGrid(true ));
-    Window.draw(this->CreateGrid(false));
+    window.draw(CreateGrid(true ));
+    window.draw(CreateGrid(false));
+
+    window.draw(dots_);
 
     return Common::Error::SUCCESS;
 }
