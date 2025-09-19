@@ -84,7 +84,7 @@ Common::Error Mephi::MephiManager::HandleInteraction_() {
                 size_t id1 = molecules_[i]->GetTypeId();
                 size_t id2 = molecules_[j]->GetTypeId();
                 
-                return handleIntercationFuncsTable_.at(id1).at(id2)(*this, i, j);
+                ERROR_HANDLE(handleIntercationFuncsTable_.at(id1).at(id2)(*this, i, j));
             }
         }
     }
@@ -117,7 +117,7 @@ Common::Error Mephi::MephiManager::HandleInteractionSS_(size_t& moleculeInd1, si
     const Mephi::Molecule& square2 = *molecules_[moleculeInd2];
 
     const uint64_t sumMass = square1.GetMass() + square2.GetMass();
-    const double speedModule = Mephi::Vector2d((square1.GetSpeed() + square2.GetSpeed()) / 2.).Len();
+    const double speedModule = sqrt((square1.GetMass() * square1.GetSpeed().Len2() + square2.GetMass() * square2.GetSpeed().Len2()) / sumMass);
 
     srand(time(NULL));
     for (size_t i = 0; i < sumMass; ++i) {
@@ -128,24 +128,35 @@ Common::Error Mephi::MephiManager::HandleInteractionSS_(size_t& moleculeInd1, si
         const Mephi::Vector2d avgSpeed(cos * speedModule - sin * speedModule, 
                                        sin * speedModule + cos * speedModule);
 
+        const uint64_t sizeSquare = Mephi::MoleculeSquare::START_RADIUS + sumMass;
+        const Mephi::Vector2d addPos(cos * sizeSquare - sin * sizeSquare,
+                                     sin * sizeSquare + cos * sizeSquare);
+
         const Mephi::Vector2d midPos((square1.GetCoord() + square2.GetCoord()) / 2.);
 
         molecules_.push_back(std::make_unique<Mephi::MoleculeCircle>(Mephi::MoleculeCircle(
-            Mephi::Vector2d(midPos + avgSpeed * static_cast<double>(sumMass)),
-            avgSpeed,
+            Mephi::Vector2d(midPos + addPos),
+            Mephi::Vector2d(avgSpeed),
             sf::Color::Red
         )));
     }
 
     std::swap(molecules_[moleculeInd1], molecules_.back());
+    // molecules_[moleculeInd1].reset();
     molecules_.pop_back();
     std::swap(molecules_[moleculeInd2], molecules_.back());
+    // molecules_[moleculeInd2].reset();
     molecules_.pop_back();
 
     return Common::Error::SUCCESS;
 }
 
-Common::Error Mephi::MephiManager::HandleInteractionCS_(size_t& moleculeInd1, size_t& moleculeInd2) {    
+Common::Error Mephi::MephiManager::HandleInteractionCS_(size_t& moleculeInd1, size_t& moleculeInd2) {  
+    const Mephi::Molecule& circle = *molecules_[moleculeInd1];
+    const Mephi::Molecule& square = *molecules_[moleculeInd2];
+
+    static_cast<Mephi::MoleculeSquare&>(*molecules_[moleculeInd2]).GetSpeed() = 
+        Mephi::Vector2d((circle.GetSpeed() + (double)square.GetMass() * square.GetSpeed()) / double(square.GetMass() + 1));
     static_cast<Mephi::MoleculeSquare&>(*molecules_[moleculeInd2]).IncreaseMass(1);
 
     std::swap(molecules_[moleculeInd1], molecules_.back());

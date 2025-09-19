@@ -22,7 +22,7 @@ namespace Mephi
 class MephiManager;
 
 using FHandleInteraction = std::function<Common::Error(Mephi::MephiManager& manager, size_t& moleculeInd1, size_t& moleculeInd2)>;
-using THandleIntercationFuncsTable = std::unordered_map<size_t, std::unordered_map<size_t, FHandleInteraction>>;
+using THandleIntercationFuncsTable = std::unordered_map<size_t, std::unordered_map<size_t, FHandleInteraction>>; // TODO enum. Сравнить скорости 
 
 class MephiManager{
     private:

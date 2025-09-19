@@ -18,13 +18,13 @@ namespace Mephi
 
 class MoleculeCircle: public Mephi::Molecule {
     private:
-        static constexpr uint64_t START_RADIUS_ = 10;
     public:
+        static constexpr uint64_t START_RADIUS = 1;
         MoleculeCircle(const Mephi::Vector2d& startCoord, const Mephi::Vector2d& startSpeed, 
                        const sf::Color& color)
             : Mephi::Molecule{startCoord, startSpeed, 1, color}
         {
-            radius_ += START_RADIUS_;
+            radius_ += START_RADIUS;
         }
 
         virtual Common::Error Draw(sf::RenderWindow& window) const override final;
