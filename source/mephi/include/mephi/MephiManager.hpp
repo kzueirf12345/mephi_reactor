@@ -45,6 +45,8 @@ class MephiManager{
         Common::Error Draw(sf::RenderWindow& window) const;
         Common::Error Update();
 
+        Common::Error GenerateMolecules(const size_t count);
+
         [[nodiscard]]       Mephi::Reactor& GetReactor()                                        noexcept {return reactor_; }
         [[nodiscard]] const Mephi::Reactor& GetReactor()                                  const noexcept {return reactor_; }
         [[nodiscard]]       std::vector<std::unique_ptr<Mephi::Molecule>>& GetMolecules()       noexcept {return molecules_; }

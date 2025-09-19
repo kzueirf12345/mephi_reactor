@@ -1,10 +1,12 @@
 
+#include <memory>
+#include <random>
+
 #include "common/ErrorHandle.hpp"
 #include "molecule/Molecule.hpp"
 #include "molecule/MoleculeCircle.hpp"
 #include "molecule/MoleculeSquare.hpp"
 #include "vector/Vector.hpp"
-#include <memory>
 #include "mephi/MephiManager.hpp"
 
 Mephi::THandleIntercationFuncsTable Mephi::MephiManager::handleIntercationFuncsTable_ = []() {
@@ -149,5 +151,32 @@ Common::Error Mephi::MephiManager::HandleInteractionCS_(size_t& moleculeInd1, si
     std::swap(molecules_[moleculeInd1], molecules_.back());
     molecules_.pop_back();
     
+    return Common::Error::SUCCESS;
+}
+
+Common::Error Mephi::MephiManager::GenerateMolecules(const size_t count)
+{
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    
+    std::uniform_real_distribution<double> distX(reactor_.GetLeftCorner().x, reactor_.GetRightCorner().x);
+    std::uniform_real_distribution<double> distY(reactor_.GetLeftCorner().y, reactor_.GetRightCorner().y);
+    
+    std::uniform_real_distribution<double> distSpeed(0, 10);
+    std::uniform_real_distribution<double> distAngle(0.0, 2.0 * M_PI);
+    
+    for (size_t i = 0; i < count; ++i)
+    {
+        const Mephi::Vector2d randomCoord(distX(gen), distY(gen));
+        
+        const double speed = distSpeed(gen);
+        const double angle = distAngle(gen);
+        const Mephi::Vector2d randomSpeed(speed * std::cos(angle), speed * std::sin(angle));
+        
+        const Mephi::MoleculeCircle molecule(randomCoord, randomSpeed, sf::Color::Red);
+        
+        molecules_.push_back(std::make_unique<Mephi::MoleculeCircle>(molecule));
+    }
+
     return Common::Error::SUCCESS;
 }
