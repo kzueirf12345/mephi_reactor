@@ -21,10 +21,12 @@ class Molecule {
         Mephi::Vector2d speed_;
         uint64_t         mass_;
         sf::Color       color_;
+        uint64_t       radius_;
     public:
         Molecule(const Mephi::Vector2d& startCoord, const Mephi::Vector2d& startSpeed, 
                  uint64_t startMass, const sf::Color& color)
-            : coord_{startCoord}, speed_{startSpeed}, mass_{startMass}, color_{color}
+            : coord_{startCoord}, speed_{startSpeed}, mass_{startMass}, color_{color}, 
+              radius_(startMass)
         {}
 
         [[nodiscard]] virtual size_t GetTypeId() const noexcept;
@@ -41,8 +43,8 @@ class Molecule {
         [[nodiscard]]       Mephi::Vector2d& GetCoord()       noexcept {return coord_;}
         [[nodiscard]] const Mephi::Vector2d& GetSpeed() const noexcept {return speed_;}
         [[nodiscard]]       Mephi::Vector2d& GetSpeed()       noexcept {return speed_;}
-        [[nodiscard]] const uint64_t&        GetMass()  const noexcept {return  mass_;}
-        [[nodiscard]]       uint64_t&        GetMass()        noexcept {return  mass_;}
+        [[nodiscard]] const uint64_t&        GetMass()  const noexcept {return mass_;}
+        [[nodiscard]] const uint64_t&        GetRadius()const noexcept {return radius_;}
 };
 
 bool IsIntersect(const Mephi::Molecule& molecule1, 

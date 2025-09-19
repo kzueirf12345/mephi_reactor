@@ -5,10 +5,17 @@
 #include "molecule/MoleculeSquare.hpp"
 #include "vector/Vector.hpp"
 
+Common::Error Mephi::MoleculeSquare::IncreaseMass(int64_t addNum) noexcept {
+    mass_   += addNum;
+    radius_ += addNum;
+
+    return Common::Error::SUCCESS;
+}
+
 Common::Error Mephi::MoleculeSquare::Draw(sf::RenderWindow& window) const {
-    sf::RectangleShape square(sf::Vector2f(side_, side_));
+    sf::RectangleShape square(sf::Vector2f(2 * radius_, 2 * radius_));
     square.setFillColor(color_);
-    square.setPosition(static_cast<sf::Vector2f>(coord_));
+    square.setPosition(static_cast<sf::Vector2f>(coord_ - Mephi::Vector2d(radius_, radius_)));
     window.draw(square);
     
     return Common::Error::SUCCESS;

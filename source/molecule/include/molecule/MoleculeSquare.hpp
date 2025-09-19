@@ -8,7 +8,6 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/Graphics/Color.hpp>
 #include <SFML/Graphics/Shape.hpp>
-#include <numbers>
 
 #include "common/ErrorHandle.hpp"
 #include "vector/Vector.hpp"
@@ -19,24 +18,23 @@ namespace Mephi
 
 class MoleculeSquare: public Mephi::Molecule {
     private:
-        uint64_t side_;
-        uint64_t radius_;
+        static constexpr uint64_t START_RADIUS_ = 30;
     public:
         MoleculeSquare(const Mephi::Vector2d& startCoord, const Mephi::Vector2d& startSpeed, 
-                       uint64_t startMass, const sf::Color& color, const uint64_t radius)
-            : Mephi::Molecule{startCoord, startSpeed, startMass, color}, radius_{radius}, 
-              side_{uint64_t(radius * std::numbers::sqrt2)}
-        {}
+                       uint64_t startMass, const sf::Color& color)
+            : Mephi::Molecule{startCoord, startSpeed, startMass, color}
+        {
+            radius_ += START_RADIUS_;
+        }
 
         virtual Common::Error Draw(sf::RenderWindow& window) const override final;
         virtual Common::Error Update() override final;
 
-        [[nodiscard]]         const uint64_t& GetRadius() const noexcept                {return radius_;}
-        [[nodiscard]]               uint64_t& GetRadius()       noexcept                {return radius_;}
-        [[nodiscard]] virtual       uint64_t  LeftX()     const noexcept override final {return coord_.x - radius_ * std::numbers::sqrt2;}
-        [[nodiscard]] virtual       uint64_t  RightX()    const noexcept override final {return coord_.x + radius_ * std::numbers::sqrt2;}
-        [[nodiscard]] virtual       uint64_t  TopY()      const noexcept override final {return coord_.y - radius_ * std::numbers::sqrt2;}
-        [[nodiscard]] virtual       uint64_t  BottomY()   const noexcept override final {return coord_.y + radius_ * std::numbers::sqrt2;}
+        Common::Error IncreaseMass(int64_t addNum) noexcept;
+        [[nodiscard]] virtual       uint64_t  LeftX()     const noexcept override final {return coord_.x - radius_;}
+        [[nodiscard]] virtual       uint64_t  RightX()    const noexcept override final {return coord_.x + radius_;}
+        [[nodiscard]] virtual       uint64_t  TopY()      const noexcept override final {return coord_.y - radius_;}
+        [[nodiscard]] virtual       uint64_t  BottomY()   const noexcept override final {return coord_.y + radius_;}
 };
 
 }

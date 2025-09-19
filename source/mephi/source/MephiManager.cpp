@@ -7,8 +7,6 @@
 #include <memory>
 #include "mephi/MephiManager.hpp"
 
-// static const Mephi::THandleIntercationFuncsTable handleIntercationFuncsTable;
-
 Mephi::THandleIntercationFuncsTable Mephi::MephiManager::handleIntercationFuncsTable_ = []() {
     const auto circleId = typeid(Mephi::MoleculeCircle).hash_code();
     const auto squareId = typeid(Mephi::MoleculeSquare).hash_code();
@@ -51,37 +49,36 @@ Common::Error Mephi::MephiManager::Update() {
 
         const Mephi::Vector2d curCoord = molecule->GetCoord();
         const Mephi::Vector2d curSpeed = molecule->GetSpeed();
-        if (molecule->LeftX() <= reactor_.GetLeftCorner().x) {
-            molecule->GetCoord().x = reactor_.GetLeftCorner().x  + (reactor_.GetLeftCorner().x  - molecule->LeftX());
+        if (molecule->LeftX() <= reactor_.GetLeftCorner().x && molecule->GetSpeed().x < 0) {
+            molecule->GetCoord().x = reactor_.GetLeftCorner().x + molecule->GetRadius()  + (reactor_.GetLeftCorner().x  - molecule->LeftX());
             molecule->GetSpeed().x = -curSpeed.x;
         }
-        if (reactor_.GetRightCorner().x <= molecule->RightX()) {
-            molecule->GetCoord().x = reactor_.GetRightCorner().x - (molecule->RightX() - reactor_.GetRightCorner().x);
+        if (reactor_.GetRightCorner().x <= molecule->RightX() && molecule->GetSpeed().x > 0) {
+            molecule->GetCoord().x = reactor_.GetRightCorner().x - molecule->GetRadius() - (molecule->RightX() - reactor_.GetRightCorner().x);
             molecule->GetSpeed().x = -curSpeed.x;
         }
-        if (molecule->TopY() <= reactor_.GetLeftCorner().y) {
-            molecule->GetCoord().y = reactor_.GetLeftCorner().y  + (reactor_.GetLeftCorner().y  - molecule->TopY());
+        if (molecule->TopY() <= reactor_.GetLeftCorner().y && molecule->GetSpeed().y < 0) {
+            molecule->GetCoord().y = reactor_.GetLeftCorner().y + molecule->GetRadius() + (reactor_.GetLeftCorner().y  - molecule->TopY());
             molecule->GetSpeed().y = -curSpeed.y;
         }
-        if (reactor_.GetRightCorner().x <= molecule->BottomY()) {
-            molecule->GetCoord().y = reactor_.GetRightCorner().y - (molecule->BottomY() - reactor_.GetRightCorner().y);
+        if (reactor_.GetRightCorner().y <= molecule->BottomY() && molecule->GetSpeed().y > 0) {
+            molecule->GetCoord().y = reactor_.GetRightCorner().y - molecule->GetRadius() - (molecule->BottomY() - reactor_.GetRightCorner().y);
             molecule->GetSpeed().y = -curSpeed.y;
         }
     }
 
     ERROR_HANDLE(HandleInteraction_());
+
     return Common::Error::SUCCESS;
 }
 
 Common::Error Mephi::MephiManager::HandleInteraction_() {
+
+    // uint64_t sumMass = 0;
     for (size_t i = 0; i < molecules_.size(); ++i) {
+        // sumMass += molecules_[i]->GetMass();
         for (size_t j = i + 1; j < molecules_.size(); ++j) {
-            if (i == j) {
-                continue;
-            }
-            // std::cerr << "lol1 i = " << i << " j = " << j << std::endl;
             if (Mephi::IsIntersect(*molecules_[i], *molecules_[j])) {
-                // std::cerr << "lol2" << std::endl;
                 size_t id1 = molecules_[i]->GetTypeId();
                 size_t id2 = molecules_[j]->GetTypeId();
                 
@@ -89,6 +86,8 @@ Common::Error Mephi::MephiManager::HandleInteraction_() {
             }
         }
     }
+
+    // std::cerr << "sumMass " << sumMass << std::endl;
     
     return Common::Error::SUCCESS;
 }
@@ -102,8 +101,7 @@ Common::Error Mephi::MephiManager::HandleInteractionCC_(size_t& moleculeInd1, si
         Mephi::Vector2d((circle1.GetCoord() + circle2.GetCoord()) / 2.), 
         Mephi::Vector2d((circle1.GetSpeed() + circle2.GetSpeed()) / 2.),
         2,
-        sf::Color::Blue,
-        20
+        sf::Color::Blue
     ));
     
     std::swap(molecules_[moleculeInd2], molecules_.back());
@@ -131,11 +129,9 @@ Common::Error Mephi::MephiManager::HandleInteractionSS_(size_t& moleculeInd1, si
         const Mephi::Vector2d midPos((square1.GetCoord() + square2.GetCoord()) / 2.);
 
         molecules_.push_back(std::make_unique<Mephi::MoleculeCircle>(Mephi::MoleculeCircle(
-            Mephi::Vector2d(midPos + avgSpeed * 4.),
+            Mephi::Vector2d(midPos + avgSpeed * static_cast<double>(sumMass)),
             avgSpeed,
-            1,
-            sf::Color::Red,
-            20
+            sf::Color::Red
         )));
     }
 
@@ -144,14 +140,11 @@ Common::Error Mephi::MephiManager::HandleInteractionSS_(size_t& moleculeInd1, si
     std::swap(molecules_[moleculeInd2], molecules_.back());
     molecules_.pop_back();
 
-    --moleculeInd1;
-    moleculeInd2 = 0;
-
     return Common::Error::SUCCESS;
 }
 
 Common::Error Mephi::MephiManager::HandleInteractionCS_(size_t& moleculeInd1, size_t& moleculeInd2) {    
-    molecules_[moleculeInd2]->GetMass()++;
+    static_cast<Mephi::MoleculeSquare&>(*molecules_[moleculeInd2]).IncreaseMass(1);
 
     std::swap(molecules_[moleculeInd1], molecules_.back());
     molecules_.pop_back();
