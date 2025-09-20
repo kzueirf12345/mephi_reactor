@@ -13,6 +13,8 @@
 #include <cstdlib>
 #include <thread>
 #include <X11/Xlib.h>
+#include <vector>
+#include <functional>
 
 #include "common/ErrorHandle.hpp"
 #include "plot/Plot.hpp"
@@ -22,25 +24,33 @@
 #include "mephi/MephiManager.hpp"
 #include "threads/ThreadManager.hpp"
 
-Mephi::ThreadManager<size_t> ShareCircleCntManager;
+enum ShareData {
+    CIRCLE_CNT = 0,
+    SQUARE_CNT,
+    SIZE
+};
 
-void ReactorThread();
-void PlotThread();
+void ReactorThread(std::vector<Mephi::ThreadManager<double>>& shareDataManagers);
+void PlotThread(Mephi::ThreadManager<double>& shareDataManager, const std::string& windowName);
 
 int main()
 {
     XInitThreads();
 
-    std::thread t1(PlotThread);
-    std::thread t2(ReactorThread);
+    std::vector<Mephi::ThreadManager<double>> shareDataManagers(ShareData::SIZE);
+
+    std::thread circlePlotThread1(PlotThread, std::ref(shareDataManagers[ShareData::CIRCLE_CNT]), "Circle Count");
+    std::thread squarePlotThread1(PlotThread, std::ref(shareDataManagers[ShareData::SQUARE_CNT]), "Square Count");
+    std::thread reactorThread2(ReactorThread, std::ref(shareDataManagers));
     
-    t1.join();
-    t2.join();
+    circlePlotThread1.join();
+    squarePlotThread1.join();
+    reactorThread2.join();
 
     return 0;
 }
 
-void ReactorThread() {
+void ReactorThread(std::vector<Mephi::ThreadManager<double>>& shareDataManagers) {
     constexpr unsigned int WINDOW_WIDTH    = 1920;
     constexpr unsigned int WINDOW_HEIGHT   = 1200;
     constexpr unsigned int FRAMERATE_LIMIT = 15;
@@ -66,7 +76,7 @@ void ReactorThread() {
         {}
     );
 
-    manager.GenerateMolecules(100);
+    manager.GenerateMolecules(1000);
 
     while (window.isOpen())
     {
@@ -83,23 +93,25 @@ void ReactorThread() {
         manager.Draw(window);
         manager.Update();
 
-        ShareCircleCntManager.setData(manager.GetCircleCnt());
-        
+        shareDataManagers[ShareData::CIRCLE_CNT].setData(manager.GetCircleCnt());
+        shareDataManagers[ShareData::SQUARE_CNT].setData(manager.GetSquareCnt());
 
         window.display();
     }
-    ShareCircleCntManager.stop();
+    shareDataManagers[ShareData::CIRCLE_CNT].stop();
+    shareDataManagers[ShareData::SQUARE_CNT].stop();
 }
 
-void PlotThread() {
+void PlotThread(Mephi::ThreadManager<double>& shareDataManager, const std::string& windowName) {
     constexpr unsigned int WINDOW_WIDTH    = 700;
     constexpr unsigned int WINDOW_HEIGHT   = 700;
     constexpr unsigned int FRAMERATE_LIMIT = 60;
+    constexpr double       PLOT_DELAY_ITER = 40;
     const sf::Color WINDOW_BG_COLOR(20, 20, 20);
 
     sf::RenderWindow window(
         sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT),
-        "Plot"
+        windowName
     );
 
     window.setFramerateLimit(FRAMERATE_LIMIT);
@@ -112,7 +124,7 @@ void PlotThread() {
         Mephi::Vector2d(200, 200)
     );
 
-    double ind = 0;
+    double curValX = -PLOT_DELAY_ITER;
 
     while (window.isOpen())
     {
@@ -126,15 +138,15 @@ void PlotThread() {
 
         window.clear(WINDOW_BG_COLOR);
         
-        size_t curCircleCnt;
-        if (ShareCircleCntManager.getData(curCircleCnt)) {
-            plot.PushDot(Mephi::Vector2d(ind, curCircleCnt));
+        double curValY;
+        if (shareDataManager.getData(curValY) && curValX > 0) {
+            plot.PushDot(Mephi::Vector2d(curValX, curValY));
         }
 
         plot.Draw(window);
 
         window.display();
 
-        ++ind;
+        ++curValX;
     }
 }

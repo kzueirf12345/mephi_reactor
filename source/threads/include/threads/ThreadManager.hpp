@@ -10,41 +10,41 @@ namespace Mephi
 template<typename T>
 class ThreadManager{
 private:
-    std::mutex mtx;
-    std::condition_variable cv;
-    T data;
-    bool new_data_rdy;
-    std::atomic<bool> running;
+    std::mutex mtx_;
+    std::condition_variable condVar_;
+    T data_;
+    bool isDataRdy_;
+    std::atomic<bool> isRunning_;
 public:
     ThreadManager() 
-        : mtx{}, cv{}, data{}, new_data_rdy{false}, running{true}
+        : mtx_{}, condVar_{}, data_{}, isDataRdy_{false}, isRunning_{true}
     {}
 
-    void setData(T new_val) {
-        std::lock_guard<std::mutex> lock(mtx);
-        data = new_val;
-        new_data_rdy = true;
-        cv.notify_one();
+    void setData(T newVal) {
+        std::lock_guard<std::mutex> lock(mtx_);
+        data_ = newVal;
+        isDataRdy_ = true;
+        condVar_.notify_one();
     }
     
     bool getData(T& result) {
-        std::unique_lock<std::mutex> lock(mtx);
-        cv.wait(lock, [this]() { return new_data_rdy || !running; });
+        std::unique_lock<std::mutex> lock(mtx_);
+        condVar_.wait(lock, [this]() { return isDataRdy_ || !isRunning_; });
         
-        if (!running) return false;
+        if (!isRunning_) return false;
         
-        result = data;
-        new_data_rdy = false;
+        result = data_;
+        isDataRdy_ = false;
         return true;
     }
     
     void stop() {
-        running = false;
-        cv.notify_all();
+        isRunning_ = false;
+        condVar_.notify_all();
     }
     
     bool isRunning() const {
-        return running;
+        return isRunning_;
     }
 };
     

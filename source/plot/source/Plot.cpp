@@ -2,6 +2,8 @@
 #include "common/ErrorHandle.hpp"
 #include "vector/Vector.hpp"
 #include <SFML/Graphics/Vertex.hpp>
+#include <SFML/Graphics/VertexArray.hpp>
+#include <SFML/System/Vector2.hpp>
 
 Mephi::Vector2d Mephi::Plot::Seg2Pix(const Mephi::Vector2d& segDot) const {
     return Mephi::Vector2d(Mephi::Vector2d(segDot.x * scaleX_, -segDot.y * scaleY_) + originOffset_ + leftCorner_);
@@ -14,13 +16,19 @@ Mephi::Vector2d Mephi::Plot::Pix2Seg(const Mephi::Vector2d& pixDot) const {
     );
 }
 
+static int debugCounter = 0;
+
 Common::Error Mephi::Plot::PushDot(const Mephi::Vector2d& segDot) {
-    dots_.append(static_cast<sf::Vector2f>(Seg2Pix(segDot)));
+    segDots_.push_back(segDot);
+    maxModY_ = std::max(maxModY_, std::abs(segDot.y));
+
+    scaleY_ = Height() / (2.5 * maxModY_);
+    scaleX_ = Width() / (2 * segDots_.size());
+
     return Common::Error::SUCCESS;
 }
 
-sf::VertexArray Mephi::Plot::CreateAxis(const bool IsX) const
-{
+sf::VertexArray Mephi::Plot::CreateAxis(const bool IsX) const {
     sf::VertexArray Axis(sf::PrimitiveType::Lines, 2);
 
     Axis[0].color = Axis[1].color = outlineColor_;
@@ -36,10 +44,11 @@ sf::VertexArray Mephi::Plot::CreateAxis(const bool IsX) const
     return Axis;
 }
 
-Common::Error Mephi::Plot::Draw(sf::RenderWindow& window) const {
+Common::Error Mephi::Plot::Draw(sf::RenderWindow& window) {
 
+    
     window.draw(GetSFRect());
-
+    
     const sf::VertexArray xAxis = CreateAxis(true);
     const sf::VertexArray yAxis = CreateAxis(false);
 
@@ -49,11 +58,20 @@ Common::Error Mephi::Plot::Draw(sf::RenderWindow& window) const {
     if (leftCorner_.x < yAxis[0].position.x && yAxis[0].position.x < rightCorner_.x) {
         window.draw(yAxis);
     }
-
+    
     window.draw(CreateGrid(true ));
     window.draw(CreateGrid(false));
 
-    window.draw(dots_);
+    sf::VertexArray pixDots_(sf::PrimitiveType::LinesStrip, segDots_.size());
+
+    for (size_t vertexInd = 0; vertexInd < segDots_.size(); ++vertexInd) {
+        pixDots_[vertexInd] = {
+            static_cast<sf::Vector2f>(Seg2Pix(segDots_[vertexInd])),
+            dotColor_
+        };
+    }
+    
+    window.draw(pixDots_);
 
     return Common::Error::SUCCESS;
 }

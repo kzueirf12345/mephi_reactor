@@ -110,6 +110,7 @@ Common::Error Mephi::MephiManager::HandleInteractionCC_(size_t& moleculeInd1, si
     molecules_.pop_back();
 
     circleCnt_ -= 2;
+    squareCnt_ += 1;
 
     return Common::Error::SUCCESS;
 }
@@ -144,6 +145,7 @@ Common::Error Mephi::MephiManager::HandleInteractionSS_(size_t& moleculeInd1, si
     }
 
     circleCnt_ += sumMass;
+    squareCnt_ -= 2;
 
     std::swap(molecules_[moleculeInd1], molecules_.back());
     // molecules_[moleculeInd1].reset();

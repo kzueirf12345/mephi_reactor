@@ -31,7 +31,9 @@ class Vector2: public ParentT<T> {
     public:
         Vector2() : ParentT<T>() {}
         Vector2(T X, T Y) : ParentT<T>(X, Y) {}
+
         template <typename U>
+        explicit Vector2(const ParentT<U>& vector)  : ParentT<T>(vector) {}
         explicit Vector2(const ParentT<T>& vector)  : ParentT<T>(vector) {}
         explicit Vector2(const ParentT<T>&& vector) : ParentT<T>(vector) {}
 
