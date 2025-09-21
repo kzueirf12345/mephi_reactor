@@ -17,6 +17,7 @@
 #include <functional>
 
 #include "common/ErrorHandle.hpp"
+#include "molecule/MoleculeManager.hpp"
 #include "plot/Plot.hpp"
 #include "reactor/Reactor.hpp"
 #include "vector/Vector.hpp"
@@ -54,6 +55,7 @@ void ReactorThread(std::vector<Mephi::ThreadManager<double>>& shareDataManagers)
     constexpr unsigned int WINDOW_WIDTH    = 1920;
     constexpr unsigned int WINDOW_HEIGHT   = 1200;
     constexpr unsigned int FRAMERATE_LIMIT = 15;
+    constexpr size_t       MOLECULES_CNT   = 1000;
     const sf::Color WINDOW_BG_COLOR(20, 20, 20);
 
     sf::RenderWindow window(
@@ -73,10 +75,9 @@ void ReactorThread(std::vector<Mephi::ThreadManager<double>>& shareDataManagers)
                 5
             )
         ), 
-        {}
+        Mephi::MoleculeManager(),
+        MOLECULES_CNT
     );
-
-    manager.GenerateMolecules(1000);
 
     while (window.isOpen())
     {
@@ -93,8 +94,8 @@ void ReactorThread(std::vector<Mephi::ThreadManager<double>>& shareDataManagers)
         manager.Draw(window);
         manager.Update();
 
-        shareDataManagers[ShareData::CIRCLE_CNT].setData(manager.GetCircleCnt());
-        shareDataManagers[ShareData::SQUARE_CNT].setData(manager.GetSquareCnt());
+        shareDataManagers[ShareData::CIRCLE_CNT].setData(manager.GetMoleculeManager().GetCircleCnt());
+        shareDataManagers[ShareData::SQUARE_CNT].setData(manager.GetMoleculeManager().GetSquareCnt());
 
         window.display();
     }
