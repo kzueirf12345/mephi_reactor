@@ -18,6 +18,10 @@ struct Sides {
     double top;
     double right;
     double bottom;
+
+    [[nodiscard]] double Average() const noexcept {
+        return (left + top + right + bottom) / 4;
+    }
 };
 
 class Reactor: public Mephi::Rect {

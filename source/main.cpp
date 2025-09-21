@@ -28,6 +28,7 @@
 enum ShareData {
     CIRCLE_CNT = 0,
     SQUARE_CNT,
+    AVG_WALLS_TEMP,
     SIZE
 };
 
@@ -40,8 +41,9 @@ int main()
 
     std::vector<Mephi::ThreadManager<double>> shareDataManagers(ShareData::SIZE);
 
-    std::thread circlePlotThread1(PlotThread, std::ref(shareDataManagers[ShareData::CIRCLE_CNT]), "Circle Count");
-    std::thread squarePlotThread1(PlotThread, std::ref(shareDataManagers[ShareData::SQUARE_CNT]), "Square Count");
+    std::thread circlePlotThread1  (PlotThread, std::ref(shareDataManagers[ShareData::CIRCLE_CNT]),     "Circle Count");
+    std::thread squarePlotThread1  (PlotThread, std::ref(shareDataManagers[ShareData::SQUARE_CNT]),     "Square Count");
+    std::thread avgWallsTempThread1(PlotThread, std::ref(shareDataManagers[ShareData::AVG_WALLS_TEMP]), "Average walls temp");
     std::thread reactorThread2(ReactorThread, std::ref(shareDataManagers));
     
     circlePlotThread1.join();
@@ -53,7 +55,7 @@ int main()
 
 void ReactorThread(std::vector<Mephi::ThreadManager<double>>& shareDataManagers) {
     constexpr unsigned int WINDOW_WIDTH    = 1920;
-    constexpr unsigned int WINDOW_HEIGHT   = 1200;
+    constexpr unsigned int WINDOW_HEIGHT   = 1000;
     constexpr unsigned int FRAMERATE_LIMIT = 15;
     constexpr size_t       MOLECULES_CNT   = 1000;
     const sf::Color WINDOW_BG_COLOR(20, 20, 20);
@@ -96,13 +98,15 @@ void ReactorThread(std::vector<Mephi::ThreadManager<double>>& shareDataManagers)
         manager.Draw(window);
         manager.Update();
 
-        shareDataManagers[ShareData::CIRCLE_CNT].setData(manager.GetMoleculeManager().GetCircleCnt());
-        shareDataManagers[ShareData::SQUARE_CNT].setData(manager.GetMoleculeManager().GetSquareCnt());
+        shareDataManagers[ShareData::CIRCLE_CNT]    .setData(manager.GetMoleculeManager().GetCircleCnt());
+        shareDataManagers[ShareData::SQUARE_CNT]    .setData(manager.GetMoleculeManager().GetSquareCnt());
+        shareDataManagers[ShareData::AVG_WALLS_TEMP].setData(manager.GetReactor().GetTemp().Average());
 
         window.display();
     }
     shareDataManagers[ShareData::CIRCLE_CNT].stop();
     shareDataManagers[ShareData::SQUARE_CNT].stop();
+    shareDataManagers[ShareData::AVG_WALLS_TEMP].stop();
 }
 
 void PlotThread(Mephi::ThreadManager<double>& shareDataManager, const std::string& windowName) {
