@@ -8,19 +8,30 @@
 #include <SFML/Graphics/Color.hpp>
 #include <SFML/Graphics/Shape.hpp>
 
-
 #include "figures/Rect.hpp"
 
 namespace Mephi
 {
 
+struct Sides {
+    double left;
+    double top;
+    double right;
+    double bottom;
+};
+
 class Reactor: public Mephi::Rect {
     private:
-        ssize_t resistance_; // TODO
+        Sides temp_;
+        double accom_;
     public:
-        explicit Reactor(const Mephi::Rect& rect) 
-            : Mephi::Rect{rect}
+        explicit Reactor(const Mephi::Rect& rect, const double accom = 0.5) 
+            : Mephi::Rect{rect}, temp_{0}, accom_{accom}
         {}
+
+        [[nodiscard]] const Mephi::Sides& GetTemp() const noexcept {return temp_;}
+        [[nodiscard]]       Mephi::Sides& GetTemp()       noexcept {return temp_;}
+        [[nodiscard]]       double        GetAccom() const noexcept {return accom_;}
 };
 
 }

@@ -3,7 +3,6 @@
 
 #include <cstdlib>
 #include <memory>
-#include <functional>
 
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/Config.hpp>

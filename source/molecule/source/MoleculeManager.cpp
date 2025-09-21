@@ -3,7 +3,6 @@
 #include <memory>
 #include <random>
 
-#include "common/Concole.hpp"
 #include "common/ErrorHandle.hpp"
 #include "molecule/Molecule.hpp"
 #include "molecule/MoleculeCircle.hpp"

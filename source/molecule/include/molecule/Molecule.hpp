@@ -39,6 +39,10 @@ class Molecule {
         [[nodiscard]] virtual uint64_t  TopY()      const noexcept = 0;
         [[nodiscard]] virtual uint64_t  BottomY()   const noexcept = 0;
 
+        [[nodiscard]]       double           KinEnergy() const noexcept {return mass_ * speed_.Len2() / 2;}
+        [[nodiscard]]       double           KinEnergyX()const noexcept {return mass_ * speed_.x * speed_.x / 2;}
+        [[nodiscard]]       double           KinEnergyY()const noexcept {return mass_ * speed_.y * speed_.y / 2;}
+
         [[nodiscard]] const Mephi::Vector2d& GetCoord() const noexcept {return coord_;}
         [[nodiscard]]       Mephi::Vector2d& GetCoord()       noexcept {return coord_;}
         [[nodiscard]] const Mephi::Vector2d& GetSpeed() const noexcept {return speed_;}
