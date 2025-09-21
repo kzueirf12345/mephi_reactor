@@ -1,7 +1,9 @@
 
+#include <cstddef>
 #include <memory>
 #include <random>
 
+#include "common/Concole.hpp"
 #include "common/ErrorHandle.hpp"
 #include "molecule/Molecule.hpp"
 #include "molecule/MoleculeCircle.hpp"
@@ -9,30 +11,32 @@
 #include "vector/Vector.hpp"
 #include "molecule/MoleculeManager.hpp"
 
-Mephi::THandleIntercationFuncsTable Mephi::MoleculeManager::handleIntercationFuncsTable_ = []() {
-    const auto circleId = typeid(Mephi::MoleculeCircle).hash_code();
-    const auto squareId = typeid(Mephi::MoleculeSquare).hash_code();
-    
-    std::unordered_map<size_t, std::unordered_map<size_t, Mephi::FHandleInteraction>> table;
-    
-        table[circleId][circleId] = [](Mephi::MoleculeManager& manager, size_t& moleculeInd1, size_t& moleculeInd2) {
-            return manager.HandleInteractionCC_(moleculeInd1, moleculeInd2);
-        };
-        
-        table[circleId][squareId] = [](Mephi::MoleculeManager& manager, size_t& moleculeInd1, size_t& moleculeInd2) {
-            return manager.HandleInteractionCS_(moleculeInd1, moleculeInd2);
-        };
+const Mephi::MoleculeManager::FHandleInteraction 
+    Mephi::MoleculeManager::handleIntercationFuncsTable_
+        [Mephi::MoleculeManager::MoleculeType::SIZE]
+        [Mephi::MoleculeManager::MoleculeType::SIZE] = {
+    {
+        &Mephi::MoleculeManager::HandleInteractionCC_,
+        &Mephi::MoleculeManager::HandleInteractionCS_
+    },
+    {
+        &Mephi::MoleculeManager::HandleInteractionCS_,
+        &Mephi::MoleculeManager::HandleInteractionSS_
+    }
+};
 
-        table[squareId][circleId] = [](Mephi::MoleculeManager& manager, size_t& moleculeInd1, size_t& moleculeInd2) {
-            return manager.HandleInteractionCS_(moleculeInd2, moleculeInd1);
-        };
-        
-        table[squareId][squareId] = [](Mephi::MoleculeManager& manager, size_t& moleculeInd1, size_t& moleculeInd2) {
-            return manager.HandleInteractionSS_(moleculeInd1, moleculeInd2);
-        };
-    
-    return std::move(table);
-}();
+Mephi::MoleculeManager::MoleculeType Mephi::MoleculeManager::HashCode2MoleculeType(const size_t hash_code) {
+
+    if (hash_code == typeid(Mephi::MoleculeCircle).hash_code()) {
+        return Mephi::MoleculeManager::CIRCLE;
+    }
+
+    if (hash_code == typeid(Mephi::MoleculeSquare).hash_code()) {
+        return Mephi::MoleculeManager::SQUARE;
+    }
+
+    return Mephi::MoleculeManager::UNKNOWN;
+};
 
 Common::Error Mephi::MoleculeManager::Draw(sf::RenderWindow& window) const {
     for (const auto& molecule : molecules_) {
@@ -46,10 +50,11 @@ Common::Error Mephi::MoleculeManager::HandleInteraction_() {
     for (size_t i = 0; i < molecules_.size(); ++i) {
         for (size_t j = i + 1; j < molecules_.size(); ++j) {
             if (Mephi::IsIntersect(*molecules_[i], *molecules_[j])) {
-                size_t id1 = molecules_[i]->GetTypeId();
-                size_t id2 = molecules_[j]->GetTypeId();
-                
-                ERROR_HANDLE(handleIntercationFuncsTable_.at(id1).at(id2)(*this, i, j));
+                Mephi::MoleculeManager::MoleculeType id1 = HashCode2MoleculeType(molecules_[i]->GetTypeId());
+                Mephi::MoleculeManager::MoleculeType id2 = HashCode2MoleculeType(molecules_[j]->GetTypeId());
+
+                if (id2 > id1)  { ERROR_HANDLE((this->*handleIntercationFuncsTable_[id1][id2])(i, j)); }
+                else            { ERROR_HANDLE((this->*handleIntercationFuncsTable_[id1][id2])(j, i)); }
             }
         }
     }
@@ -57,11 +62,10 @@ Common::Error Mephi::MoleculeManager::HandleInteraction_() {
     return Common::Error::SUCCESS;
 }
 
-Common::Error Mephi::MoleculeManager::HandleInteractionCC_(size_t& moleculeInd1, size_t& moleculeInd2) {
+Common::Error Mephi::MoleculeManager::HandleInteractionCC_(size_t moleculeInd1, size_t moleculeInd2) {
     const Mephi::Molecule& circle1 = *molecules_[moleculeInd1];
     const Mephi::Molecule& circle2 = *molecules_[moleculeInd2];
 
-    
     molecules_[moleculeInd1] = std::make_unique<Mephi::MoleculeSquare>(Mephi::MoleculeSquare(
         Mephi::Vector2d((circle1.GetCoord() + circle2.GetCoord()) / 2.), 
         Mephi::Vector2d((circle1.GetSpeed() + circle2.GetSpeed()) / 2.),
@@ -78,7 +82,7 @@ Common::Error Mephi::MoleculeManager::HandleInteractionCC_(size_t& moleculeInd1,
     return Common::Error::SUCCESS;
 }
 
-Common::Error Mephi::MoleculeManager::HandleInteractionSS_(size_t& moleculeInd1, size_t& moleculeInd2) {
+Common::Error Mephi::MoleculeManager::HandleInteractionSS_(size_t moleculeInd1, size_t moleculeInd2) {
     const Mephi::Molecule& square1 = *molecules_[moleculeInd1];
     const Mephi::Molecule& square2 = *molecules_[moleculeInd2];
 
@@ -118,7 +122,7 @@ Common::Error Mephi::MoleculeManager::HandleInteractionSS_(size_t& moleculeInd1,
     return Common::Error::SUCCESS;
 }
 
-Common::Error Mephi::MoleculeManager::HandleInteractionCS_(size_t& moleculeInd1, size_t& moleculeInd2) {  
+Common::Error Mephi::MoleculeManager::HandleInteractionCS_(size_t moleculeInd1, size_t moleculeInd2) {  
     const Mephi::Molecule& circle = *molecules_[moleculeInd1];
     const Mephi::Molecule& square = *molecules_[moleculeInd2];
 

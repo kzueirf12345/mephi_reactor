@@ -65,6 +65,8 @@ void ReactorThread(std::vector<Mephi::ThreadManager<double>>& shareDataManagers)
 
     window.setFramerateLimit(FRAMERATE_LIMIT);
 
+    Mephi::MoleculeManager moleculeManager = Mephi::MoleculeManager();
+
     Mephi::MephiManager manager(
         Mephi::Reactor (
             Mephi::Rect(

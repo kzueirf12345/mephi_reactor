@@ -16,8 +16,6 @@ Mephi::Vector2d Mephi::Plot::Pix2Seg(const Mephi::Vector2d& pixDot) const {
     );
 }
 
-static int debugCounter = 0;
-
 Common::Error Mephi::Plot::PushDot(const Mephi::Vector2d& segDot) {
     segDots_.push_back(segDot);
     maxModY_ = std::max(maxModY_, std::abs(segDot.y));

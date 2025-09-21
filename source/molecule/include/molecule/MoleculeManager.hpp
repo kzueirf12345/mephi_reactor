@@ -4,7 +4,6 @@
 #include <cstdlib>
 #include <memory>
 #include <functional>
-#include <unordered_map>
 
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/Config.hpp>
@@ -19,26 +18,51 @@
 namespace Mephi
 {
 
-class MoleculeManager;
-
-using FHandleInteraction = std::function<Common::Error(Mephi::MoleculeManager& manager, size_t& moleculeInd1, size_t& moleculeInd2)>;
-using THandleIntercationFuncsTable = std::unordered_map<size_t, std::unordered_map<size_t, FHandleInteraction>>;
-
 class MoleculeManager{
     private:
         std::vector<std::unique_ptr<Mephi::Molecule>> molecules_;
         size_t circleCnt_;
         size_t squareCnt_;
-    
-        static THandleIntercationFuncsTable handleIntercationFuncsTable_;
-        Common::Error HandleInteractionCC_(size_t& moleculeInd1, size_t& moleculeInd2);
-        Common::Error HandleInteractionSS_(size_t& moleculeInd1, size_t& moleculeInd2);
-        Common::Error HandleInteractionCS_(size_t& moleculeInd1, size_t& moleculeInd2);
 
     public:
-        explicit MoleculeManager(std::vector<std::unique_ptr<Mephi::Molecule>> molecules = {}) 
+        enum MoleculeType {
+            UNKNOWN = -1    ,
+            CIRCLE  = 0     ,
+            SQUARE          ,
+            SIZE
+        };
+        MoleculeType HashCode2MoleculeType(const size_t hash_code);
+
+    private:
+
+        using FHandleInteraction = Common::Error(MoleculeManager::*)(size_t, size_t);
+
+        Common::Error HandleInteractionCC_(size_t moleculeInd1, size_t moleculeInd2);
+        Common::Error HandleInteractionSS_(size_t moleculeInd1, size_t moleculeInd2);
+        Common::Error HandleInteractionCS_(size_t moleculeInd1, size_t moleculeInd2);
+
+        const static FHandleInteraction 
+            handleIntercationFuncsTable_
+                [Mephi::MoleculeManager::MoleculeType::SIZE]
+                [Mephi::MoleculeManager::MoleculeType::SIZE];
+    
+    public:
+        explicit MoleculeManager(std::vector<std::unique_ptr<Mephi::Molecule>> molecules = {})
             : molecules_(std::move(molecules)), circleCnt_(0), squareCnt_(0)
-        {}
+        {
+            // handleIntercationFuncsTable_[Mephi::MoleculeManager::MoleculeType::CIRCLE]
+            //                             [Mephi::MoleculeManager::MoleculeType::CIRCLE] = 
+            //     &Mephi::MoleculeManager::HandleInteractionCC_;
+            // handleIntercationFuncsTable_[Mephi::MoleculeManager::MoleculeType::CIRCLE]
+            //                             [Mephi::MoleculeManager::MoleculeType::SQUARE] = 
+            //     &Mephi::MoleculeManager::HandleInteractionCS_;
+            // handleIntercationFuncsTable_[Mephi::MoleculeManager::MoleculeType::SQUARE]
+            //                             [Mephi::MoleculeManager::MoleculeType::CIRCLE] = 
+            //     &Mephi::MoleculeManager::HandleInteractionSC_;
+            // handleIntercationFuncsTable_[Mephi::MoleculeManager::MoleculeType::SQUARE]
+            //                             [Mephi::MoleculeManager::MoleculeType::SQUARE] = 
+            //     &Mephi::MoleculeManager::HandleInteractionSS_;
+        }
 
         Common::Error Draw(sf::RenderWindow& window) const;
         Common::Error HandleInteraction_();
