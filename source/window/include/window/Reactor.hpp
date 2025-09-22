@@ -8,7 +8,7 @@
 #include <SFML/Graphics/Color.hpp>
 #include <SFML/Graphics/Shape.hpp>
 
-#include "figures/Rect.hpp"
+#include "Window.hpp"
 
 namespace Mephi
 {
@@ -24,18 +24,20 @@ struct Sides {
     }
 };
 
-class Reactor: public Mephi::Rect {
+class Reactor: public Mephi::Window {
     private:
         Sides temp_;
         double accom_;
     public:
-        explicit Reactor(const Mephi::Rect& rect, const double accom = 0.5) 
-            : Mephi::Rect{rect}, temp_{0}, accom_{accom}
+        explicit Reactor(const Mephi::Rect& rect, const double accom = 0.1) 
+            : Mephi::Window{rect}, temp_{0}, accom_{accom}
         {}
 
-        [[nodiscard]] const Mephi::Sides& GetTemp() const noexcept {return temp_;}
-        [[nodiscard]]       Mephi::Sides& GetTemp()       noexcept {return temp_;}
+        [[nodiscard]] const Mephi::Sides& GetTemp()  const noexcept {return temp_;}
+        [[nodiscard]]       Mephi::Sides& GetTemp()        noexcept {return temp_;}
         [[nodiscard]]       double        GetAccom() const noexcept {return accom_;}
+
+        virtual Common::Error Draw(sf::RenderWindow& window) const override final;
 };
 
 }

@@ -16,6 +16,6 @@ target_link_libraries(mephi
         common
         vector
         figures
-        reactor
         molecule
+        window
 )

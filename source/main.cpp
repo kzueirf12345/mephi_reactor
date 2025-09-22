@@ -19,7 +19,7 @@
 #include "common/ErrorHandle.hpp"
 #include "molecule/MoleculeManager.hpp"
 #include "plot/Plot.hpp"
-#include "reactor/Reactor.hpp"
+#include "window/Reactor.hpp"
 #include "vector/Vector.hpp"
 #include "figures/Rect.hpp"
 #include "mephi/MephiManager.hpp"
@@ -96,7 +96,7 @@ void ReactorThread(std::vector<Mephi::ThreadManager<double>>& shareDataManagers)
         window.clear(WINDOW_BG_COLOR);
 
         manager.Draw(window);
-        manager.Update();
+        manager.Update(Mephi::Vector2i(sf::Mouse::getPosition()));
 
         shareDataManagers[ShareData::CIRCLE_CNT]    .setData(manager.GetMoleculeManager().GetCircleCnt());
         shareDataManagers[ShareData::SQUARE_CNT]    .setData(manager.GetMoleculeManager().GetSquareCnt());

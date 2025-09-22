@@ -19,5 +19,4 @@ target_link_libraries(molecule
         common
         vector
         figures
-        reactor
 )

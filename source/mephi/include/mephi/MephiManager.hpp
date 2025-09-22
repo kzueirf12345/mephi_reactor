@@ -10,7 +10,7 @@
 #include <SFML/Graphics/Shape.hpp>
 
 #include "common/ErrorHandle.hpp"
-#include "reactor/Reactor.hpp"
+#include "window/Reactor.hpp"
 #include "molecule/MoleculeManager.hpp"
 
 namespace Mephi
@@ -22,16 +22,16 @@ class MephiManager{
         Mephi::MoleculeManager moleculeManager_;
 
     public:
-        explicit MephiManager(const Mephi::Reactor& reactor, 
+        explicit MephiManager(Mephi::Reactor reactor, 
                               Mephi::MoleculeManager moleculeManager = Mephi::MoleculeManager(),
                               const size_t moleculeCnt = 1000) 
-            : reactor_{reactor}, moleculeManager_{std::move(moleculeManager)}
+            : reactor_{std::move(reactor)}, moleculeManager_{std::move(moleculeManager)}
         {
-            moleculeManager_.GenerateMolecules(moleculeCnt, reactor_);
+            moleculeManager_.GenerateMolecules(moleculeCnt, reactor_.GetRect());
         }
 
         Common::Error Draw(sf::RenderWindow& window) const;
-        Common::Error Update();
+        Common::Error Update(const Mephi::Vector2i &mousePos);
 
         [[nodiscard]] const Mephi::Reactor&         GetReactor()         const noexcept {return reactor_; }
         [[nodiscard]] const Mephi::MoleculeManager& GetMoleculeManager() const noexcept {return moleculeManager_; }
