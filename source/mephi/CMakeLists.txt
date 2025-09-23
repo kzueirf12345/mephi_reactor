@@ -17,5 +17,5 @@ target_link_libraries(mephi
         vector
         figures
         molecule
-        window
+        windows
 )

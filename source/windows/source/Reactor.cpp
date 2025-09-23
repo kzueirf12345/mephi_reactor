@@ -1,7 +1,7 @@
-#include "window/Reactor.hpp"
+#include "windows/Reactor.hpp"
 #include "common/ErrorHandle.hpp"
 
-Common::Error Mephi::Reactor::Draw(sf::RenderWindow& window) const {
+Common::Error Mephi::Reactor::Draw(sf::RenderWindow& window) {
     for (auto& child : children_) {
         ERROR_HANDLE(child->Draw(window));
     }

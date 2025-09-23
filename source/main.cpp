@@ -19,13 +19,12 @@
 #include "common/ErrorHandle.hpp"
 #include "molecule/MoleculeManager.hpp"
 #include "plot/Plot.hpp"
-#include "window/Reactor.hpp"
+#include "windows/Reactor.hpp"
 #include "vector/Vector.hpp"
 #include "figures/Rect.hpp"
 #include "mephi/MephiManager.hpp"
 #include "threads/ThreadManager.hpp"
-
-
+#include "windows/buttons/button.hpp"
 
 enum ShareData {
     CIRCLE_CNT = 0,
@@ -43,14 +42,14 @@ int main()
 
     std::vector<Mephi::ThreadManager<double>> shareDataManagers(ShareData::SIZE);
 
-    std::thread circlePlotThread1  (PlotThread, std::ref(shareDataManagers[ShareData::CIRCLE_CNT]),     "Circle Count");
-    std::thread squarePlotThread1  (PlotThread, std::ref(shareDataManagers[ShareData::SQUARE_CNT]),     "Square Count");
-    std::thread avgWallsTempThread1(PlotThread, std::ref(shareDataManagers[ShareData::AVG_WALLS_TEMP]), "Average walls temp");
-    std::thread reactorThread2(ReactorThread, std::ref(shareDataManagers));
+    std::thread circlePlotThread  (PlotThread, std::ref(shareDataManagers[ShareData::CIRCLE_CNT]),     "Circle Count");
+    std::thread squarePlotThread  (PlotThread, std::ref(shareDataManagers[ShareData::SQUARE_CNT]),     "Square Count");
+    std::thread avgWallsTempThread(PlotThread, std::ref(shareDataManagers[ShareData::AVG_WALLS_TEMP]), "Average walls temp");
+    std::thread reactorThread  (ReactorThread, std::ref(shareDataManagers));
     
-    circlePlotThread1.join();
-    squarePlotThread1.join();
-    reactorThread2.join();
+    circlePlotThread.join();
+    squarePlotThread.join();
+    reactorThread.join();
 
     return 0;
 }
@@ -59,7 +58,7 @@ void ReactorThread(std::vector<Mephi::ThreadManager<double>>& shareDataManagers)
     constexpr unsigned int WINDOW_WIDTH    = 1920;
     constexpr unsigned int WINDOW_HEIGHT   = 1000;
     constexpr unsigned int FRAMERATE_LIMIT = 15;
-    constexpr size_t       MOLECULES_CNT   = 1500;
+    constexpr size_t       MOLECULES_CNT   = 1000;
     const sf::Color WINDOW_BG_COLOR(20, 20, 20);
 
     sf::RenderWindow window(
@@ -85,6 +84,13 @@ void ReactorThread(std::vector<Mephi::ThreadManager<double>>& shareDataManagers)
         MOLECULES_CNT
     );
 
+    Mephi::Button tempButton(
+        Mephi::Rect(
+            Mephi::Vector2d(WINDOW_WIDTH - 400, 100),
+            Mephi::Vector2d(WINDOW_WIDTH - 200, 300)
+        )
+    );
+
     while (window.isOpen())
     {
         sf::Event event;
@@ -98,13 +104,14 @@ void ReactorThread(std::vector<Mephi::ThreadManager<double>>& shareDataManagers)
         window.clear(WINDOW_BG_COLOR);
 
         manager.Draw(window);
+        tempButton.Draw(window);
         manager.Update(Mephi::Vector2i(sf::Mouse::getPosition()));
 
         shareDataManagers[ShareData::CIRCLE_CNT]    .setData(manager.GetMoleculeManager().GetCircleCnt());
         shareDataManagers[ShareData::SQUARE_CNT]    .setData(manager.GetMoleculeManager().GetSquareCnt());
         shareDataManagers[ShareData::AVG_WALLS_TEMP].setData(manager.GetReactor().GetTemp().Average());
 
-        std::cerr << "Energy " << manager.GetMoleculeManager().TotalEnergy() << std::endl;
+        // std::cerr << "Energy " << manager.GetMoleculeManager().TotalEnergy() << std::endl;
 
         window.display();
     }

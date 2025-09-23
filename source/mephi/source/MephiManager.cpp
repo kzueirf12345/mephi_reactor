@@ -5,10 +5,10 @@
 #include "molecule/Molecule.hpp"
 #include "vector/Vector.hpp"
 #include "mephi/MephiManager.hpp"
-#include "window/Reactor.hpp"
+#include "windows/Reactor.hpp"
 // #include "window/Window.hpp"
 
-Common::Error Mephi::MephiManager::Draw(sf::RenderWindow& window) const {
+Common::Error Mephi::MephiManager::Draw(sf::RenderWindow& window) {
 
     ERROR_HANDLE(reactor_.Draw(window));
     ERROR_HANDLE(moleculeManager_.Draw(window));

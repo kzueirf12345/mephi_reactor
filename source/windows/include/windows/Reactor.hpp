@@ -1,5 +1,5 @@
-#ifndef MEPHI_REACTOR_SOURCE_REACTOR_INCLUDE_REACTOR_REACTOR_HPP
-#define MEPHI_REACTOR_SOURCE_REACTOR_INCLUDE_REACTOR_REACTOR_HPP
+#ifndef MEPHI_REACTOR_SOURCE_WINDOWS_INCLUDE_WINDOWS_REACTOR_HPP
+#define MEPHI_REACTOR_SOURCE_WINDOWS_INCLUDE_WINDOWS_REACTOR_HPP
 
 #include <cstdlib>
 
@@ -37,8 +37,8 @@ class Reactor: public Mephi::Window {
         [[nodiscard]]       Mephi::Sides& GetTemp()        noexcept {return temp_;}
         [[nodiscard]]       double        GetAccom() const noexcept {return accom_;}
 
-        virtual Common::Error Draw(sf::RenderWindow& window) const override final;
+        virtual Common::Error Draw(sf::RenderWindow& window) override final;
 };
 
 }
-#endif /*MEPHI_REACTOR_SOURCE_REACTOR_INCLUDE_REACTOR_REACTOR_HPP*/
+#endif /*MEPHI_REACTOR_SOURCE_WINDOWS_INCLUDE_WINDOWS_REACTOR_HPP*/

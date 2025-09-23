@@ -1,17 +1,18 @@
-add_library(window STATIC
+add_library(windows STATIC
     source/Window.cpp
     source/Reactor.cpp
+    source/buttons/button.cpp
 )
 
-set_target_properties(window PROPERTIES FOLDER "source")
+set_target_properties(windows PROPERTIES FOLDER "source")
 
-target_include_directories(window
+target_include_directories(windows
     PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include> # Для сборки проекта
         $<INSTALL_INTERFACE:include>                           # Для будущей установки
 )
 
-target_link_libraries(window
+target_link_libraries(windows
     PRIVATE 
         sfml-graphics
         common

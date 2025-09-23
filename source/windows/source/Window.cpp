@@ -1,5 +1,6 @@
-#include "window/Window.hpp"
+#include "windows/Window.hpp"
 #include "vector/Vector.hpp"
+
 #include <SFML/Window/Mouse.hpp>
 
 bool Mephi::Window::CheckPressed(const Mephi::Vector2i& mousePos) const {

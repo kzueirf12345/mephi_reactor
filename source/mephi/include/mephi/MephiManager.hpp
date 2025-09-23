@@ -11,7 +11,7 @@
 
 #include "common/ErrorHandle.hpp"
 #include "molecule/Molecule.hpp"
-#include "window/Reactor.hpp"
+#include "windows/Reactor.hpp"
 #include "molecule/MoleculeManager.hpp"
 
 namespace Mephi
@@ -33,7 +33,7 @@ class MephiManager{
             moleculeManager_.GenerateMolecules(moleculeCnt, reactor_.GetRect());
         }
 
-        Common::Error Draw(sf::RenderWindow& window) const;
+        Common::Error Draw(sf::RenderWindow& window);
         Common::Error Update(const Mephi::Vector2i &mousePos);
 
         [[nodiscard]] const Mephi::Reactor&         GetReactor()         const noexcept {return reactor_; }

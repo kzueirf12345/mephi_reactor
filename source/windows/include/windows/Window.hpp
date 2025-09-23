@@ -1,5 +1,5 @@
-#ifndef MEPHI_REACTOR_SOURCE_WINDOW_INCLUDE_WINDOW_WINDOW_HPP
-#define MEPHI_REACTOR_SOURCE_WINDOW_INCLUDE_WINDOW_WINDOW_HPP
+#ifndef MEPHI_REACTOR_SOURCE_WINDOWS_INCLUDE_WINDOWS_WINDOW_HPP
+#define MEPHI_REACTOR_SOURCE_WINDOWS_INCLUDE_WINDOWS_WINDOW_HPP
 
 #include "figures/Rect.hpp"
 #include "vector/Vector.hpp"
@@ -37,9 +37,9 @@ class Window{
 
         [[nodiscard]] const Mephi::Rect& GetRect() const noexcept { return rect_; }
 
-        virtual Common::Error Draw(sf::RenderWindow& window) const = 0;
+        virtual Common::Error Draw(sf::RenderWindow& window) = 0;
 };
 
 
 }
-#endif /*MEPHI_REACTOR_SOURCE_WINDOW_INCLUDE_WINDOW_WINDOW_HPP*/
+#endif /*MEPHI_REACTOR_SOURCE_WINDOWS_INCLUDE_WINDOWS_WINDOW_HPP*/

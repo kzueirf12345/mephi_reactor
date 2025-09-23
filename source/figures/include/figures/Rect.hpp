@@ -39,6 +39,7 @@ class Rect {
         [[nodiscard]] const Mephi::Vector2d& GetRightCorner()  const noexcept {return rightCorner_;}
         [[nodiscard]]       Mephi::Vector2d& GetRightCorner()        noexcept {return rightCorner_;}
         [[nodiscard]] const sf::Color&       GetFillColor()    const noexcept {return fillColor_;}
+        [[nodiscard]]       sf::Color&       GetFillColor()          noexcept {return fillColor_;}
         [[nodiscard]] const sf::Color&       GetOutlintColor() const noexcept {return outlineColor_;}
         [[nodiscard]]       double           Width()           const noexcept {return rightCorner_.x - leftCorner_.x;}
         [[nodiscard]]       double           Height()          const noexcept {return rightCorner_.y - leftCorner_.y;}
