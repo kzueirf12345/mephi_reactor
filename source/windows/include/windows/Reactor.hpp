@@ -36,8 +36,6 @@ class Reactor: public Mephi::Window {
         [[nodiscard]] const Mephi::Sides& GetTemp()  const noexcept {return temp_;}
         [[nodiscard]]       Mephi::Sides& GetTemp()        noexcept {return temp_;}
         [[nodiscard]]       double        GetAccom() const noexcept {return accom_;}
-
-        virtual Common::Error Draw(sf::RenderWindow& window) override final;
 };
 
 }

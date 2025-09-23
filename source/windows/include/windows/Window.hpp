@@ -28,8 +28,8 @@ class Window{
             : rect_{rect}, isHold_{false}, prevMousePos_{POISON_MOUSE_POS_}, children_{}
         {}
 
-        [[nodiscard]] bool CheckPressed(const Mephi::Vector2i& mousePos) const;
-                      bool CheckHold   (const Mephi::Vector2i& mousePos);
+        [[nodiscard]] bool CheckPressed(const Mephi::Vector2i& mousePos, const sf::Mouse::Button& mouseButton = MOVE_BUTTON_) const;
+                      bool CheckHold   (const Mephi::Vector2i& mousePos, const sf::Mouse::Button& mouseButton = MOVE_BUTTON_);
         [[nodiscard]] Mephi::Vector2i HandleMouseShift(const Mephi::Vector2i& curMousePos);
         Common::Error Move(const Mephi::Vector2d& shift);
 
@@ -37,7 +37,7 @@ class Window{
 
         [[nodiscard]] const Mephi::Rect& GetRect() const noexcept { return rect_; }
 
-        virtual Common::Error Draw(sf::RenderWindow& window) = 0;
+        virtual Common::Error Draw(sf::RenderWindow& window);
 };
 
 

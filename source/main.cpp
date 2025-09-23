@@ -24,7 +24,7 @@
 #include "figures/Rect.hpp"
 #include "mephi/MephiManager.hpp"
 #include "threads/ThreadManager.hpp"
-#include "windows/buttons/button.hpp"
+#include "windows/buttons/AdjustButton.hpp"
 
 enum ShareData {
     CIRCLE_CNT = 0,
@@ -49,6 +49,7 @@ int main()
     
     circlePlotThread.join();
     squarePlotThread.join();
+    avgWallsTempThread.join();
     reactorThread.join();
 
     return 0;
@@ -68,8 +69,6 @@ void ReactorThread(std::vector<Mephi::ThreadManager<double>>& shareDataManagers)
 
     window.setFramerateLimit(FRAMERATE_LIMIT);
 
-    Mephi::MoleculeManager moleculeManager = Mephi::MoleculeManager();
-
     Mephi::MephiManager manager(
         Mephi::Reactor (
             Mephi::Rect(
@@ -84,11 +83,16 @@ void ReactorThread(std::vector<Mephi::ThreadManager<double>>& shareDataManagers)
         MOLECULES_CNT
     );
 
-    Mephi::Button tempButton(
+    double lol = 0;
+
+    Mephi::AdjustButton<double> tempButton(
         Mephi::Rect(
             Mephi::Vector2d(WINDOW_WIDTH - 400, 100),
-            Mephi::Vector2d(WINDOW_WIDTH - 200, 300)
-        )
+            Mephi::Vector2d(WINDOW_WIDTH - 200, 300),
+            sf::Color(220, 20, 60)
+        ),
+        manager.GetReactor().GetTemp().left,
+        10.
     );
 
     while (window.isOpen())
@@ -105,13 +109,16 @@ void ReactorThread(std::vector<Mephi::ThreadManager<double>>& shareDataManagers)
 
         manager.Draw(window);
         tempButton.Draw(window);
-        manager.Update(Mephi::Vector2i(sf::Mouse::getPosition()));
+        manager.Update(Mephi::Vector2i(sf::Mouse::getPosition(window)));
 
         shareDataManagers[ShareData::CIRCLE_CNT]    .setData(manager.GetMoleculeManager().GetCircleCnt());
         shareDataManagers[ShareData::SQUARE_CNT]    .setData(manager.GetMoleculeManager().GetSquareCnt());
         shareDataManagers[ShareData::AVG_WALLS_TEMP].setData(manager.GetReactor().GetTemp().Average());
 
+        tempButton.HandlePressed(Mephi::Vector2i(sf::Mouse::getPosition(window)));
+
         // std::cerr << "Energy " << manager.GetMoleculeManager().TotalEnergy() << std::endl;
+        std::cout << manager.GetReactor().GetTemp().left << std::endl;
 
         window.display();
     }

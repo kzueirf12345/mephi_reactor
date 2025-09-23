@@ -3,16 +3,19 @@
 
 #include <SFML/Window/Mouse.hpp>
 
-bool Mephi::Window::CheckPressed(const Mephi::Vector2i& mousePos) const {
+bool Mephi::Window::CheckPressed(const Mephi::Vector2i& mousePos, const sf::Mouse::Button& mouseButton) const {
     return rect_.GetLeftCorner().x < mousePos.x && mousePos.x < rect_.GetRightCorner().x 
         && rect_.GetLeftCorner().y < mousePos.y && mousePos.y < rect_.GetRightCorner().y
-        && sf::Mouse::isButtonPressed(MOVE_BUTTON_);
+        && sf::Mouse::isButtonPressed(mouseButton);
 }
 
-bool Mephi::Window::CheckHold(const Mephi::Vector2i& mousePos) {
-    const bool isPressed = CheckPressed(mousePos);
+bool Mephi::Window::CheckHold(const Mephi::Vector2i& mousePos, const sf::Mouse::Button& mouseButton) {
+    const bool isPressed = CheckPressed(mousePos, mouseButton);
+    // std::cout << "isHold1 " << isHold_ << std::endl;
+    // std::cout << "check pressed " << isPressed << std::endl;
     const bool result = isPressed && isHold_;
     isHold_ = isPressed;
+    // std::cout << "isHold2 " << isHold_ << std::endl;
     return result;
 }
 
@@ -44,4 +47,13 @@ Mephi::Vector2i Mephi::Window::HandleDrag(const Mephi::Vector2i& curMousePos) {
     }
 
     return Mephi::Vector2i(shift * (int)isHold);
+}
+
+Common::Error Mephi::Window::Draw(sf::RenderWindow& window) {
+    for (auto& child : children_) {
+        ERROR_HANDLE(child->Draw(window));
+    }
+
+    ERROR_HANDLE(rect_.Draw(window));
+    return Common::Error::SUCCESS;
 }

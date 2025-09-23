@@ -37,6 +37,7 @@ class MephiManager{
         Common::Error Update(const Mephi::Vector2i &mousePos);
 
         [[nodiscard]] const Mephi::Reactor&         GetReactor()         const noexcept {return reactor_; }
+        [[nodiscard]]       Mephi::Reactor&         GetReactor()               noexcept {return reactor_; }
         [[nodiscard]] const Mephi::MoleculeManager& GetMoleculeManager() const noexcept {return moleculeManager_; }
 } ;
 

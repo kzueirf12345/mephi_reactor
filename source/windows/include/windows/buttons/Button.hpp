@@ -1,6 +1,7 @@
 #ifndef MEPHI_REACTOR_SOURCE_WINDOWS_INCLUDE_WINDOWS_BUTTONS_BUTTON_HPP
 #define MEPHI_REACTOR_SOURCE_WINDOWS_INCLUDE_WINDOWS_BUTTONS_BUTTON_HPP
 
+#include <SFML/Window/Mouse.hpp>
 #include <cstdlib>
 
 #include <SFML/Config.hpp>
@@ -14,7 +15,7 @@ namespace Mephi
 {
 
 class Button: public Mephi::Window {
-    private:
+    protected:
         sf::Color pressedColor_;
         sf::Color defaultColor_;
 
@@ -25,7 +26,8 @@ class Button: public Mephi::Window {
             : Mephi::Window{rect}, defaultColor_(defaultColor), pressedColor_{pressedColor}
         {}
 
-        virtual Common::Error Draw(sf::RenderWindow& window) override final;
+        virtual Common::Error HandlePressed(const Mephi::Vector2i& mousePos);
+        // virtual Common::Error HandleHold   (const Mephi::Vector2i& mousePos) = 0;
 };
 
 }
