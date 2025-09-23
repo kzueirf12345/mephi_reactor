@@ -25,6 +25,8 @@
 #include "mephi/MephiManager.hpp"
 #include "threads/ThreadManager.hpp"
 
+
+
 enum ShareData {
     CIRCLE_CNT = 0,
     SQUARE_CNT,
@@ -57,7 +59,7 @@ void ReactorThread(std::vector<Mephi::ThreadManager<double>>& shareDataManagers)
     constexpr unsigned int WINDOW_WIDTH    = 1920;
     constexpr unsigned int WINDOW_HEIGHT   = 1000;
     constexpr unsigned int FRAMERATE_LIMIT = 15;
-    constexpr size_t       MOLECULES_CNT   = 1000;
+    constexpr size_t       MOLECULES_CNT   = 1500;
     const sf::Color WINDOW_BG_COLOR(20, 20, 20);
 
     sf::RenderWindow window(
@@ -101,6 +103,8 @@ void ReactorThread(std::vector<Mephi::ThreadManager<double>>& shareDataManagers)
         shareDataManagers[ShareData::CIRCLE_CNT]    .setData(manager.GetMoleculeManager().GetCircleCnt());
         shareDataManagers[ShareData::SQUARE_CNT]    .setData(manager.GetMoleculeManager().GetSquareCnt());
         shareDataManagers[ShareData::AVG_WALLS_TEMP].setData(manager.GetReactor().GetTemp().Average());
+
+        std::cerr << "Energy " << manager.GetMoleculeManager().TotalEnergy() << std::endl;
 
         window.display();
     }

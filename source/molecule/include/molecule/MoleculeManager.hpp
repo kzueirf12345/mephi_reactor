@@ -48,20 +48,7 @@ class MoleculeManager{
     public:
         explicit MoleculeManager(std::vector<std::unique_ptr<Mephi::Molecule>> molecules = {})
             : molecules_(std::move(molecules)), circleCnt_(0), squareCnt_(0)
-        {
-            // handleIntercationFuncsTable_[Mephi::MoleculeManager::MoleculeType::CIRCLE]
-            //                             [Mephi::MoleculeManager::MoleculeType::CIRCLE] = 
-            //     &Mephi::MoleculeManager::HandleInteractionCC_;
-            // handleIntercationFuncsTable_[Mephi::MoleculeManager::MoleculeType::CIRCLE]
-            //                             [Mephi::MoleculeManager::MoleculeType::SQUARE] = 
-            //     &Mephi::MoleculeManager::HandleInteractionCS_;
-            // handleIntercationFuncsTable_[Mephi::MoleculeManager::MoleculeType::SQUARE]
-            //                             [Mephi::MoleculeManager::MoleculeType::CIRCLE] = 
-            //     &Mephi::MoleculeManager::HandleInteractionSC_;
-            // handleIntercationFuncsTable_[Mephi::MoleculeManager::MoleculeType::SQUARE]
-            //                             [Mephi::MoleculeManager::MoleculeType::SQUARE] = 
-            //     &Mephi::MoleculeManager::HandleInteractionSS_;
-        }
+        {}
 
         Common::Error Draw(sf::RenderWindow& window) const;
         Common::Error HandleInteraction_();
@@ -71,6 +58,7 @@ class MoleculeManager{
         [[nodiscard]]       size_t                                         GetCircleCnt() const noexcept {return circleCnt_;}
         [[nodiscard]]       size_t                                         GetSquareCnt() const noexcept {return squareCnt_;}
         [[nodiscard]] const std::vector<std::unique_ptr<Mephi::Molecule>>& GetMolecules() const noexcept {return molecules_;}
+        [[nodiscard]]       double                                         TotalEnergy() const noexcept;
 } ;
 
 }

@@ -10,6 +10,7 @@
 #include <SFML/Graphics/Shape.hpp>
 
 #include "common/ErrorHandle.hpp"
+#include "molecule/Molecule.hpp"
 #include "window/Reactor.hpp"
 #include "molecule/MoleculeManager.hpp"
 
@@ -20,6 +21,8 @@ class MephiManager{
     private:
         Mephi::Reactor reactor_;
         Mephi::MoleculeManager moleculeManager_;
+
+        Common::Error HandleMoleculesWallsInteraction(Mephi::Molecule& molecule);
 
     public:
         explicit MephiManager(Mephi::Reactor reactor, 

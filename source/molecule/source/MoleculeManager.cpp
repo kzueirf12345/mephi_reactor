@@ -84,8 +84,14 @@ Common::Error Mephi::MoleculeManager::HandleInteractionCC_(size_t moleculeInd1, 
 Common::Error Mephi::MoleculeManager::HandleInteractionSS_(size_t moleculeInd1, size_t moleculeInd2) {
     const Mephi::Molecule& square1 = *molecules_[moleculeInd1];
     const Mephi::Molecule& square2 = *molecules_[moleculeInd2];
-
     const uint64_t sumMass = square1.GetMass() + square2.GetMass();
+
+    const Mephi::Vector2d centerMassSpeed((
+            static_cast<double>(square1.GetMass()) * square1.GetSpeed() 
+          + static_cast<double>(square2.GetMass()) * square2.GetSpeed()
+        ) / static_cast<double>(sumMass)
+    );
+
     const double speedModule = sqrt((square1.GetMass() * square1.GetSpeed().Len2() + square2.GetMass() * square2.GetSpeed().Len2()) / sumMass);
 
     srand(time(NULL));
@@ -94,8 +100,7 @@ Common::Error Mephi::MoleculeManager::HandleInteractionSS_(size_t moleculeInd1, 
         const double cos = std::cos(angle);
         const double sin = std::sin(angle);
 
-        const Mephi::Vector2d avgSpeed(cos * speedModule - sin * speedModule, 
-                                       sin * speedModule + cos * speedModule);
+        const Mephi::Vector2d relSpeed(cos * speedModule, sin * speedModule);
 
         const uint64_t sizeSquare = Mephi::MoleculeSquare::START_RADIUS + sumMass;
         const Mephi::Vector2d addPos(cos * sizeSquare - sin * sizeSquare,
@@ -105,7 +110,7 @@ Common::Error Mephi::MoleculeManager::HandleInteractionSS_(size_t moleculeInd1, 
 
         molecules_.push_back(std::make_unique<Mephi::MoleculeCircle>(Mephi::MoleculeCircle(
             Mephi::Vector2d(midPos + addPos),
-            Mephi::Vector2d(avgSpeed),
+            Mephi::Vector2d(centerMassSpeed + relSpeed),
             sf::Color::Red
         )));
     }
@@ -164,4 +169,12 @@ Common::Error Mephi::MoleculeManager::GenerateMolecules(const size_t count, cons
     }
 
     return Common::Error::SUCCESS;
+}
+
+double Mephi::MoleculeManager::TotalEnergy() const noexcept{
+    double energy = 0;
+    for (const auto& molecule : molecules_) {
+        energy += 0.5 * molecule->GetMass() * molecule->GetSpeed().Len2();
+    }
+    return energy;
 }
