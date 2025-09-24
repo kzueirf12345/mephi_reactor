@@ -1,4 +1,5 @@
 #include "windows/Window.hpp"
+#include "common/ErrorHandle.hpp"
 #include "vector/Vector.hpp"
 
 #include <SFML/Window/Mouse.hpp>
@@ -31,14 +32,14 @@ Mephi::Vector2i Mephi::Window::HandleMouseShift(const Mephi::Vector2i& curMouseP
 Common::Error Mephi::Window::Move(const Mephi::Vector2d& shift) {
     rect_.GetLeftCorner()  += shift;
     rect_.GetRightCorner() += shift;
+
+    for (auto& child : children_) {
+        child->Move(shift);
+    }
     return Common::Error::SUCCESS;
 }
 
 Mephi::Vector2i Mephi::Window::HandleDrag(const Mephi::Vector2i& curMousePos) {
-    for (auto& child : children_) {
-        child->HandleDrag(curMousePos);
-    }
-
     const Mephi::Vector2i shift(HandleMouseShift(curMousePos));
     bool isHold = CheckHold(curMousePos);
 
@@ -50,10 +51,25 @@ Mephi::Vector2i Mephi::Window::HandleDrag(const Mephi::Vector2i& curMousePos) {
 }
 
 Common::Error Mephi::Window::Draw(sf::RenderWindow& window) {
+    ERROR_HANDLE(rect_.Draw(window));
+
     for (auto& child : children_) {
         ERROR_HANDLE(child->Draw(window));
     }
 
-    ERROR_HANDLE(rect_.Draw(window));
+    return Common::Error::SUCCESS;
+}
+
+Common::Error Mephi::Window::AddChild(std::unique_ptr<Window> child) {
+    children_.push_back(std::move(child));
+
+    return Common::Error::SUCCESS;
+}
+
+Common::Error Mephi::Window::HandlePressed(const Mephi::Vector2i& mousePos) {
+    for (auto& child : children_) {
+        ERROR_HANDLE(child->HandlePressed(mousePos));
+    }
+
     return Common::Error::SUCCESS;
 }

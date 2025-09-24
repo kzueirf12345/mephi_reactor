@@ -10,6 +10,7 @@
 
 Common::Error Mephi::MephiManager::Draw(sf::RenderWindow& window) {
 
+    ERROR_HANDLE(toolbox_.Draw(window));
     ERROR_HANDLE(reactor_.Draw(window));
     ERROR_HANDLE(moleculeManager_.Draw(window));
 
@@ -81,6 +82,12 @@ Common::Error Mephi::MephiManager::Update(const Mephi::Vector2i &mousePos) {
     }
 
     ERROR_HANDLE(moleculeManager_.HandleInteraction_());
+
+    if (!shift.Len2()) {
+        toolbox_.HandleDrag(mousePos);
+    }
+
+    ERROR_HANDLE(toolbox_.HandlePressed(mousePos));
 
     return Common::Error::SUCCESS;
 }

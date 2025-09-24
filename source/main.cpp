@@ -11,6 +11,7 @@
 #include <cmath>
 #include <cstddef>
 #include <cstdlib>
+#include <memory>
 #include <thread>
 #include <X11/Xlib.h>
 #include <vector>
@@ -26,6 +27,10 @@
 #include "threads/ThreadManager.hpp"
 #include "windows/buttons/AdjustButton.hpp"
 
+// TODO add molecule circle
+// TODO add molecule square
+// TODO delete also
+
 enum ShareData {
     CIRCLE_CNT = 0,
     SQUARE_CNT,
@@ -34,7 +39,7 @@ enum ShareData {
 };
 
 void ReactorThread(std::vector<Mephi::ThreadManager<double>>& shareDataManagers);
-void PlotThread(Mephi::ThreadManager<double>& shareDataManager, const std::string& windowName);
+void PlotThread(Mephi::ThreadManager<double>& shareDataManager, const std::string& windowName); // TODO в одном окне
 
 int main()
 {
@@ -56,8 +61,8 @@ int main()
 }
 
 void ReactorThread(std::vector<Mephi::ThreadManager<double>>& shareDataManagers) {
-    constexpr unsigned int WINDOW_WIDTH    = 1920;
-    constexpr unsigned int WINDOW_HEIGHT   = 1000;
+    constexpr unsigned int WINDOW_WIDTH    = 1720;
+    constexpr unsigned int WINDOW_HEIGHT   = 900;
     constexpr unsigned int FRAMERATE_LIMIT = 15;
     constexpr size_t       MOLECULES_CNT   = 1000;
     const sf::Color WINDOW_BG_COLOR(20, 20, 20);
@@ -69,31 +74,77 @@ void ReactorThread(std::vector<Mephi::ThreadManager<double>>& shareDataManagers)
 
     window.setFramerateLimit(FRAMERATE_LIMIT);
 
+    Mephi::Reactor reactor(
+        Mephi::Rect(
+            Mephi::Vector2d(100, 100), 
+            Mephi::Vector2d(WINDOW_WIDTH - 500, WINDOW_HEIGHT - 100), 
+            sf::Color::Cyan, 
+            sf::Color::Black, 
+            5
+        )
+    );
+
+    Mephi::Window toolbar(
+        Mephi::Rect(
+            Mephi::Vector2d(
+                reactor.GetRect().GetRightCorner().x + 100, 
+                reactor.GetRect().GetLeftCorner().y),
+            Mephi::Vector2d(
+                WINDOW_WIDTH - 100, 
+                reactor.GetRect().GetRightCorner().y)
+        )
+    );
+
     Mephi::MephiManager manager(
-        Mephi::Reactor (
-            Mephi::Rect(
-                Mephi::Vector2d(100, 100), 
-                Mephi::Vector2d(WINDOW_WIDTH - 500, WINDOW_HEIGHT - 100), 
-                sf::Color::Cyan, 
-                sf::Color::Black, 
-                5
-            )
-        ), 
+        std::move(reactor), 
+        std::move(toolbar),
         Mephi::MoleculeManager(),
         MOLECULES_CNT
     );
 
-    double lol = 0;
+    const Mephi::Vector2d toolboxLC = manager.GetToolbox().GetRect().GetLeftCorner();
+    const Mephi::Vector2d toolboxRC = manager.GetToolbox().GetRect().GetRightCorner();
+    const double          avgX      = (toolboxRC.x + toolboxLC.x) / 2;
 
-    Mephi::AdjustButton<double> tempButton(
+    manager.GetToolbox().AddChild(std::make_unique<Mephi::AdjustButton<double>>(Mephi::AdjustButton<double>(
         Mephi::Rect(
-            Mephi::Vector2d(WINDOW_WIDTH - 400, 100),
-            Mephi::Vector2d(WINDOW_WIDTH - 200, 300),
+            Mephi::Vector2d(avgX - 25,      toolboxLC.y + 50),
+            Mephi::Vector2d(avgX - 25 + 50, toolboxLC.y + 50 + 50),
+            sf::Color(220, 20, 60)
+        ),
+        manager.GetReactor().GetTemp().top,
+        10.
+    )));
+
+    manager.GetToolbox().AddChild(std::make_unique<Mephi::AdjustButton<double>>(Mephi::AdjustButton<double>(
+        Mephi::Rect(
+            Mephi::Vector2d(avgX - 112.5,      toolboxLC.y + 150),
+            Mephi::Vector2d(avgX - 112.5 + 50, toolboxLC.y + 150 + 50),
             sf::Color(220, 20, 60)
         ),
         manager.GetReactor().GetTemp().left,
         10.
-    );
+    )));
+
+    manager.GetToolbox().AddChild(std::make_unique<Mephi::AdjustButton<double>>(Mephi::AdjustButton<double>(
+        Mephi::Rect(
+            Mephi::Vector2d(avgX + 75,      toolboxLC.y + 150),
+            Mephi::Vector2d(avgX + 75 + 50, toolboxLC.y + 150 + 50),
+            sf::Color(220, 20, 60)
+        ),
+        manager.GetReactor().GetTemp().right,
+        10.
+    )));
+
+    manager.GetToolbox().AddChild(std::make_unique<Mephi::AdjustButton<double>>(Mephi::AdjustButton<double>(
+        Mephi::Rect(
+            Mephi::Vector2d(avgX - 25,      toolboxLC.y + 250),
+            Mephi::Vector2d(avgX - 25 + 50, toolboxLC.y + 250 + 50),
+            sf::Color(220, 20, 60)
+        ),
+        manager.GetReactor().GetTemp().bottom,
+        10.
+    )));
 
     while (window.isOpen())
     {
@@ -108,16 +159,12 @@ void ReactorThread(std::vector<Mephi::ThreadManager<double>>& shareDataManagers)
         window.clear(WINDOW_BG_COLOR);
 
         manager.Draw(window);
-        tempButton.Draw(window);
         manager.Update(Mephi::Vector2i(sf::Mouse::getPosition(window)));
 
         shareDataManagers[ShareData::CIRCLE_CNT]    .setData(manager.GetMoleculeManager().GetCircleCnt());
         shareDataManagers[ShareData::SQUARE_CNT]    .setData(manager.GetMoleculeManager().GetSquareCnt());
         shareDataManagers[ShareData::AVG_WALLS_TEMP].setData(manager.GetReactor().GetTemp().Average());
 
-        tempButton.HandlePressed(Mephi::Vector2i(sf::Mouse::getPosition(window)));
-
-        // std::cerr << "Energy " << manager.GetMoleculeManager().TotalEnergy() << std::endl;
         std::cout << manager.GetReactor().GetTemp().left << std::endl;
 
         window.display();

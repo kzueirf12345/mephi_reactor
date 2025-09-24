@@ -27,7 +27,6 @@ class Button: public Mephi::Window {
         {}
 
         virtual Common::Error HandlePressed(const Mephi::Vector2i& mousePos);
-        // virtual Common::Error HandleHold   (const Mephi::Vector2i& mousePos) = 0;
 };
 
 }

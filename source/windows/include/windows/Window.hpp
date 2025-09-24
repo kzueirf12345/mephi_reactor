@@ -5,13 +5,14 @@
 #include "vector/Vector.hpp"
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/Window/Mouse.hpp>
+#include <memory>
 
 namespace Mephi
 {
 
 class Window{
     protected:
-        static constexpr sf::Mouse::Button MOVE_BUTTON_ = sf::Mouse::Button::Left;
+        static constexpr sf::Mouse::Button MOVE_BUTTON_ = sf::Mouse::Button::Middle;
 
         Mephi::Rect rect_;
         bool isHold_;
@@ -38,6 +39,11 @@ class Window{
         [[nodiscard]] const Mephi::Rect& GetRect() const noexcept { return rect_; }
 
         virtual Common::Error Draw(sf::RenderWindow& window);
+        virtual Common::Error HandlePressed(const Mephi::Vector2i& mousePos);
+
+        Common::Error AddChild(std::unique_ptr<Window> child);
+        
+        [[nodiscard]] const std::vector<std::unique_ptr<Window>>& GetChildren() {return children_;}
 };
 
 
