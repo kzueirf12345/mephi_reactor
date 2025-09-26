@@ -16,7 +16,6 @@ add_subdirectory(source/vector)
 add_subdirectory(source/figures)
 add_subdirectory(source/mephi)
 add_subdirectory(source/molecule)
-add_subdirectory(source/plot)
 add_subdirectory(source/threads)
 add_subdirectory(source/windows)
 # add_subdirectory(source/windows/buttons)
@@ -40,6 +39,5 @@ target_link_libraries(${CMAKE_PROJECT_NAME}
         windows
         mephi
         molecule
-        plot
         threads
 )

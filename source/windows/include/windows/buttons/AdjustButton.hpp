@@ -26,16 +26,14 @@ class AdjustButton: public Mephi::Button {
         std::chrono::time_point<std::chrono::steady_clock> prevTime_;
 
     public:
-        AdjustButton(const Mephi::Rect& rect, T& obj, T changeRate,
+        AdjustButton(const Mephi::Rect& rect, T& obj, T changeRate, const std::string& textString,
                      const sf::Color& defaultColor = sf::Color(220, 20, 60),
                      const sf::Color& pressedColor = sf::Color(139, 0, 0)) 
-            : Mephi::Button{rect, defaultColor, pressedColor}, obj_{obj}, changeRate_(std::move(changeRate)),
+            : Mephi::Button{rect, textString, defaultColor, pressedColor}, obj_{obj}, changeRate_(std::move(changeRate)),
               prevTime_{std::chrono::milliseconds(0)}
         {}
 
         virtual Common::Error HandlePressed(const Mephi::Vector2i& mousePos) override final;
-
-        // [[nodiscard]] T GetT() noexcept {return obj_.get();}
 };
 
 template<typename T>
@@ -58,6 +56,7 @@ Common::Error Mephi::AdjustButton<T>::HandlePressed(const Mephi::Vector2i& mouse
         prevTime_ = std::chrono::time_point<std::chrono::steady_clock>(std::chrono::milliseconds(0));
         rect_.GetFillColor() = defaultColor_;
     }
+
 
     return Common::Error::SUCCESS;
 }

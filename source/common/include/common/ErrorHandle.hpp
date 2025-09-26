@@ -3,6 +3,16 @@
 
 #include <string>
 #include <iostream>
+#include <SFML/Config.hpp>
+#include <SFML/Graphics/RenderWindow.hpp>
+#include <SFML/System/Clock.hpp>
+#include <SFML/Window/Event.hpp>
+#include <SFML/Window/Keyboard.hpp>
+#include <SFML/Graphics.hpp>
+#include <SFML/Graphics/Color.hpp>
+#include <SFML/System/Vector2.hpp>
+#include <SFML/Window/VideoMode.hpp>
+#include <SFML/Window/WindowStyle.hpp>
 
 #include "Concole.hpp"
 
@@ -53,6 +63,8 @@ std::string ErrorToString(const enum Common::Error Error);
 //             return Error;                                                                           \
 //         }                                                                                           \
 //     } while(0)
+
+extern sf::Font GLOBAL_FONT;
 
 }
 

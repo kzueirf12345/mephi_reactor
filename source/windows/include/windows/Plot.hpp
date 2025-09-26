@@ -8,11 +8,12 @@
 
 #include "figures/Rect.hpp"
 #include "vector/Vector.hpp"
+#include "windows/Window.hpp"
 
 namespace Mephi
 {
 
-class Plot : public Mephi::Rect{
+class Plot : public Mephi::Window{
     private:
         double scaleX_;
         double scaleY_;
@@ -27,17 +28,16 @@ class Plot : public Mephi::Rect{
         sf::VertexArray CreateAxis(const bool isX) const ;
         sf::VertexArray CreateGrid(const bool isX) const ;
     public:
-        Plot(const Mephi::Vector2d&  leftCorner, const Mephi::Vector2d& rightCorner,
-             double scaleX, double scaleY, const Mephi::Vector2d& OriginOffset,
-             const sf::Color& dotColor = sf::Color::Red)
-        : Mephi::Rect{leftCorner, rightCorner}, scaleX_{scaleX}, scaleY_{scaleY}, 
+        Plot(const Mephi::Rect& rect,double scaleX, double scaleY, 
+             const Mephi::Vector2d& OriginOffset, const sf::Color& dotColor = sf::Color::Red)
+        : Mephi::Window{rect}, scaleX_{scaleX}, scaleY_{scaleY}, 
           originOffset_{OriginOffset}, segDots_{}, dotColor_{dotColor}, 
           maxModY_{0}
         {}
 
         Common::Error PushDot(const Mephi::Vector2d& segDot);
 
-        Common::Error Draw(sf::RenderWindow& window) ;
+        virtual Common::Error Draw(sf::RenderWindow& window) override final;
 };
     
 }

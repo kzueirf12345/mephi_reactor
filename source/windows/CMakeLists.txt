@@ -1,5 +1,6 @@
 add_library(windows STATIC
     source/Window.cpp
+    source/Plot.cpp
     source/buttons/Button.cpp
 )
 

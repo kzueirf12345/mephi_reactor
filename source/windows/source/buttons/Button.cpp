@@ -11,9 +11,10 @@ Common::Error Mephi::Button::HandlePressed(const Mephi::Vector2i& mousePos) {
     return Common::Error::SUCCESS;
 }
 
-// Common::Error Mephi::Button::Draw(sf::RenderWindow& window) {
+Common::Error Mephi::Button::Draw(sf::RenderWindow& window) {
+    
+    ERROR_HANDLE(Mephi::Window::Draw(window));
+    window.draw(text_);
 
-//     ERROR_HANDLE(Mephi::Window::Draw(window));
-
-//     return Common::Error::SUCCESS;
-// }
+    return Common::Error::SUCCESS;
+}
