@@ -10,12 +10,13 @@
 #include <SFML/Graphics/Shape.hpp>
 #include <functional>
 
+#include "common/ErrorHandle.hpp"
 #include "windows/buttons/Button.hpp"
 
 namespace Mephi
 {
 
-template <typename T = double>
+template <typename T>
 class AdjustButton: public Mephi::Button {
     private:
         static constexpr sf::Mouse::Button INCREASE_BUTTON_ = sf::Mouse::Button::Left;
@@ -29,9 +30,14 @@ class AdjustButton: public Mephi::Button {
         AdjustButton(const Mephi::Rect& rect, T& obj, T changeRate, const std::string& textString,
                      const sf::Color& defaultColor = sf::Color(220, 20, 60),
                      const sf::Color& pressedColor = sf::Color(139, 0, 0)) 
-            : Mephi::Button{rect, textString, defaultColor, pressedColor}, obj_{obj}, changeRate_(std::move(changeRate)),
+            : Mephi::Button{rect, textString, defaultColor, pressedColor}, obj_{std::ref(obj)}, changeRate_(std::move(changeRate)),
               prevTime_{std::chrono::milliseconds(0)}
         {}
+
+        Common::Error SwitchObj(T& newObj)  {
+            obj_ = std::ref(newObj);
+            return Common::Error::SUCCESS;
+        };
 
         virtual Common::Error HandlePressed(const Mephi::Vector2i& mousePos) override final;
 };
@@ -51,6 +57,7 @@ Common::Error Mephi::AdjustButton<T>::HandlePressed(const Mephi::Vector2i& mouse
         const double durTimeS = durTime.count() / 1e8;
 
         obj_.get() += durTimeS * (increased ? changeRate_ : -changeRate_);
+
         rect_.GetFillColor() = pressedColor_;
     } else {
         prevTime_ = std::chrono::time_point<std::chrono::steady_clock>(std::chrono::milliseconds(0));

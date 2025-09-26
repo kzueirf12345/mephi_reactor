@@ -21,6 +21,7 @@ class Plot : public Mephi::Window{
         std::vector<Mephi::Vector2d> segDots_;
         sf::Color dotColor_;
         double maxModY_;
+        double maxModX_;
 
         Mephi::Vector2d Seg2Pix (const Mephi::Vector2d& segDot) const;
         Mephi::Vector2d Pix2Seg (const Mephi::Vector2d& pixDot) const;
@@ -32,7 +33,7 @@ class Plot : public Mephi::Window{
              const Mephi::Vector2d& OriginOffset, const sf::Color& dotColor = sf::Color::Red)
         : Mephi::Window{rect}, scaleX_{scaleX}, scaleY_{scaleY}, 
           originOffset_{OriginOffset}, segDots_{}, dotColor_{dotColor}, 
-          maxModY_{0}
+          maxModY_{0}, maxModX_(0)
         {}
 
         Common::Error PushDot(const Mephi::Vector2d& segDot);

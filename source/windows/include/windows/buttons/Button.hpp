@@ -38,6 +38,8 @@ class Button: public Mephi::Window {
             text_.setPosition(static_cast<sf::Vector2f>(rect.GetLeftCorner()));
         }
 
+        virtual Common::Error Move(const Mephi::Vector2d& shift) override final;
+
         virtual Common::Error HandlePressed(const Mephi::Vector2i& mousePos) override;
 
         virtual Common::Error Draw(sf::RenderWindow& window) override;

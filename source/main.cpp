@@ -56,36 +56,6 @@ int main()
     
     Mephi::MephiManager manager(std::move(InitManager()));
 
-    // =======================PLOTS=====================
-
-    constexpr double PLOT_DELAY_ITER = 40;
-
-    Mephi::Plot plotCircle(
-        Mephi::Rect(
-            Mephi::Vector2d(100, 500),
-            Mephi::Vector2d(100 + 400, 500 + 400)
-        ),
-        1, 1, Mephi::Vector2d(200, 200)
-    );
-
-    Mephi::Plot plotSquare(
-        Mephi::Rect(
-            Mephi::Vector2d(600, 500),
-            Mephi::Vector2d(600 + 400, 500 + 400)
-        ),
-        1, 1, Mephi::Vector2d(200, 200)
-    );
-
-    Mephi::Plot plotTemp(
-        Mephi::Rect(
-            Mephi::Vector2d(1100, 500),
-            Mephi::Vector2d(1100 + 400, 500 + 400)
-        ),
-        1, 1, Mephi::Vector2d(200, 200)
-    );
-
-    double curValX = -PLOT_DELAY_ITER;
-
     //=======================CYCLE==========================
 
     if (!Common::GLOBAL_FONT.loadFromFile("./data/Font.ttf")) {
@@ -106,25 +76,8 @@ int main()
         window.clear(WINDOW_BG_COLOR);
 
         manager.Draw(window);
-        plotCircle.Draw(window);
-        plotSquare.Draw(window);
-        plotTemp.Draw(window);
 
         manager.Update(Mephi::Vector2i(sf::Mouse::getPosition(window)));
-
-        const double curValYCircle = manager.GetMoleculeManager().GetCircleCnt();
-        const double curValYSquare = manager.GetMoleculeManager().GetSquareCnt();
-        const double curValYTemp   = manager.GetReactor().GetTemp().Average();
-
-        plotCircle.PushDot(Mephi::Vector2d(curValX, curValYCircle));
-        plotSquare.PushDot(Mephi::Vector2d(curValX, curValYSquare));
-        plotTemp.PushDot(Mephi::Vector2d(curValX, curValYTemp));
-
-        plotCircle.HandleDrag(Mephi::Vector2i(sf::Mouse::getPosition(window)));
-        plotSquare.HandleDrag(Mephi::Vector2i(sf::Mouse::getPosition(window)));
-        plotTemp.HandleDrag(Mephi::Vector2i(sf::Mouse::getPosition(window)));
-        
-        ++curValX;
 
         window.display();
     }
@@ -156,16 +109,87 @@ Mephi::MephiManager InitManager() {
         )
     );
 
+    Mephi::Plot plotCircle(
+        Mephi::Rect(
+            Mephi::Vector2d(100, 500),
+            Mephi::Vector2d(100 + 400, 500 + 400)
+        ),
+        1, 1, Mephi::Vector2d(200, 200)
+    );
+
+    Mephi::Plot plotSquare(
+        Mephi::Rect(
+            Mephi::Vector2d(600, 500),
+            Mephi::Vector2d(600 + 400, 500 + 400)
+        ),
+        1, 1, Mephi::Vector2d(200, 200)
+    );
+
+    Mephi::Plot plotTemp(
+        Mephi::Rect(
+            Mephi::Vector2d(1100, 500),
+            Mephi::Vector2d(1100 + 400, 500 + 400)
+        ),
+        1, 1, Mephi::Vector2d(200, 200)
+    );
+
+    const Mephi::Vector2d toolboxLC = toolbar.GetRect().GetLeftCorner();
+    const Mephi::Vector2d toolboxRC = toolbar.GetRect().GetRightCorner();
+    const double          avgX      = (toolboxRC.x + toolboxLC.x) / 2;
+
+    toolbar.AddChild(std::make_unique<Mephi::AdjustButton<double>>(Mephi::AdjustButton<double>(
+        Mephi::Rect(
+            Mephi::Vector2d(avgX - 25,      toolboxLC.y + 25),
+            Mephi::Vector2d(avgX - 25 + 50, toolboxLC.y + 25 + 50),
+            sf::Color(220, 20, 60)
+        ),
+        reactor.GetTemp().top,
+        10.,
+        "top"
+    )));
+
+    toolbar.AddChild(std::make_unique<Mephi::AdjustButton<double>>(Mephi::AdjustButton<double>(
+        Mephi::Rect(
+            Mephi::Vector2d(avgX - 112.5,      toolboxLC.y + 125),
+            Mephi::Vector2d(avgX - 112.5 + 50, toolboxLC.y + 125 + 50),
+            sf::Color(220, 20, 60)
+        ),
+        reactor.GetTemp().left,
+        10.,
+        "left"
+    )));
+
+    toolbar.AddChild(std::make_unique<Mephi::AdjustButton<double>>(Mephi::AdjustButton<double>(
+        Mephi::Rect(
+            Mephi::Vector2d(avgX + 75,      toolboxLC.y + 125),
+            Mephi::Vector2d(avgX + 75 + 50, toolboxLC.y + 125 + 50),
+            sf::Color(220, 20, 60)
+        ),
+        reactor.GetTemp().right,
+        10.,
+        "right"
+    )));
+
+    toolbar.AddChild(std::make_unique<Mephi::AdjustButton<double>>(Mephi::AdjustButton<double>(
+        Mephi::Rect(
+            Mephi::Vector2d(avgX - 25,      toolboxLC.y + 225),
+            Mephi::Vector2d(avgX - 25 + 50, toolboxLC.y + 225 + 50),
+            sf::Color(220, 20, 60)
+        ),
+        reactor.GetTemp().bottom,
+        10.,
+        "bottom"
+    )));
+
     Mephi::MephiManager manager(
         std::move(reactor), 
         std::move(toolbar),
+        std::move(plotCircle),
+        std::move(plotSquare),
+        std::move(plotTemp),
         Mephi::MoleculeManager(),
         MOLECULES_CNT
     );
-
-    const Mephi::Vector2d toolboxLC = manager.GetToolbox().GetRect().GetLeftCorner();
-    const Mephi::Vector2d toolboxRC = manager.GetToolbox().GetRect().GetRightCorner();
-    const double          avgX      = (toolboxRC.x + toolboxLC.x) / 2;
 
     sf::Font font;
     if (!font.loadFromFile("./data/Font.ttf")) {
@@ -173,48 +197,5 @@ Mephi::MephiManager InitManager() {
         abort();
     }
 
-    manager.GetToolbox().AddChild(std::make_unique<Mephi::AdjustButton<double>>(Mephi::AdjustButton<double>(
-        Mephi::Rect(
-            Mephi::Vector2d(avgX - 25,      toolboxLC.y + 25),
-            Mephi::Vector2d(avgX - 25 + 50, toolboxLC.y + 25 + 50),
-            sf::Color(220, 20, 60)
-        ),
-        manager.GetReactor().GetTemp().top,
-        10.,
-        "top"
-    )));
-
-    manager.GetToolbox().AddChild(std::make_unique<Mephi::AdjustButton<double>>(Mephi::AdjustButton<double>(
-        Mephi::Rect(
-            Mephi::Vector2d(avgX - 112.5,      toolboxLC.y + 125),
-            Mephi::Vector2d(avgX - 112.5 + 50, toolboxLC.y + 125 + 50),
-            sf::Color(220, 20, 60)
-        ),
-        manager.GetReactor().GetTemp().left,
-        10.,
-        "left"
-    )));
-
-    manager.GetToolbox().AddChild(std::make_unique<Mephi::AdjustButton<double>>(Mephi::AdjustButton<double>(
-        Mephi::Rect(
-            Mephi::Vector2d(avgX + 75,      toolboxLC.y + 125),
-            Mephi::Vector2d(avgX + 75 + 50, toolboxLC.y + 125 + 50),
-            sf::Color(220, 20, 60)
-        ),
-        manager.GetReactor().GetTemp().right,
-        10.,
-        "right"
-    )));
-
-    manager.GetToolbox().AddChild(std::make_unique<Mephi::AdjustButton<double>>(Mephi::AdjustButton<double>(
-        Mephi::Rect(
-            Mephi::Vector2d(avgX - 25,      toolboxLC.y + 225),
-            Mephi::Vector2d(avgX - 25 + 50, toolboxLC.y + 225 + 50),
-            sf::Color(220, 20, 60)
-        ),
-        manager.GetReactor().GetTemp().bottom,
-        10.,
-        "bottom"
-    )));
     return manager;
 }

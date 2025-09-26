@@ -20,9 +20,10 @@ Mephi::Vector2d Mephi::Plot::Pix2Seg(const Mephi::Vector2d& pixDot) const {
 Common::Error Mephi::Plot::PushDot(const Mephi::Vector2d& segDot) {
     segDots_.push_back(segDot);
     maxModY_ = std::max(maxModY_, std::abs(segDot.y));
+    maxModX_ = std::max(maxModX_, std::abs(segDot.x));
 
     scaleY_ = rect_.Height() / (2.5 * maxModY_);
-    scaleX_ = rect_.Width() / (2 * segDots_.size());
+    scaleX_ = rect_.Width() / (2.5 * maxModX_);
 
     return Common::Error::SUCCESS;
 }

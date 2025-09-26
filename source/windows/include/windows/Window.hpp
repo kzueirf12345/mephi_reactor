@@ -32,7 +32,7 @@ class Window{
         [[nodiscard]] bool CheckPressed(const Mephi::Vector2i& mousePos, const sf::Mouse::Button& mouseButton = MOVE_BUTTON_) const;
                       bool CheckHold   (const Mephi::Vector2i& mousePos, const sf::Mouse::Button& mouseButton = MOVE_BUTTON_);
         [[nodiscard]] Mephi::Vector2i HandleMouseShift(const Mephi::Vector2i& curMousePos);
-        Common::Error Move(const Mephi::Vector2d& shift);
+        virtual Common::Error Move(const Mephi::Vector2d& shift);
 
         Mephi::Vector2i HandleDrag(const Mephi::Vector2i& curMousePos);
 

@@ -13,6 +13,9 @@ Common::Error Mephi::MephiManager::Draw(sf::RenderWindow& window) {
     ERROR_HANDLE(toolbox_.Draw(window));
     ERROR_HANDLE(reactor_.Draw(window));
     ERROR_HANDLE(moleculeManager_.Draw(window));
+    ERROR_HANDLE(circlePlot_.Draw(window));
+    ERROR_HANDLE(squarePlot_.Draw(window));
+    ERROR_HANDLE(tempPlot_.Draw(window));
 
     return Common::Error::SUCCESS;
 }
@@ -83,8 +86,29 @@ Common::Error Mephi::MephiManager::Update(const Mephi::Vector2i &mousePos) {
 
     ERROR_HANDLE(moleculeManager_.HandleInteraction_());
 
+    
+    if (curPlotX_ > 0) {
+        const double curYCircle = GetMoleculeManager().GetCircleCnt();
+        const double curYSquare = GetMoleculeManager().GetSquareCnt();
+        const double curYTemp   = GetReactor().GetTemp().Average();
+        
+        circlePlot_.PushDot(Mephi::Vector2d(curPlotX_, curYCircle));
+        squarePlot_.PushDot(Mephi::Vector2d(curPlotX_, curYSquare));
+        tempPlot_.PushDot(Mephi::Vector2d(curPlotX_, curYTemp));
+    }
+    ++curPlotX_;
+
     if (!shift.Len2()) {
-        toolbox_.HandleDrag(mousePos);
+        shift = toolbox_.HandleDrag(mousePos);
+    }
+    if (!shift.Len2()) {
+        shift = circlePlot_.HandleDrag(mousePos);
+    }
+    if (!shift.Len2()) {
+        shift = squarePlot_.HandleDrag(mousePos);
+    }
+    if (!shift.Len2()) {
+        shift = tempPlot_.HandleDrag(mousePos);
     }
 
     ERROR_HANDLE(toolbox_.HandlePressed(mousePos));
