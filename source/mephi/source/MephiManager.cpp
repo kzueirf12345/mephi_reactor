@@ -6,7 +6,6 @@
 #include "vector/Vector.hpp"
 #include "mephi/MephiManager.hpp"
 #include "windows/Reactor.hpp"
-// #include "window/Window.hpp"
 
 Common::Error Mephi::MephiManager::Draw(sf::RenderWindow& window) {
 
@@ -36,7 +35,7 @@ Common::Error Mephi::MephiManager::HandleMoleculesWallsInteraction(Mephi::Molecu
                               + (reactor_.GetRect().GetLeftCorner().x  - molecule.LeftX());
         molecule.GetSpeed().x = -curSpeed.x;
     }
-
+    
     if (reactor_.GetRect().GetRightCorner().x <= molecule.RightX() && molecule.GetSpeed().x > 0) {
         tempDiff = reactor_.GetTemp().right - molecule.KinEnergyX();
         energyDiff = reactor_.GetAccom() * tempDiff;

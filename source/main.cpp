@@ -39,7 +39,6 @@ constexpr unsigned int FRAMERATE_LIMIT = 15;
 
 sf::Font Common::GLOBAL_FONT = {};
 
-
 Mephi::MephiManager InitManager();
 
 int main()
@@ -55,13 +54,13 @@ int main()
     const sf::Color WINDOW_BG_COLOR(20, 20, 20);
     
     Mephi::MephiManager manager(std::move(InitManager()));
-
-    //=======================CYCLE==========================
-
+    
     if (!Common::GLOBAL_FONT.loadFromFile("./data/Font.ttf")) {
         std::cerr << "Can't load font" << std::endl;
-        abort();
+        return EXIT_FAILURE;
     }
+
+    //=======================CYCLE==========================
 
     while (window.isOpen())
     {
@@ -82,11 +81,11 @@ int main()
         window.display();
     }
 
-    return 0;
+    return EXIT_SUCCESS;
 }
 
 Mephi::MephiManager InitManager() {
-    constexpr size_t MOLECULES_CNT = 500;
+    constexpr size_t MOLECULES_CNT = 2000;
 
     Mephi::Reactor reactor(
         Mephi::Rect(
@@ -190,12 +189,6 @@ Mephi::MephiManager InitManager() {
         Mephi::MoleculeManager(),
         MOLECULES_CNT
     );
-
-    sf::Font font;
-    if (!font.loadFromFile("./data/Font.ttf")) {
-        std::cerr << "Can't load font" << std::endl;
-        abort();
-    }
 
     return manager;
 }
