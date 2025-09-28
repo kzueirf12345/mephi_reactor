@@ -8,7 +8,8 @@
 #include <SFML/Graphics/Color.hpp>
 #include <SFML/Graphics/Shape.hpp>
 
-#include "Window.hpp"
+#include "windows/Window.hpp"
+#include "molecule/MoleculeManager.hpp"
 
 namespace Mephi
 {
@@ -26,16 +27,28 @@ struct Sides {
 
 class Reactor: public Mephi::Window {
     private:
-        Sides temp_;
-        double accom_;
+    Mephi::MoleculeManager moleculeManager_;
+    
+    Sides wallEnergy_;
+    double accom_;
+    
+    Common::Error HandleWallCollisions(Mephi::Molecule& molecule, const size_t maxChangeCycle = 2);
     public:
-        explicit Reactor(const Mephi::Rect& rect, const double accom = 0.1) 
-            : Mephi::Window{rect}, temp_{0}, accom_{accom}
+        explicit Reactor(Mephi::Rect rect, 
+                         Mephi::MoleculeManager moleculeManager = std::move(Mephi::MoleculeManager()), 
+                         const double accom = 0.1) 
+            : Mephi::Window{std::move(rect)}, moleculeManager_{std::move(moleculeManager)}, wallEnergy_{0}, 
+              accom_{accom}
         {}
 
-        [[nodiscard]] const Mephi::Sides& GetTemp()  const noexcept {return temp_;}
-        [[nodiscard]]       Mephi::Sides& GetTemp()        noexcept {return temp_;}
+        [[nodiscard]] const Mephi::Sides& GetTemp()  const noexcept {return wallEnergy_;}
         [[nodiscard]]       double        GetAccom() const noexcept {return accom_;}
+        [[nodiscard]] const Mephi::MoleculeManager& GetMoleculeManager() const noexcept {return moleculeManager_;}
+
+        Common::Error GenerateMolecules(const size_t count, const double maxSpeed);
+        Common::Error Update();
+        virtual Common::Error Draw(sf::RenderWindow& window) const override final;
+
 };
 
 }

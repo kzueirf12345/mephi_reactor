@@ -28,7 +28,6 @@ class MoleculeSquare: public Mephi::Molecule {
         }
 
         virtual Common::Error Draw(sf::RenderWindow& window) const override final;
-        virtual Common::Error Update() override final;
 
         Common::Error IncreaseMass(int64_t addNum) noexcept;
         [[nodiscard]] virtual       uint64_t  LeftX()     const noexcept override final {return coord_.x - radius_;}

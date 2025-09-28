@@ -53,7 +53,8 @@ class MoleculeManager{
         Common::Error Draw(sf::RenderWindow& window) const;
         Common::Error HandleInteraction_();
 
-        Common::Error GenerateMolecules(const size_t count, const Mephi::Rect& rect);
+        Common::Error GenerateMolecules(const size_t count, const double maxSpeed, 
+                                        const Mephi::Rect& rect);
 
         [[nodiscard]]       size_t                                         GetCircleCnt() const noexcept {return circleCnt_;}
         [[nodiscard]]       size_t                                         GetSquareCnt() const noexcept {return squareCnt_;}

@@ -1,5 +1,6 @@
 add_library(windows STATIC
     source/Window.cpp
+    source/Reactor.cpp
     # source/Plot.cpp
     # source/buttons/Button.cpp
 )
@@ -18,4 +19,5 @@ target_link_libraries(windows
         common
         vector
         figures
+        molecule
 )

@@ -14,8 +14,10 @@
 #include <X11/Xlib.h>
 
 #include "common/ErrorHandle.hpp"
+#include "molecule/MoleculeManager.hpp"
 #include "vector/Vector.hpp"
 #include "figures/Rect.hpp"
+#include "windows/Reactor.hpp"
 #include "windows/Window.hpp"
 
 constexpr unsigned int WINDOW_WIDTH    = 1720;
@@ -40,7 +42,7 @@ int main()
         return EXIT_FAILURE;
     }
 
-    Mephi::Window tempWindow(
+    Mephi::Reactor reactor(
         Mephi::Rect(
             Mephi::Vector2d(100, 100),
             Mephi::Vector2d(WINDOW_WIDTH - 500, WINDOW_HEIGHT - 500),
@@ -49,6 +51,8 @@ int main()
             5
         )
     );
+
+    reactor.GenerateMolecules(10000, 100);
 
     //=======================CYCLE==========================
 
@@ -62,9 +66,14 @@ int main()
             }
         }
 
+
         window.clear(WINDOW_BG_COLOR);
 
-        ERROR_HANDLE(tempWindow.Draw(window));
+        ERROR_HANDLE(reactor.Draw(window));
+        ERROR_HANDLE(reactor.Update());
+
+        std::cerr << reactor.GetTemp().Average() << std::endl;
+        // std::cerr << "speed " << reactor.GetMoleculeManager().GetMolecules()[0]->GetSpeed().Len2() << std::endl;
 
         window.display();
     }

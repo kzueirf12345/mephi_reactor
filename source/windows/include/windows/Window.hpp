@@ -6,8 +6,6 @@
 #include "vector/Vector.hpp"
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/Window/Mouse.hpp>
-#include <functional>
-#include <memory>
 
 namespace Mephi
 {
@@ -27,7 +25,7 @@ class Window {
             : rect_{std::move(rect)}, parent_(parent)
         {}
 
-        Common::Error Draw(sf::RenderWindow& window) const;
+        virtual Common::Error Draw(sf::RenderWindow& window) const;
 };
 
 

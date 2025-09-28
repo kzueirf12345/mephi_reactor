@@ -17,3 +17,8 @@ bool Mephi::IsIntersect(const Mephi::Molecule& molecule1,
     
     return xOverlap && yOverlap;
 }
+
+Common::Error Mephi::Molecule::Update(){
+    coord_ += speed_;
+    return Common::Error::SUCCESS;
+}

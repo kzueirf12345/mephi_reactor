@@ -28,7 +28,6 @@ class MoleculeCircle: public Mephi::Molecule {
         }
 
         virtual Common::Error Draw(sf::RenderWindow& window) const override final;
-        virtual Common::Error Update() override final;
 
         [[nodiscard]]         const uint64_t& GetRadius() const noexcept                {return radius_;}
         [[nodiscard]]               uint64_t& GetRadius()       noexcept                {return radius_;}

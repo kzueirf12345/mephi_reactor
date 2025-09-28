@@ -142,18 +142,22 @@ Common::Error Mephi::MoleculeManager::HandleInteractionCS_(size_t moleculeInd1, 
     return Common::Error::SUCCESS;
 }
 
-Common::Error Mephi::MoleculeManager::GenerateMolecules(const size_t count, const Mephi::Rect& rect)
-{
+Common::Error Mephi::MoleculeManager::GenerateMolecules(const size_t count, const double maxSpeed, 
+                                                        const Mephi::Rect& rect) {
     std::random_device rd;
     std::mt19937 gen(rd());
 
     circleCnt_ += count;
     
-    std::uniform_real_distribution<double> distX(rect.GetLeftCorner().x, rect.GetRightCorner().x);
-    std::uniform_real_distribution<double> distY(rect.GetLeftCorner().y, rect.GetRightCorner().y);
+    std::uniform_real_distribution<double> distX(
+        rect.GetLeftCorner() .x + Mephi::MoleculeCircle::START_RADIUS,
+        rect.GetRightCorner().x - Mephi::MoleculeCircle::START_RADIUS);
+    std::uniform_real_distribution<double> distY(
+        rect.GetLeftCorner() .y + Mephi::MoleculeCircle::START_RADIUS, 
+        rect.GetRightCorner().y - Mephi::MoleculeCircle::START_RADIUS);
     
-    std::uniform_real_distribution<double> distSpeed(0, 10);
-    std::uniform_real_distribution<double> distAngle(0.0, 2.0 * M_PI);
+    std::uniform_real_distribution<double> distSpeed(0, maxSpeed);
+    std::uniform_real_distribution<double> distAngle(0.0, 2 * std::numbers::pi);
     
     for (size_t i = 0; i < count; ++i)
     {

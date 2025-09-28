@@ -32,7 +32,7 @@ class Molecule {
         [[nodiscard]] virtual size_t GetTypeId() const noexcept;
 
         virtual Common::Error Draw(sf::RenderWindow& window) const = 0;
-        virtual Common::Error Update() = 0;
+        virtual Common::Error Update();
 
         [[nodiscard]] virtual uint64_t  LeftX()     const noexcept = 0;
         [[nodiscard]] virtual uint64_t  RightX()    const noexcept = 0;

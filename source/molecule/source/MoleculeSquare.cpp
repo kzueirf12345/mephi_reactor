@@ -20,7 +20,3 @@ Common::Error Mephi::MoleculeSquare::Draw(sf::RenderWindow& window) const {
     
     return Common::Error::SUCCESS;
 }
-Common::Error Mephi::MoleculeSquare::Update(){
-    coord_ += speed_;
-    return Common::Error::SUCCESS;
-}
