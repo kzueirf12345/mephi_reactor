@@ -1,7 +1,7 @@
 add_library(windows STATIC
     source/Window.cpp
-    source/Plot.cpp
-    source/buttons/Button.cpp
+    # source/Plot.cpp
+    # source/buttons/Button.cpp
 )
 
 set_target_properties(windows PROPERTIES FOLDER "source")

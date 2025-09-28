@@ -14,11 +14,9 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 add_subdirectory(source/common)
 add_subdirectory(source/vector)
 add_subdirectory(source/figures)
-add_subdirectory(source/mephi)
+# add_subdirectory(source/mephi)
 add_subdirectory(source/molecule)
-add_subdirectory(source/threads)
 add_subdirectory(source/windows)
-# add_subdirectory(source/windows/buttons)
 
 find_package(X11                            REQUIRED)
 find_package(SFML 2.5.1 COMPONENTS graphics REQUIRED)
@@ -37,7 +35,6 @@ target_link_libraries(${CMAKE_PROJECT_NAME}
         vector
         figures
         windows
-        mephi
+        # mephi
         molecule
-        threads
 )
