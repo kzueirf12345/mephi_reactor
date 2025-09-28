@@ -29,10 +29,6 @@
 #include "windows/Window.hpp"
 #include "windows/buttons/AdjustButton.hpp"
 
-// TODO add molecule circle
-// TODO add molecule square
-// TODO delete also
-
 constexpr unsigned int WINDOW_WIDTH    = 1720;
 constexpr unsigned int WINDOW_HEIGHT   = 900;
 constexpr unsigned int FRAMERATE_LIMIT = 15;
@@ -85,7 +81,7 @@ int main()
 }
 
 Mephi::MephiManager InitManager() {
-    constexpr size_t MOLECULES_CNT = 2000;
+    constexpr size_t MOLECULES_CNT = 700;
 
     Mephi::Reactor reactor(
         Mephi::Rect(

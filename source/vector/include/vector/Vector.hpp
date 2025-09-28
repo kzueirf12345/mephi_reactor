@@ -40,6 +40,34 @@ class Vector2: public ParentT<T> {
         [[nodiscard]] T Len2() const;
         [[nodiscard]] T Len()  const;
         [[nodiscard]] Vector2<T, ParentT> Normal() const;
+
+        Vector2<T, ParentT> operator-() const {
+            return Vector2<T, ParentT>(-this->x, -this->y);
+        }
+
+        Vector2<T, ParentT>& operator+=(const Vector2<T, ParentT>& other) {
+            this->x += other.x;
+            this->y += other.y;
+            return *this;
+        }
+
+        Vector2<T, ParentT>& operator-=(const Vector2<T, ParentT>& other) {
+            this->x -= other.x;
+            this->y -= other.y;
+            return *this;
+        }
+
+        Vector2<T, ParentT>& operator*=(T scalar) {
+            this->x *= scalar;
+            this->y *= scalar;
+            return *this;
+        }
+
+        Vector2<T, ParentT>& operator/=(T scalar) {
+            this->x /= scalar;
+            this->y /= scalar;
+            return *this;
+        }
 };
 
 typedef Mephi::Vector2<float>  Vector2f;
@@ -54,6 +82,41 @@ T operator ^(const Mephi::Vector2<T, ParentT>& left, const Mephi::Vector2<T, Par
 template <typename T, template<typename> typename ParentT = sf::Vector2>
 Mephi::Vector2<T, ParentT> operator !(const Mephi::Vector2<T, ParentT>& right) {
     return Mephi::Vector2<T, ParentT>(right / right.Len());
+}
+
+template <typename T, template<typename> typename ParentT>
+Vector2<T, ParentT> operator+(const Vector2<T, ParentT>& left, const Vector2<T, ParentT>& right) {
+    return Vector2<T, ParentT>(left.x + right.x, left.y + right.y);
+}
+
+template <typename T, template<typename> typename ParentT>
+Vector2<T, ParentT> operator-(const Vector2<T, ParentT>& left, const Vector2<T, ParentT>& right) {
+    return Vector2<T, ParentT>(left.x - right.x, left.y - right.y);
+}
+
+template <typename T, template<typename> typename ParentT>
+Vector2<T, ParentT> operator*(const Vector2<T, ParentT>& left, T right) {
+    return Vector2<T, ParentT>(left.x * right, left.y * right);
+}
+
+template <typename T, template<typename> typename ParentT>
+Vector2<T, ParentT> operator*(T left, const Vector2<T, ParentT>& right) {
+    return Vector2<T, ParentT>(right.x * left, right.y * left);
+}
+
+template <typename T, template<typename> typename ParentT>
+Vector2<T, ParentT> operator/(const Vector2<T, ParentT>& left, T right) {
+    return Vector2<T, ParentT>(left.x / right, left.y / right);
+}
+
+template <typename T, template<typename> typename ParentT>
+bool operator==(const Vector2<T, ParentT>& left, const Vector2<T, ParentT>& right) {
+    return left.x == right.x && left.y == right.y;
+}
+
+template <typename T, template<typename> typename ParentT>
+bool operator!=(const Vector2<T, ParentT>& left, const Vector2<T, ParentT>& right) {
+    return !(left == right);
 }
 
 template <typename T, template<typename> typename ParentT>
@@ -76,7 +139,7 @@ T Mephi::Vector2<T, ParentT>::Len() const {
 template <typename T, template<typename> typename ParentT>
 Mephi::Vector2<T, ParentT> Mephi::Vector2<T, ParentT>::Normal() const {
     return Vector2<T, ParentT>(this->y, -this->x);
-}\
+}
 
 Common::Error TransformVector(Mephi::Vector2f& Vector, const Mephi::Transform Transform, 
                               const float AngleRadians = 0.01);
@@ -95,20 +158,87 @@ class Vector3: public ParentT<T> {
         
         [[nodiscard]] T Len2() const;
         [[nodiscard]] T Len()  const;
+
+        Vector3<T, ParentT> operator-() const {
+            return Vector3<T, ParentT>(-this->x, -this->y, -this->z);
+        }
+
+        Vector3<T, ParentT>& operator+=(const Vector3<T, ParentT>& other) {
+            this->x += other.x;
+            this->y += other.y;
+            this->z += other.z;
+            return *this;
+        }
+
+        Vector3<T, ParentT>& operator-=(const Vector3<T, ParentT>& other) {
+            this->x -= other.x;
+            this->y -= other.y;
+            this->z -= other.z;
+            return *this;
+        }
+
+        Vector3<T, ParentT>& operator*=(T scalar) {
+            this->x *= scalar;
+            this->y *= scalar;
+            this->z *= scalar;
+            return *this;
+        }
+
+        Vector3<T, ParentT>& operator/=(T scalar) {
+            this->x /= scalar;
+            this->y /= scalar;
+            this->z /= scalar;
+            return *this;
+        }
 };
 
 typedef Mephi::Vector3<float>  Vector3f;
-typedef Mephi::Vector2<double> Vector3d;
+typedef Mephi::Vector3<double> Vector3d;
 typedef Mephi::Vector3<int>    Vector3i;
 
-template <typename T, template<typename> typename ParentT = sf::Vector2>
+template <typename T, template<typename> typename ParentT = sf::Vector3>
 T operator ^(const Mephi::Vector3<T, ParentT>& left, const Mephi::Vector3<T, ParentT>& right) {
     return left.x * right.x + left.y * right.y + left.z * right.z;
 }
 
-template <typename T, template<typename> typename ParentT = sf::Vector2>
+template <typename T, template<typename> typename ParentT = sf::Vector3>
 Mephi::Vector3<T, ParentT> operator !(const Mephi::Vector3<T, ParentT>& right) {
     return Mephi::Vector3<T, ParentT>(right / right.Len());
+}
+
+template <typename T, template<typename> typename ParentT>
+Vector3<T, ParentT> operator+(const Vector3<T, ParentT>& left, const Vector3<T, ParentT>& right) {
+    return Vector3<T, ParentT>(left.x + right.x, left.y + right.y, left.z + right.z);
+}
+
+template <typename T, template<typename> typename ParentT>
+Vector3<T, ParentT> operator-(const Vector3<T, ParentT>& left, const Vector3<T, ParentT>& right) {
+    return Vector3<T, ParentT>(left.x - right.x, left.y - right.y, left.z - right.z);
+}
+
+template <typename T, template<typename> typename ParentT>
+Vector3<T, ParentT> operator*(const Vector3<T, ParentT>& left, T right) {
+    return Vector3<T, ParentT>(left.x * right, left.y * right, left.z * right);
+}
+
+template <typename T, template<typename> typename ParentT>
+Vector3<T, ParentT> operator*(T left, const Vector3<T, ParentT>& right) {
+    return Vector3<T, ParentT>(right.x * left, right.y * left, right.z * left);
+}
+
+template <typename T, template<typename> typename ParentT>
+Vector3<T, ParentT> operator/(const Vector3<T, ParentT>& left, T right) {
+    return Vector3<T, ParentT>(left.x / right, left.y / right, left.z / right);
+}
+
+template <typename T, template<typename> typename ParentT>
+bool operator==(const Vector3<T, ParentT>& left, const Vector3<T, ParentT>& right) {
+    return left.x == right.x && left.y == right.y && left.z == right.z;
+}
+
+template <typename T, template<typename> typename ParentT>
+bool operator!=(const Vector3<T, ParentT>& left, const Vector3<T, ParentT>& right) {
+    return !(left == right);
 }
 
 template <typename T, template<typename> typename ParentT>

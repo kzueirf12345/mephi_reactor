@@ -8,7 +8,7 @@ Common::Error Mephi::TransformVector(Mephi::Vector2f& Vector, const Mephi::Trans
         case Mephi::Transform::ROTATE_CLKWISE:  RotateAngleRadians = AngleRadians; break;
         case Mephi::Transform::ROTATE_CCLKWISE: RotateAngleRadians = AngleRadians; break;
         case Mephi::Transform::NONE:            return Common::Error::SUCCESS;
-        default:                                   return Common::Error::UNKNOWN_ENUM_ARG;
+        default:                                return Common::Error::UNKNOWN_ENUM_ARG;
     }
 
     float cosA = std::cos(RotateAngleRadians);
