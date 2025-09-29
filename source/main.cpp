@@ -12,6 +12,7 @@
 #include <cmath>
 #include <cstdlib>
 #include <X11/Xlib.h>
+#include <memory>
 
 #include "common/ErrorHandle.hpp"
 #include "molecule/MoleculeManager.hpp"
@@ -25,6 +26,10 @@ constexpr unsigned int WINDOW_HEIGHT   = 900;
 constexpr unsigned int FRAMERATE_LIMIT = 15;
 
 sf::Font Common::GLOBAL_FONT = {};
+
+enum GlobWindowIndexses {
+    REACTOR = 0
+};
 
 int main()
 {
@@ -42,17 +47,28 @@ int main()
         return EXIT_FAILURE;
     }
 
-    Mephi::Reactor reactor(
+    Mephi::Window GlobWindow(
+        Mephi::Rect(
+            Mephi::Vector2d(0, 0),
+            Mephi::Vector2d(WINDOW_WIDTH, WINDOW_HEIGHT),
+            WINDOW_BG_COLOR
+        )
+    );
+
+    auto reactor = std::make_unique<Mephi::Reactor> (
         Mephi::Rect(
             Mephi::Vector2d(100, 100),
             Mephi::Vector2d(WINDOW_WIDTH - 500, WINDOW_HEIGHT - 500),
             sf::Color::Cyan, 
             sf::Color::Black, 
             5
-        )
+        ),
+        0.1
     );
 
-    reactor.GenerateMolecules(10000, 100);
+    reactor->GenerateMolecules(500, 100);
+
+    GlobWindow.AddChild(std::move(reactor));
 
     //=======================CYCLE==========================
 
@@ -66,14 +82,12 @@ int main()
             }
         }
 
+        window.clear();
 
-        window.clear(WINDOW_BG_COLOR);
+        ERROR_HANDLE(GlobWindow.Draw(window));
+        ERROR_HANDLE(GlobWindow.Update());
 
-        ERROR_HANDLE(reactor.Draw(window));
-        ERROR_HANDLE(reactor.Update());
-
-        std::cerr << reactor.GetTemp().Average() << std::endl;
-        // std::cerr << "speed " << reactor.GetMoleculeManager().GetMolecules()[0]->GetSpeed().Len2() << std::endl;
+        std::cerr << dynamic_cast<Mephi::Reactor*>(&GlobWindow[REACTOR])->GetTemp().Average() << std::endl;
 
         window.display();
     }

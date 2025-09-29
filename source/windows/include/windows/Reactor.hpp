@@ -35,8 +35,8 @@ class Reactor: public Mephi::Window {
     Common::Error HandleWallCollisions(Mephi::Molecule& molecule, const size_t maxChangeCycle = 2);
     public:
         explicit Reactor(Mephi::Rect rect, 
-                         Mephi::MoleculeManager moleculeManager = std::move(Mephi::MoleculeManager()), 
-                         const double accom = 0.1) 
+                         const double accom = 0.1,
+                         Mephi::MoleculeManager moleculeManager = std::move(Mephi::MoleculeManager()))
             : Mephi::Window{std::move(rect)}, moleculeManager_{std::move(moleculeManager)}, wallEnergy_{0}, 
               accom_{accom}
         {}
@@ -46,8 +46,10 @@ class Reactor: public Mephi::Window {
         [[nodiscard]] const Mephi::MoleculeManager& GetMoleculeManager() const noexcept {return moleculeManager_;}
 
         Common::Error GenerateMolecules(const size_t count, const double maxSpeed);
-        Common::Error Update();
+        Common::Error Update() override final;
         virtual Common::Error Draw(sf::RenderWindow& window) const override final;
+
+        virtual ~Reactor() = default;
 
 };
 

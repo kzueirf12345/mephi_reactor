@@ -5,7 +5,7 @@
 #include "molecule/MoleculeSquare.hpp"
 #include "vector/Vector.hpp"
 
-Common::Error Mephi::MoleculeSquare::IncreaseMass(int64_t addNum) noexcept {
+Common::Error Mephi::MoleculeSquare::IncreaseMass(double addNum) noexcept {
     mass_   += addNum;
     radius_ += addNum;
 

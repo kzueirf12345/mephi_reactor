@@ -19,12 +19,13 @@ class Molecule {
     protected:
         Mephi::Vector2d coord_;
         Mephi::Vector2d speed_;
-        uint64_t         mass_;
+        double           mass_;
+        double         radius_;
         sf::Color       color_;
-        uint64_t       radius_;
     public:
+        static constexpr double START_RADIUS = 1;
         Molecule(const Mephi::Vector2d& startCoord, const Mephi::Vector2d& startSpeed, 
-                 uint64_t startMass, const sf::Color& color)
+                 double startMass, const sf::Color& color)
             : coord_{startCoord}, speed_{startSpeed}, mass_{startMass}, color_{color}, 
               radius_(startMass)
         {}
@@ -34,11 +35,6 @@ class Molecule {
         virtual Common::Error Draw(sf::RenderWindow& window) const = 0;
         virtual Common::Error Update();
 
-        [[nodiscard]] virtual uint64_t  LeftX()     const noexcept = 0;
-        [[nodiscard]] virtual uint64_t  RightX()    const noexcept = 0;
-        [[nodiscard]] virtual uint64_t  TopY()      const noexcept = 0;
-        [[nodiscard]] virtual uint64_t  BottomY()   const noexcept = 0;
-
         [[nodiscard]]       double           KinEnergy() const noexcept {return mass_ * speed_.Len2() / 2;}
         [[nodiscard]]       double           KinEnergyX()const noexcept {return mass_ * speed_.x * speed_.x / 2;}
         [[nodiscard]]       double           KinEnergyY()const noexcept {return mass_ * speed_.y * speed_.y / 2;}
@@ -47,8 +43,8 @@ class Molecule {
         [[nodiscard]]       Mephi::Vector2d& GetCoord()       noexcept {return coord_;}
         [[nodiscard]] const Mephi::Vector2d& GetSpeed() const noexcept {return speed_;}
         [[nodiscard]]       Mephi::Vector2d& GetSpeed()       noexcept {return speed_;}
-        [[nodiscard]] const uint64_t&        GetMass()  const noexcept {return mass_;}
-        [[nodiscard]] const uint64_t&        GetRadius()const noexcept {return radius_;}
+        [[nodiscard]] const double&          GetMass()  const noexcept {return mass_;}
+        [[nodiscard]] const double&          GetRadius()const noexcept {return radius_;}
 };
 
 bool IsIntersect(const Mephi::Molecule& molecule1, 

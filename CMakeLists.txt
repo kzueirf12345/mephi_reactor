@@ -11,6 +11,22 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+    add_compile_options(
+        -g
+        -O0
+        -fsanitize=address
+        -fsanitize=undefined
+        -fno-omit-frame-pointer
+    )
+    add_link_options(
+        -fsanitize=address
+        -fsanitize=undefined
+    )
+else()
+    add_compile_options(-O2)
+endif()
+
 add_subdirectory(source/common)
 add_subdirectory(source/vector)
 add_subdirectory(source/figures)

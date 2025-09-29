@@ -6,7 +6,7 @@
 #include "vector/Vector.hpp"
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/Window/Mouse.hpp>
-
+#include <memory>
 namespace Mephi
 {
 
@@ -16,16 +16,25 @@ class Window {
 
     protected:
         Mephi::Rect rect_;
-        std::vector<Mephi::Window*> children_;
+        std::vector<std::unique_ptr<Mephi::Window>> children_;
         Mephi::Window* parent_;
 
         [[nodiscard]] Mephi::Vector2d AbsoluteCoord() const noexcept;
     public:
-        Window(Mephi::Rect rect, Mephi::Window* const parent = nullptr)
+        explicit Window(Mephi::Rect rect, Mephi::Window* const parent = nullptr)
             : rect_{std::move(rect)}, parent_(parent)
         {}
 
-        virtual Common::Error Draw(sf::RenderWindow& window) const;
+        Common::Error AddChild(std::unique_ptr<Mephi::Window> child);
+
+        virtual Common::Error Draw  (sf::RenderWindow& window) const;
+        virtual Common::Error Update();
+
+        Window& operator [](size_t ind) { return *children_[ind].get(); } 
+
+        const Window& operator [](size_t ind) const { return *children_[ind].get(); } 
+
+        virtual ~Window() = default;
 };
 
 

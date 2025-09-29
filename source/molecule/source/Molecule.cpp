@@ -8,14 +8,15 @@ size_t Mephi::Molecule::GetTypeId() const noexcept{
 
 bool Mephi::IsIntersect(const Mephi::Molecule& molecule1, 
                         const Mephi::Molecule& molecule2) noexcept {
-                            
-    bool xOverlap = molecule1.LeftX()  <= molecule2.RightX() && 
-                    molecule1.RightX() >= molecule2.LeftX();
+               
+    const double r1 = molecule1.GetRadius();
+    const double r2 = molecule2.GetRadius();
+    const double rDiff = std::abs(r2 - r1);
+    const double rSum = r1 + r2;
+
+    const double dist = (molecule1.GetCoord() - molecule2.GetCoord()).Len2();
     
-    bool yOverlap = molecule1.TopY()    <= molecule2.BottomY() && 
-                    molecule1.BottomY() >= molecule2.TopY();
-    
-    return xOverlap && yOverlap;
+    return rDiff * rDiff <= dist && dist <= rSum * rSum;
 }
 
 Common::Error Mephi::Molecule::Update(){

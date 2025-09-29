@@ -1,16 +1,21 @@
 #include "windows/Reactor.hpp"
 #include "common/ErrorHandle.hpp"
+#include "vector/Vector.hpp"
 #include "windows/Window.hpp"
 #include "molecule/MoleculeManager.hpp"
-#include <limits>
 
 Common::Error Mephi::Reactor::GenerateMolecules(const size_t count, const double maxSpeed) {
-    ERROR_HANDLE(moleculeManager_.GenerateMolecules(count, maxSpeed, rect_));
+    Mephi::Rect genRect(rect_);
+    genRect.GetLeftCorner()  = AbsoluteCoord();
+    genRect.GetRightCorner() = genRect.GetLeftCorner() + Mephi::Vector2d(rect_.Width(), rect_.Height());
+
+    ERROR_HANDLE(moleculeManager_.GenerateMolecules(count, maxSpeed, genRect));
 
     return Common::Error::SUCCESS;
 }
 
 Common::Error Mephi::Reactor::Draw(sf::RenderWindow& window) const {
+
     ERROR_HANDLE(this->Mephi::Window::Draw(window));
 
     ERROR_HANDLE(moleculeManager_.Draw(window));
@@ -35,10 +40,10 @@ Common::Error Mephi::Reactor::HandleWallCollisions(Mephi::Molecule& molecule, co
     const uint64_t radius = molecule.GetRadius();
     const uint64_t mass = molecule.GetMass();
     
-    const double   leftBound = rect_.GetLeftCorner() .x;
-    const double  rightBound = rect_.GetRightCorner().x;
-    const double    topBound = rect_.GetLeftCorner() .y;
-    const double bottomBound = rect_.GetRightCorner().y;
+    const double   leftBound = AbsoluteCoord().x ;
+    const double  rightBound = AbsoluteCoord().x + rect_.Width();
+    const double    topBound = AbsoluteCoord().y ;
+    const double bottomBound = AbsoluteCoord().y + rect_.Height();
 
     bool isChanged = false;
     size_t changeCycleCnt = 0;
@@ -102,12 +107,14 @@ Common::Error Mephi::Reactor::HandleWallCollisions(Mephi::Molecule& molecule, co
 }
 
 Common::Error Mephi::Reactor::Update() {
+    Mephi::Window::Update();
 
     for (const auto& molecule : moleculeManager_.GetMolecules()) {
         ERROR_HANDLE(molecule->Update());
-
+        
         ERROR_HANDLE(HandleWallCollisions(*molecule.get()));
     }
+    ERROR_HANDLE(moleculeManager_.HandleInteraction_());
 
     return Common::Error::SUCCESS;
 }

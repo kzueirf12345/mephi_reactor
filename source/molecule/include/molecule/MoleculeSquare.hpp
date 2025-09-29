@@ -19,9 +19,8 @@ namespace Mephi
 class MoleculeSquare: public Mephi::Molecule {
     private:
     public:
-        static constexpr uint64_t START_RADIUS = 1;
         MoleculeSquare(const Mephi::Vector2d& startCoord, const Mephi::Vector2d& startSpeed, 
-                       uint64_t startMass, const sf::Color& color)
+                       double startMass, const sf::Color& color)
             : Mephi::Molecule{startCoord, startSpeed, startMass, color}
         {
             radius_ += START_RADIUS;
@@ -29,11 +28,11 @@ class MoleculeSquare: public Mephi::Molecule {
 
         virtual Common::Error Draw(sf::RenderWindow& window) const override final;
 
-        Common::Error IncreaseMass(int64_t addNum) noexcept;
-        [[nodiscard]] virtual       uint64_t  LeftX()     const noexcept override final {return coord_.x - radius_;}
-        [[nodiscard]] virtual       uint64_t  RightX()    const noexcept override final {return coord_.x + radius_;}
-        [[nodiscard]] virtual       uint64_t  TopY()      const noexcept override final {return coord_.y - radius_;}
-        [[nodiscard]] virtual       uint64_t  BottomY()   const noexcept override final {return coord_.y + radius_;}
+        Common::Error IncreaseMass(double addNum) noexcept;
+        // [[nodiscard]] virtual       uint64_t  LeftX()     const noexcept override final {return coord_.x - radius_;}
+        // [[nodiscard]] virtual       uint64_t  RightX()    const noexcept override final {return coord_.x + radius_;}
+        // [[nodiscard]] virtual       uint64_t  TopY()      const noexcept override final {return coord_.y - radius_;}
+        // [[nodiscard]] virtual       uint64_t  BottomY()   const noexcept override final {return coord_.y + radius_;}
 };
 
 }

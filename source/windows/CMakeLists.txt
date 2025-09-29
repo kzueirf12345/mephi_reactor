@@ -5,6 +5,22 @@ add_library(windows STATIC
     # source/buttons/Button.cpp
 )
 
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+    add_compile_options(
+        -g
+        -O0
+        -fsanitize=address
+        -fsanitize=undefined
+        -fno-omit-frame-pointer
+    )
+    add_link_options(
+        -fsanitize=address
+        -fsanitize=undefined
+    )
+else()
+    add_compile_options(-O2)
+endif()
+
 set_target_properties(windows PROPERTIES FOLDER "source")
 
 target_include_directories(windows
