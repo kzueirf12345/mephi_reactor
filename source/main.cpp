@@ -20,10 +20,11 @@
 #include "figures/Rect.hpp"
 #include "windows/Reactor.hpp"
 #include "windows/Window.hpp"
+#include "windows/Plot.hpp"
 
 constexpr unsigned int WINDOW_WIDTH    = 1720;
 constexpr unsigned int WINDOW_HEIGHT   = 900;
-constexpr unsigned int FRAMERATE_LIMIT = 15;
+constexpr unsigned int FRAMERATE_LIMIT = 10;
 
 sf::Font Common::GLOBAL_FONT = {};
 
@@ -47,7 +48,7 @@ int main()
         return EXIT_FAILURE;
     }
 
-    Mephi::Window GlobWindow(
+    Mephi::Window globWindow(
         Mephi::Rect(
             Mephi::Vector2d(0, 0),
             Mephi::Vector2d(WINDOW_WIDTH, WINDOW_HEIGHT),
@@ -58,7 +59,7 @@ int main()
     auto reactor = std::make_unique<Mephi::Reactor> (
         Mephi::Rect(
             Mephi::Vector2d(100, 100),
-            Mephi::Vector2d(WINDOW_WIDTH - 500, WINDOW_HEIGHT - 500),
+            Mephi::Vector2d(1200, 350),
             sf::Color::Cyan, 
             sf::Color::Black, 
             5
@@ -67,8 +68,56 @@ int main()
     );
 
     reactor->GenerateMolecules(500, 100);
+    
+    globWindow.AddChild(std::move(reactor));
+    
+    auto circlePlot = std::make_unique<Mephi::Plot> (
+        Mephi::Rect(
+            Mephi::Vector2d(100, 500),
+            Mephi::Vector2d(300, 300)
+        ),
+        1, 
+        1,
+        Mephi::Vector2d(150, 150),
+        0,
+        [&globWindow](){ 
+            return dynamic_cast<Mephi::Reactor*>(&globWindow[REACTOR])->GetMoleculeManager().GetCircleCnt();
+        }
+    );
+    
+    globWindow.AddChild(std::move(circlePlot));
 
-    GlobWindow.AddChild(std::move(reactor));
+    auto squarePlot = std::make_unique<Mephi::Plot> (
+        Mephi::Rect(
+            Mephi::Vector2d(450, 500),
+            Mephi::Vector2d(300, 300)
+        ),
+        1, 
+        1,
+        Mephi::Vector2d(150, 150),
+        0,
+        [&globWindow](){ 
+            return dynamic_cast<Mephi::Reactor*>(&globWindow[REACTOR])->GetMoleculeManager().GetSquareCnt();
+        }
+    );
+    
+    globWindow.AddChild(std::move(squarePlot));
+
+    auto tempPlot = std::make_unique<Mephi::Plot> (
+        Mephi::Rect(
+            Mephi::Vector2d(800, 500),
+            Mephi::Vector2d(300, 300)
+        ),
+        1, 
+        1,
+        Mephi::Vector2d(150, 150),
+        0,
+        [&globWindow](){ 
+            return dynamic_cast<Mephi::Reactor*>(&globWindow[REACTOR])->GetTemp().Average();
+        }
+    );
+    
+    globWindow.AddChild(std::move(tempPlot));
 
     //=======================CYCLE==========================
 
@@ -84,10 +133,10 @@ int main()
 
         window.clear();
 
-        ERROR_HANDLE(GlobWindow.Draw(window));
-        ERROR_HANDLE(GlobWindow.Update());
+        ERROR_HANDLE(globWindow.Draw(window));
+        ERROR_HANDLE(globWindow.Update());
 
-        std::cerr << dynamic_cast<Mephi::Reactor*>(&GlobWindow[REACTOR])->GetTemp().Average() << std::endl;
+        std::cerr << dynamic_cast<Mephi::Reactor*>(&globWindow[REACTOR])->GetTemp().Average() << std::endl;
 
         window.display();
     }

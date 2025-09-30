@@ -7,7 +7,6 @@
 Common::Error Mephi::Reactor::GenerateMolecules(const size_t count, const double maxSpeed) {
     Mephi::Rect genRect(rect_);
     genRect.GetLeftCorner()  = AbsoluteCoord();
-    genRect.GetRightCorner() = genRect.GetLeftCorner() + Mephi::Vector2d(rect_.Width(), rect_.Height());
 
     ERROR_HANDLE(moleculeManager_.GenerateMolecules(count, maxSpeed, genRect));
 
@@ -107,13 +106,14 @@ Common::Error Mephi::Reactor::HandleWallCollisions(Mephi::Molecule& molecule, co
 }
 
 Common::Error Mephi::Reactor::Update() {
-    Mephi::Window::Update();
+    ERROR_HANDLE(Mephi::Window::Update());
 
     for (const auto& molecule : moleculeManager_.GetMolecules()) {
         ERROR_HANDLE(molecule->Update());
         
         ERROR_HANDLE(HandleWallCollisions(*molecule.get()));
     }
+
     ERROR_HANDLE(moleculeManager_.HandleInteraction_());
 
     return Common::Error::SUCCESS;

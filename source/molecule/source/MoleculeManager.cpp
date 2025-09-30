@@ -1,6 +1,5 @@
 
 #include <cstddef>
-#include <functional>
 #include <memory>
 #include <random>
 

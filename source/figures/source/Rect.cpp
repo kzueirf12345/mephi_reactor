@@ -5,12 +5,7 @@
 #include "common/ErrorHandle.hpp"
 
 sf::RectangleShape Mephi::Rect::GetSFRect() const {
-    sf::RectangleShape rect(
-        sf::Vector2f(
-            rightCorner_.x - leftCorner_.x,
-            rightCorner_.y - leftCorner_.y
-        )
-    );
+    sf::RectangleShape rect(static_cast<sf::Vector2f>(size_));
 
     rect.setPosition(static_cast<sf::Vector2f>(leftCorner_));
     rect.setFillColor(fillColor_);
