@@ -19,3 +19,9 @@ Common::Error Mephi::Rect::Draw(sf::RenderWindow& window) const {
     window.draw(GetSFRect());
     return Common::Error::SUCCESS;
 }
+
+bool Mephi::Rect::OnMe(const Mephi::Vector2d& dot) const noexcept {
+    const Mephi::Vector2d rightCorner = GetRightCorner(); 
+    return leftCorner_.x <= dot.x && dot.x <= rightCorner.x 
+        && leftCorner_.y <= dot.y && dot.y <= rightCorner.y;
+}

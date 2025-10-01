@@ -44,6 +44,8 @@ class Rect {
         [[nodiscard]] const sf::Color&       GetOutlineColor() const noexcept {return outlineColor_;}
         [[nodiscard]]       double           Width()           const noexcept {return size_.x;}
         [[nodiscard]]       double           Height()          const noexcept {return size_.y;}
+
+        [[nodiscard]] bool                   OnMe(const Mephi::Vector2d& dot) const noexcept;
 };
 
 }

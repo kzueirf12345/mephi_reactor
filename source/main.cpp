@@ -6,6 +6,7 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/Graphics/Color.hpp>
 #include <SFML/System/Vector2.hpp>
+#include <SFML/Window/Mouse.hpp>
 #include <SFML/Window/VideoMode.hpp>
 #include <SFML/Window/WindowStyle.hpp>
 
@@ -15,6 +16,7 @@
 #include <memory>
 
 #include "common/ErrorHandle.hpp"
+#include "events/EventCoord.hpp"
 #include "molecule/MoleculeManager.hpp"
 #include "vector/Vector.hpp"
 #include "figures/Rect.hpp"
@@ -24,7 +26,7 @@
 
 constexpr unsigned int WINDOW_WIDTH    = 1720;
 constexpr unsigned int WINDOW_HEIGHT   = 900;
-constexpr unsigned int FRAMERATE_LIMIT = 10;
+constexpr unsigned int FRAMERATE_LIMIT = 15;
 
 sf::Font Common::GLOBAL_FONT = {};
 
@@ -126,8 +128,19 @@ int main()
         sf::Event event;
         while (window.pollEvent(event))
         {
-            if (event.type == sf::Event::Closed) {
-                window.close();
+            switch (event.type) {
+                case sf::Event::Closed:
+                    window.close();
+                    break;
+                
+                case sf::Event::MouseMoved:
+                    globWindow.OnMouseMove(
+                        Mephi::EventCoord(Mephi::Vector2d(sf::Mouse::getPosition(window)))
+                    );
+                    break;
+
+                default:
+                    break;
             }
         }
 
@@ -137,6 +150,7 @@ int main()
         ERROR_HANDLE(globWindow.Update());
 
         std::cerr << dynamic_cast<Mephi::Reactor*>(&globWindow[REACTOR])->GetTemp().Average() << std::endl;
+        std::cerr << globWindow[GlobWindowIndexses::REACTOR].IsHovered() << std::endl;
 
         window.display();
     }

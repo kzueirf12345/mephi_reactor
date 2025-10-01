@@ -1,8 +1,5 @@
-add_library(windows STATIC
-    source/Window.cpp
-    source/Reactor.cpp
-    source/Plot.cpp
-    # source/buttons/Button.cpp
+add_library(events STATIC
+    source/EventCoord.cpp
 )
 
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
@@ -21,20 +18,17 @@ else()
     add_compile_options(-O2)
 endif()
 
-set_target_properties(windows PROPERTIES FOLDER "source")
+set_target_properties(events PROPERTIES FOLDER "source")
 
-target_include_directories(windows
+target_include_directories(events
     PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include> # Для сборки проекта
         $<INSTALL_INTERFACE:include>                           # Для будущей установки
 )
 
-target_link_libraries(windows
+target_link_libraries(events
     PRIVATE 
         sfml-graphics
         common
         vector
-        figures
-        molecule
-        events
 )

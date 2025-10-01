@@ -1,5 +1,6 @@
 #include "windows/Window.hpp"
 #include "common/ErrorHandle.hpp"
+#include "events/EventCoord.hpp"
 #include "vector/Vector.hpp"
 
 #include <SFML/Graphics/RectangleShape.hpp>
@@ -39,4 +40,18 @@ Common::Error Mephi::Window::AddChild(std::unique_ptr<Mephi::Window> child) {
     children_.push_back(std::move(child));
 
     return Common::Error::SUCCESS;
+}
+
+bool Mephi::Window::OnMouseMove(Mephi::EventCoord event) {
+    isInderectHovered_ = rect_.OnMe(event.coord);
+
+    for (auto child = children_.rbegin(); child != children_.rend(); ++child) {
+        if ((*child)->OnMouseMove(Mephi::EventCoord(event.coord - rect_.GetLeftCorner()))) {
+            return true;
+        }
+    }
+
+    isHovered_ = isInderectHovered_;
+
+    return isHovered_;
 }

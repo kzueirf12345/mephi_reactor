@@ -33,6 +33,7 @@ add_subdirectory(source/figures)
 # add_subdirectory(source/mephi)
 add_subdirectory(source/molecule)
 add_subdirectory(source/windows)
+add_subdirectory(source/events)
 
 find_package(X11                            REQUIRED)
 find_package(SFML 2.5.1 COMPONENTS graphics REQUIRED)
@@ -53,4 +54,5 @@ target_link_libraries(${CMAKE_PROJECT_NAME}
         windows
         # mephi
         molecule
+        events
 )
