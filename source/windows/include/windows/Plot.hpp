@@ -9,7 +9,6 @@
 #include "figures/Rect.hpp"
 #include "vector/Vector.hpp"
 #include "windows/Window.hpp"
-#include "molecule/MoleculeManager.hpp"
 
 namespace Mephi
 {
@@ -35,10 +34,10 @@ class Plot : public Mephi::Window{
         sf::VertexArray CreateGrid(const bool isX) const ;
     public:
         Plot(const Mephi::Rect& rect, double scaleX, double scaleY, 
-             const Mephi::Vector2d& OriginOffset, double startXSegVal = 0, 
-             TGetYValFoo getYValFoo = NULL,
+             const Mephi::Vector2d& OriginOffset, Mephi::Window* const parent = nullptr, 
+             double startXSegVal = 0, TGetYValFoo getYValFoo = NULL,
              const sf::Color& dotColor = sf::Color::Red)
-        : Mephi::Window{rect}, scaleX_{scaleX}, scaleY_{scaleY}, 
+        : Mephi::Window{rect, parent}, scaleX_{scaleX}, scaleY_{scaleY}, 
           originOffset_{OriginOffset}, segDots_{}, dotColor_{dotColor}, 
           maxModY_{0}, maxModX_(0), xSegVal_(startXSegVal), getYValFoo_(getYValFoo)
         {}

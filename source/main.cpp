@@ -13,10 +13,12 @@
 #include <cmath>
 #include <cstdlib>
 #include <X11/Xlib.h>
+#include <iostream>
 #include <memory>
 
 #include "common/ErrorHandle.hpp"
 #include "events/EventCoord.hpp"
+#include "events/EventMouseButton.hpp"
 #include "molecule/MoleculeManager.hpp"
 #include "vector/Vector.hpp"
 #include "figures/Rect.hpp"
@@ -55,7 +57,9 @@ int main()
             Mephi::Vector2d(0, 0),
             Mephi::Vector2d(WINDOW_WIDTH, WINDOW_HEIGHT),
             WINDOW_BG_COLOR
-        )
+        ),
+        nullptr,
+        false
     );
 
     auto reactor = std::make_unique<Mephi::Reactor> (
@@ -66,6 +70,7 @@ int main()
             sf::Color::Black, 
             5
         ),
+        &globWindow,
         0.1
     );
 
@@ -81,6 +86,7 @@ int main()
         1, 
         1,
         Mephi::Vector2d(150, 150),
+        &globWindow,
         0,
         [&globWindow](){ 
             return dynamic_cast<Mephi::Reactor*>(&globWindow[REACTOR])->GetMoleculeManager().GetCircleCnt();
@@ -97,6 +103,7 @@ int main()
         1, 
         1,
         Mephi::Vector2d(150, 150),
+        &globWindow,
         0,
         [&globWindow](){ 
             return dynamic_cast<Mephi::Reactor*>(&globWindow[REACTOR])->GetMoleculeManager().GetSquareCnt();
@@ -113,6 +120,7 @@ int main()
         1, 
         1,
         Mephi::Vector2d(150, 150),
+        &globWindow,
         0,
         [&globWindow](){ 
             return dynamic_cast<Mephi::Reactor*>(&globWindow[REACTOR])->GetTemp().Average();
@@ -137,6 +145,27 @@ int main()
                     globWindow.OnMouseMove(
                         Mephi::EventCoord(Mephi::Vector2d(sf::Mouse::getPosition(window)))
                     );
+
+                    if (sf::Mouse::isButtonPressed(Mephi::EventMouseButton::MOVE_BUTTON_)) {
+                        globWindow.OnMouseDrag(
+                            Mephi::EventCoord(Mephi::Vector2d(sf::Mouse::getPosition(window)))
+                        );
+                    }
+                    break;
+
+                case sf::Event::MouseButtonPressed:
+                    globWindow.OnMousePress(Mephi::EventMouseButton(
+                        Mephi::Vector2d(sf::Mouse::getPosition(window)),
+                        event.mouseButton.button
+                    ));
+                    
+                    break;
+
+                case sf::Event::MouseButtonReleased:
+                    globWindow.OnMouseUnpress(Mephi::EventMouseButton(
+                        Mephi::Vector2d(sf::Mouse::getPosition(window)),
+                        event.mouseButton.button
+                    ));
                     break;
 
                 default:
@@ -150,7 +179,8 @@ int main()
         ERROR_HANDLE(globWindow.Update());
 
         std::cerr << dynamic_cast<Mephi::Reactor*>(&globWindow[REACTOR])->GetTemp().Average() << std::endl;
-        std::cerr << globWindow[GlobWindowIndexses::REACTOR].IsHovered() << std::endl;
+        std::cerr << "is Hovered " << globWindow[1].IsHovered() << std::endl;
+        std::cerr << "is Selected " << globWindow[1].isSelected() << std::endl;
 
         window.display();
     }
