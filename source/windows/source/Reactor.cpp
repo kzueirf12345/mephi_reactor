@@ -118,3 +118,16 @@ Common::Error Mephi::Reactor::Update() {
 
     return Common::Error::SUCCESS;
 }
+
+
+bool Mephi::Reactor::OnMouseDrag(Mephi::EventCoord event) {
+    if (isDraggable_ && isSelected_) {
+        const Mephi::Vector2d shift = event.coord - prevMousePos_;
+
+        for (auto& molecule : moleculeManager_.GetMolecules()) {
+            molecule->GetCoord() += shift;
+        }
+    }
+    
+    return Mephi::Window::OnMouseDrag(event);
+}

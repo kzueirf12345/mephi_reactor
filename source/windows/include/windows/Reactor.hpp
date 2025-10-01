@@ -44,10 +44,12 @@ class Reactor: public Mephi::Window {
         [[nodiscard]] const Mephi::Sides& GetTemp()  const noexcept {return wallEnergy_;}
         [[nodiscard]]       double        GetAccom() const noexcept {return accom_;}
         [[nodiscard]] const Mephi::MoleculeManager& GetMoleculeManager() const noexcept {return moleculeManager_;}
-
+        
         Common::Error GenerateMolecules(const size_t count, const double maxSpeed);
-        Common::Error Update() override final;
+
+        virtual Common::Error Update() override final;
         virtual Common::Error Draw(sf::RenderWindow& window) const override final;
+        virtual bool          OnMouseDrag(Mephi::EventCoord event) override final;
 
         virtual ~Reactor() = default;
 
