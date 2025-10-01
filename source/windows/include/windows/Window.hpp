@@ -1,49 +1,68 @@
 #ifndef MEPHI_REACTOR_SOURCE_WINDOWS_INCLUDE_WINDOWS_WINDOW_HPP
 #define MEPHI_REACTOR_SOURCE_WINDOWS_INCLUDE_WINDOWS_WINDOW_HPP
 
-#include "figures/Rect.hpp"
-#include "vector/Vector.hpp"
+#include <memory>
+
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/Window/Mouse.hpp>
-#include <memory>
+
+#include "common/ErrorHandle.hpp"
+#include "events/EventMouseButton.hpp"
+#include "figures/Rect.hpp"
+#include "vector/Vector.hpp"
+#include "events/EventCoord.hpp"
+
 
 namespace Mephi
 {
 
-class Window{
+class Window {
+    private:
+        // static constexpr sf::Mouse::Button MOVE_BUTTON_ = sf::Mouse::Button::Middle;
+
     protected:
-        static constexpr sf::Mouse::Button MOVE_BUTTON_ = sf::Mouse::Button::Middle;
-
         Mephi::Rect rect_;
-        bool isHold_;
-        Mephi::Vector2i prevMousePos_;
-        std::vector<std::unique_ptr<Window>> children_;
-    public:
-        static constexpr int POISON_MOUSE_POS_VAL_ = 228666133;
-        inline static const Mephi::Vector2i POISON_MOUSE_POS_{
-            Mephi::Window::POISON_MOUSE_POS_VAL_, 
-            Mephi::Window::POISON_MOUSE_POS_VAL_
-        };
+        std::vector<std::unique_ptr<Mephi::Window>> children_;
+        Mephi::Window* parent_;
 
-        Window(const Mephi::Rect& rect)
-            : rect_{rect}, isHold_{false}, prevMousePos_{POISON_MOUSE_POS_}, children_{}
+        bool isDraggable_;
+        
+        bool isSelected_;
+        bool isHovered_;
+        bool isInderectHovered_;
+        
+        Mephi::Vector2d prevMousePos_;
+
+        Common::Error SetParent_(Mephi::Window* const parent);
+        Common::Error UpdateParents_(Mephi::Window* const root);
+
+        public:
+        [[nodiscard]] Mephi::Vector2d AbsoluteCoord() const noexcept;
+        explicit Window(Mephi::Rect rect, bool isDraggable = true)
+            : rect_{std::move(rect)}, parent_(nullptr), children_{}, 
+              isHovered_{false}, isInderectHovered_{false}, isDraggable_{isDraggable}, 
+              prevMousePos_{{0, 0}}, isSelected_{false}
         {}
 
-        [[nodiscard]] bool CheckPressed(const Mephi::Vector2i& mousePos, const sf::Mouse::Button& mouseButton = MOVE_BUTTON_) const;
-                      bool CheckHold   (const Mephi::Vector2i& mousePos, const sf::Mouse::Button& mouseButton = MOVE_BUTTON_);
-        [[nodiscard]] Mephi::Vector2i HandleMouseShift(const Mephi::Vector2i& curMousePos);
-        virtual Common::Error Move(const Mephi::Vector2d& shift);
+        Common::Error AddChild(std::unique_ptr<Mephi::Window> child);
 
-        Mephi::Vector2i HandleDrag(const Mephi::Vector2i& curMousePos);
+        virtual Common::Error Draw  (sf::RenderWindow& window) const;
+        virtual Common::Error Update();
 
-        [[nodiscard]] const Mephi::Rect& GetRect() const noexcept { return rect_; }
+        virtual bool OnMouseMove   (Mephi::EventCoord       event);
+        virtual bool OnMousePress  (Mephi::EventMouseButton event);
+        virtual bool OnMouseUnpress(Mephi::EventMouseButton event);
+        virtual bool OnMouseDrag   (Mephi::EventCoord       event);
 
-        virtual Common::Error Draw(sf::RenderWindow& window);
-        virtual Common::Error HandlePressed(const Mephi::Vector2i& mousePos);
+        Window& operator [](size_t ind) { return *children_[ind].get(); } 
 
-        Common::Error AddChild(std::unique_ptr<Window> child);
-        
-        [[nodiscard]] const std::vector<std::unique_ptr<Window>>& GetChildren() {return children_;}
+        const Window& operator [](size_t ind) const { return *children_[ind].get(); } 
+
+        [[nodiscard]] bool         IsHovered()  const noexcept { return         isHovered_; }
+        [[nodiscard]] bool IsInderectHovered()  const noexcept { return isInderectHovered_; }
+        [[nodiscard]] bool         isSelected() const noexcept { return         isSelected_; }
+
+        virtual ~Window() = default;
 };
 
 

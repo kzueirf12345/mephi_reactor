@@ -22,6 +22,10 @@ class Plot : public Mephi::Window{
         sf::Color dotColor_;
         double maxModY_;
         double maxModX_;
+        double xSegVal_;
+
+        using TGetYValFoo = std::function<double()>;
+        TGetYValFoo getYValFoo_;
 
         Mephi::Vector2d Seg2Pix (const Mephi::Vector2d& segDot) const;
         Mephi::Vector2d Pix2Seg (const Mephi::Vector2d& pixDot) const;
@@ -29,16 +33,20 @@ class Plot : public Mephi::Window{
         sf::VertexArray CreateAxis(const bool isX) const ;
         sf::VertexArray CreateGrid(const bool isX) const ;
     public:
-        Plot(const Mephi::Rect& rect,double scaleX, double scaleY, 
-             const Mephi::Vector2d& OriginOffset, const sf::Color& dotColor = sf::Color::Red)
+        Plot(const Mephi::Rect& rect, double scaleX, double scaleY, 
+             const Mephi::Vector2d& OriginOffset,
+             double startXSegVal = 0, TGetYValFoo getYValFoo = NULL,
+             const sf::Color& dotColor = sf::Color::Red)
         : Mephi::Window{rect}, scaleX_{scaleX}, scaleY_{scaleY}, 
           originOffset_{OriginOffset}, segDots_{}, dotColor_{dotColor}, 
-          maxModY_{0}, maxModX_(0)
+          maxModY_{0}, maxModX_{0}, xSegVal_{startXSegVal}, getYValFoo_{getYValFoo}
         {}
 
         Common::Error PushDot(const Mephi::Vector2d& segDot);
+        Common::Error PushDot(const double ySegVal);
 
-        virtual Common::Error Draw(sf::RenderWindow& window) override final;
+        virtual Common::Error Draw(sf::RenderWindow& window) const override final;
+        virtual Common::Error Update() override final;
 };
     
 }

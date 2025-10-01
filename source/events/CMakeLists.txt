@@ -1,5 +1,6 @@
-add_library(common STATIC
-    source/ErrorHandle.cpp
+add_library(events STATIC
+    source/EventCoord.cpp
+    source/EventMouseButton.cpp
 )
 
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
@@ -18,10 +19,17 @@ else()
     add_compile_options(-O2)
 endif()
 
-set_target_properties(common PROPERTIES FOLDER "source")
+set_target_properties(events PROPERTIES FOLDER "source")
 
-target_include_directories(common
+target_include_directories(events
     PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include> # Для сборки проекта
         $<INSTALL_INTERFACE:include>                           # Для будущей установки
+)
+
+target_link_libraries(events
+    PRIVATE 
+        sfml-graphics
+        common
+        vector
 )

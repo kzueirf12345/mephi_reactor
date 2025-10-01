@@ -34,11 +34,11 @@ class MoleculeManager{
 
     private:
 
-        using FHandleInteraction = Common::Error(MoleculeManager::*)(size_t, size_t);
+        using FHandleInteraction = Common::Error(MoleculeManager::*)(size_t, size_t, std::vector<bool>& toRemove);
 
-        Common::Error HandleInteractionCC_(size_t moleculeInd1, size_t moleculeInd2);
-        Common::Error HandleInteractionSS_(size_t moleculeInd1, size_t moleculeInd2);
-        Common::Error HandleInteractionCS_(size_t moleculeInd1, size_t moleculeInd2);
+        Common::Error HandleInteractionCC_(size_t moleculeInd1, size_t moleculeInd2, std::vector<bool>& toRemove);
+        Common::Error HandleInteractionSS_(size_t moleculeInd1, size_t moleculeInd2, std::vector<bool>& toRemove);
+        Common::Error HandleInteractionCS_(size_t moleculeInd1, size_t moleculeInd2, std::vector<bool>& toRemove);
 
         const static FHandleInteraction 
             handleIntercationFuncsTable_
@@ -53,12 +53,14 @@ class MoleculeManager{
         Common::Error Draw(sf::RenderWindow& window) const;
         Common::Error HandleInteraction_();
 
-        Common::Error GenerateMolecules(const size_t count, const Mephi::Rect& rect);
+        Common::Error GenerateMolecules(const size_t count, const double maxSpeed, 
+                                        const Mephi::Rect& rect);
 
         [[nodiscard]]       size_t                                         GetCircleCnt() const noexcept {return circleCnt_;}
         [[nodiscard]]       size_t                                         GetSquareCnt() const noexcept {return squareCnt_;}
         [[nodiscard]] const std::vector<std::unique_ptr<Mephi::Molecule>>& GetMolecules() const noexcept {return molecules_;}
         [[nodiscard]]       double                                         TotalEnergy() const noexcept;
+        [[nodiscard]]       double                                         TotalMass()   const noexcept;
 } ;
 
 }

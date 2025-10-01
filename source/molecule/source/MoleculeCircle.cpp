@@ -11,7 +11,3 @@ Common::Error Mephi::MoleculeCircle::Draw(sf::RenderWindow& window) const {
     
     return Common::Error::SUCCESS;
 }
-Common::Error Mephi::MoleculeCircle::Update(){
-    coord_ += speed_;
-    return Common::Error::SUCCESS;
-}

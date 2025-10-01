@@ -5,7 +5,7 @@
 #include "molecule/MoleculeSquare.hpp"
 #include "vector/Vector.hpp"
 
-Common::Error Mephi::MoleculeSquare::IncreaseMass(int64_t addNum) noexcept {
+Common::Error Mephi::MoleculeSquare::IncreaseMass(double addNum) noexcept {
     mass_   += addNum;
     radius_ += addNum;
 
@@ -18,9 +18,5 @@ Common::Error Mephi::MoleculeSquare::Draw(sf::RenderWindow& window) const {
     square.setPosition(static_cast<sf::Vector2f>(coord_ - Mephi::Vector2d(radius_, radius_)));
     window.draw(square);
     
-    return Common::Error::SUCCESS;
-}
-Common::Error Mephi::MoleculeSquare::Update(){
-    coord_ += speed_;
     return Common::Error::SUCCESS;
 }

@@ -7,7 +7,9 @@
 #include <SFML/System/Vector2.hpp>
 
 Mephi::Vector2d Mephi::Plot::Seg2Pix(const Mephi::Vector2d& segDot) const {
-    return Mephi::Vector2d(Mephi::Vector2d(segDot.x * scaleX_, -segDot.y * scaleY_) + originOffset_ + rect_.GetLeftCorner());
+    return Mephi::Vector2d(segDot.x * scaleX_, -segDot.y * scaleY_) 
+         + originOffset_ 
+         + AbsoluteCoord();
 }
 
 Mephi::Vector2d Mephi::Plot::Pix2Seg(const Mephi::Vector2d& pixDot) const {
@@ -28,23 +30,39 @@ Common::Error Mephi::Plot::PushDot(const Mephi::Vector2d& segDot) {
     return Common::Error::SUCCESS;
 }
 
+Common::Error Mephi::Plot::PushDot(const double ySegVal) {
+    segDots_.push_back({xSegVal_, ySegVal});
+    ++xSegVal_;
+
+    maxModY_ = std::max(maxModY_, std::abs(ySegVal));
+    maxModX_ = std::max(maxModX_, std::abs(xSegVal_));
+
+    scaleY_ = rect_.Height() / (2.5 * maxModY_);
+    scaleX_ = rect_.Width() / (2.5 * maxModX_);
+
+    return Common::Error::SUCCESS;
+}
+
 sf::VertexArray Mephi::Plot::CreateAxis(const bool IsX) const {
     sf::VertexArray Axis(sf::PrimitiveType::Lines, 2);
 
     Axis[0].color = Axis[1].color = rect_.GetOutlineColor();
 
+    const Mephi::Vector2d absLeftCorner  = AbsoluteCoord();
+    const Mephi::Vector2d absRightCorner = absLeftCorner + Mephi::Vector2d(rect_.Width(), rect_.Height());
+
     if (IsX) {
-        Axis[0].position = sf::Vector2f(rect_.GetLeftCorner().x,  rect_.GetLeftCorner().y + originOffset_.y);
-        Axis[1].position = sf::Vector2f(rect_.GetRightCorner().x, rect_.GetLeftCorner().y + originOffset_.y);
+        Axis[0].position = sf::Vector2f(absLeftCorner.x,  absLeftCorner.y + originOffset_.y);
+        Axis[1].position = sf::Vector2f(absRightCorner.x, absLeftCorner.y + originOffset_.y);
     } else {
-        Axis[0].position = sf::Vector2f(rect_.GetLeftCorner().x + originOffset_.x, rect_.GetLeftCorner().y);
-        Axis[1].position = sf::Vector2f(rect_.GetLeftCorner().x + originOffset_.x, rect_.GetRightCorner().y);
+        Axis[0].position = sf::Vector2f(absLeftCorner.x + originOffset_.x, absLeftCorner.y);
+        Axis[1].position = sf::Vector2f(absLeftCorner.x + originOffset_.x, absRightCorner.y);
     }
 
     return Axis;
 }
 
-Common::Error Mephi::Plot::Draw(sf::RenderWindow& window) {
+Common::Error Mephi::Plot::Draw(sf::RenderWindow& window) const {
 
     ERROR_HANDLE(Mephi::Window::Draw(window));
     
@@ -85,37 +103,48 @@ sf::VertexArray Mephi::Plot::CreateGrid(const bool IsX) const
         GRID_LINE_OPACITY
     );
 
+    const Mephi::Vector2d absLeftCorner  = AbsoluteCoord();
+    const Mephi::Vector2d absRightCorner = absLeftCorner + Mephi::Vector2d(rect_.Width(), rect_.Height());
+
     if (IsX) {
-        const size_t GridLinesCnt = (rect_.GetRightCorner().y - rect_.GetLeftCorner().y) / scaleY_ + 1;
+        const size_t GridLinesCnt = rect_.Height() / scaleY_ + 1;
 
         sf::VertexArray Grid(sf::PrimitiveType::Lines, 2 * GridLinesCnt);
 
         for (size_t LineNum = 0; LineNum < GridLinesCnt; ++LineNum) {
             Grid[2 * LineNum].color = Grid[2 * LineNum + 1].color = GridLineColor;
 
-            Grid[2 * LineNum]    .position.x = rect_.GetLeftCorner().x;
-            Grid[2 * LineNum + 1].position.x = rect_.GetRightCorner().x;
+            Grid[2 * LineNum]    .position.x = absLeftCorner.x;
+            Grid[2 * LineNum + 1].position.x = absRightCorner.x;
 
-            Grid[2 * LineNum]    .position.y = rect_.GetLeftCorner().y + scaleY_ * LineNum;
+            Grid[2 * LineNum]    .position.y = absLeftCorner.y + scaleY_ * LineNum;
             Grid[2 * LineNum + 1].position.y = Grid[2 * LineNum].position.y;
         }
 
         return Grid;
     } else {
-        const size_t GridLinesCnt = (rect_.GetRightCorner().x - rect_.GetLeftCorner().x) / scaleX_ + 1;
+        const size_t GridLinesCnt = rect_.Width() / scaleX_ + 1;
 
         sf::VertexArray Grid(sf::PrimitiveType::Lines, 2 * GridLinesCnt);
 
         for (size_t LineNum = 0; LineNum < GridLinesCnt; ++LineNum) {
             Grid[2 * LineNum].color = Grid[2 * LineNum + 1].color = GridLineColor;
 
-            Grid[2 * LineNum]    .position.y = rect_.GetLeftCorner().y;
-            Grid[2 * LineNum + 1].position.y = rect_.GetRightCorner().y;
+            Grid[2 * LineNum]    .position.y = absLeftCorner.y;
+            Grid[2 * LineNum + 1].position.y = absRightCorner.y;
 
-            Grid[2 * LineNum].    position.x = rect_.GetLeftCorner().x + scaleX_ * LineNum;
+            Grid[2 * LineNum].    position.x = absLeftCorner.x + scaleX_ * LineNum;
             Grid[2 * LineNum + 1].position.x = Grid[2 * LineNum].position.x;
         }
 
         return Grid;
     }
+}
+
+Common::Error Mephi::Plot::Update() {
+    ERROR_HANDLE(Mephi::Window::Update());
+
+    ERROR_HANDLE(PushDot(getYValFoo_()));
+    
+    return Common::Error::SUCCESS;
 }
