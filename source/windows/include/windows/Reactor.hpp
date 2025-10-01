@@ -34,14 +34,14 @@ class Reactor: public Mephi::Window {
     
     Common::Error HandleWallCollisions(Mephi::Molecule& molecule, const size_t maxChangeCycle = 2);
     public:
-        explicit Reactor(Mephi::Rect rect, Mephi::Window* const parent = nullptr,
-                         const double accom = 0.1,
+        explicit Reactor(Mephi::Rect rect, const double accom = 0.1,
                          Mephi::MoleculeManager moleculeManager = std::move(Mephi::MoleculeManager()))
-            : Mephi::Window{std::move(rect), parent}, moleculeManager_{std::move(moleculeManager)}, wallEnergy_{0}, 
+            : Mephi::Window{std::move(rect)}, moleculeManager_{std::move(moleculeManager)}, wallEnergy_{0}, 
               accom_{accom}
         {}
 
         [[nodiscard]] const Mephi::Sides& GetTemp()  const noexcept {return wallEnergy_;}
+        [[nodiscard]]       Mephi::Sides& GetTemp()        noexcept {return wallEnergy_;}
         [[nodiscard]]       double        GetAccom() const noexcept {return accom_;}
         [[nodiscard]] const Mephi::MoleculeManager& GetMoleculeManager() const noexcept {return moleculeManager_;}
         

@@ -32,13 +32,14 @@ class Window {
         bool isInderectHovered_;
         
         Mephi::Vector2d prevMousePos_;
-        //TODO set parent function
 
+        Common::Error SetParent_(Mephi::Window* const parent);
+        Common::Error UpdateParents_(Mephi::Window* const root);
+
+        public:
         [[nodiscard]] Mephi::Vector2d AbsoluteCoord() const noexcept;
-    public:
-        explicit Window(Mephi::Rect rect, Mephi::Window* const parent = nullptr, 
-                        bool isDraggable = true)
-            : rect_{std::move(rect)}, parent_(parent), children_{}, 
+        explicit Window(Mephi::Rect rect, bool isDraggable = true)
+            : rect_{std::move(rect)}, parent_(nullptr), children_{}, 
               isHovered_{false}, isInderectHovered_{false}, isDraggable_{isDraggable}, 
               prevMousePos_{{0, 0}}, isSelected_{false}
         {}

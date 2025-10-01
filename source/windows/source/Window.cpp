@@ -37,8 +37,25 @@ Common::Error Mephi::Window::Update() {
     return Common::Error::SUCCESS;
 }
 
+Common::Error Mephi::Window::SetParent_(Mephi::Window* const parent) {
+    parent_ = parent;
+    return Common::Error::SUCCESS;
+}
+
+Common::Error Mephi::Window::UpdateParents_(Mephi::Window* const root) {
+    for (auto& child : root->children_) {
+        ERROR_HANDLE(child->SetParent_(root));
+        ERROR_HANDLE(UpdateParents_(child.get()));
+    }
+
+    return Common::Error::SUCCESS;
+}
+
 Common::Error Mephi::Window::AddChild(std::unique_ptr<Mephi::Window> child) {
+    ERROR_HANDLE(child->SetParent_(this));
     children_.push_back(std::move(child));
+
+    ERROR_HANDLE(UpdateParents_(children_.back().get()));
 
     return Common::Error::SUCCESS;
 }
@@ -80,6 +97,10 @@ bool Mephi::Window::OnMousePress(Mephi::EventMouseButton event) {
     for (auto child = children_.rbegin(); child != children_.rend(); ++child) {
         if ((*child)->OnMousePress(childEvent)) {
             isSelected_ = false;
+            auto forward_it = child.base();
+
+            // std::rotate(forward_it - 1, forward_it, children_.end());
+            
             return true;
         }
     }

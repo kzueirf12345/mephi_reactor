@@ -145,6 +145,6 @@ Common::Error Mephi::Plot::Update() {
     ERROR_HANDLE(Mephi::Window::Update());
 
     ERROR_HANDLE(PushDot(getYValFoo_()));
-
+    
     return Common::Error::SUCCESS;
 }

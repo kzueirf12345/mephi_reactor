@@ -25,6 +25,7 @@
 #include "windows/Reactor.hpp"
 #include "windows/Window.hpp"
 #include "windows/Plot.hpp"
+#include "windows/buttons/AdjustButton.hpp"
 
 constexpr unsigned int WINDOW_WIDTH    = 1720;
 constexpr unsigned int WINDOW_HEIGHT   = 900;
@@ -58,23 +59,21 @@ int main()
             Mephi::Vector2d(WINDOW_WIDTH, WINDOW_HEIGHT),
             WINDOW_BG_COLOR
         ),
-        nullptr,
         false
     );
 
     auto reactor = std::make_unique<Mephi::Reactor> (
         Mephi::Rect(
             Mephi::Vector2d(100, 100),
-            Mephi::Vector2d(1200, 350),
+            Mephi::Vector2d(1000, 350),
             sf::Color::Cyan, 
             sf::Color::Black, 
             5
         ),
-        &globWindow,
         0.1
     );
 
-    reactor->GenerateMolecules(500, 100);
+    reactor->GenerateMolecules(500, 10);
     
     globWindow.AddChild(std::move(reactor));
     
@@ -86,7 +85,6 @@ int main()
         1, 
         1,
         Mephi::Vector2d(150, 150),
-        &globWindow,
         0,
         [&globWindow](){ 
             return dynamic_cast<Mephi::Reactor*>(&globWindow[REACTOR])->GetMoleculeManager().GetCircleCnt();
@@ -103,7 +101,6 @@ int main()
         1, 
         1,
         Mephi::Vector2d(150, 150),
-        &globWindow,
         0,
         [&globWindow](){ 
             return dynamic_cast<Mephi::Reactor*>(&globWindow[REACTOR])->GetMoleculeManager().GetSquareCnt();
@@ -120,7 +117,6 @@ int main()
         1, 
         1,
         Mephi::Vector2d(150, 150),
-        &globWindow,
         0,
         [&globWindow](){ 
             return dynamic_cast<Mephi::Reactor*>(&globWindow[REACTOR])->GetTemp().Average();
@@ -128,6 +124,68 @@ int main()
     );
     
     globWindow.AddChild(std::move(tempPlot));
+
+    auto buttonPanel = std::make_unique<Mephi::Window> (
+        Mephi::Rect(
+            Mephi::Vector2d(1200, 100),
+            Mephi::Vector2d(450, 700)
+        ),
+        true
+    );
+
+    auto tempLeftButton = std::make_unique<Mephi::AdjustButton<double>> (
+        Mephi::Rect(
+            Mephi::Vector2d(25, 100),
+            Mephi::Vector2d(100, 50),
+            sf::Color(220, 20, 60)
+        ),
+        &dynamic_cast<Mephi::Reactor*>(&globWindow[REACTOR])->GetTemp().left,
+        100,
+        "Left"
+    );
+
+    buttonPanel->AddChild(std::move(tempLeftButton));
+
+    auto tempRightButton = std::make_unique<Mephi::AdjustButton<double>> (
+        Mephi::Rect(
+            Mephi::Vector2d(325, 100),
+            Mephi::Vector2d(100, 50),
+            sf::Color(220, 20, 60)
+        ),
+        &dynamic_cast<Mephi::Reactor*>(&globWindow[REACTOR])->GetTemp().right,
+        100,
+        "Right"
+    ); 
+
+    buttonPanel->AddChild(std::move(tempRightButton));
+
+    auto tempTopButton = std::make_unique<Mephi::AdjustButton<double>> (
+        Mephi::Rect(
+            Mephi::Vector2d(175, 25),
+            Mephi::Vector2d(100, 50),
+            sf::Color(220, 20, 60)
+        ),
+        &dynamic_cast<Mephi::Reactor*>(&globWindow[REACTOR])->GetTemp().top,
+        100,
+        "Top"
+    );
+
+    buttonPanel->AddChild(std::move(tempTopButton));
+
+    auto tempBottomButton = std::make_unique<Mephi::AdjustButton<double>> (
+        Mephi::Rect(
+            Mephi::Vector2d(175, 175), 
+            Mephi::Vector2d(100, 50),
+            sf::Color(220, 20, 60)
+        ),
+        &dynamic_cast<Mephi::Reactor*>(&globWindow[REACTOR])->GetTemp().bottom,
+        100,
+        "Bottom"
+    ); 
+
+    buttonPanel->AddChild(std::move(tempBottomButton));
+    
+    globWindow.AddChild(std::move(buttonPanel));
 
     //=======================CYCLE==========================
 
