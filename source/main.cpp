@@ -26,6 +26,7 @@
 #include "windows/Window.hpp"
 #include "windows/Plot.hpp"
 #include "windows/buttons/AdjustButton.hpp"
+#include "windows/Clock.hpp"
 
 constexpr unsigned int WINDOW_WIDTH    = 1720;
 constexpr unsigned int WINDOW_HEIGHT   = 900;
@@ -187,6 +188,16 @@ int main()
     
     globWindow.AddChild(std::move(buttonPanel));
 
+    auto Clock = std::make_unique<Mephi::Clock>(
+        Mephi::Rect(
+            Mephi::Vector2d(175, 175), 
+            Mephi::Vector2d(200, 200),
+            sf::Color(220, 20, 60)
+        )
+    );
+
+    globWindow.AddChild(std::move(Clock));
+
     //=======================CYCLE==========================
 
     while (window.isOpen())
@@ -236,9 +247,9 @@ int main()
         ERROR_HANDLE(globWindow.Draw(window));
         ERROR_HANDLE(globWindow.Update());
 
-        std::cerr << dynamic_cast<Mephi::Reactor*>(&globWindow[REACTOR])->GetTemp().Average() << std::endl;
-        std::cerr << "is Hovered " << globWindow[1].IsHovered() << std::endl;
-        std::cerr << "is Selected " << globWindow[1].isSelected() << std::endl;
+        // std::cerr << dynamic_cast<Mephi::Reactor*>(&globWindow[REACTOR])->GetTemp().Average() << std::endl;
+        // std::cerr << "is Hovered " << globWindow[1].IsHovered() << std::endl;
+        // std::cerr << "is Selected " << globWindow[1].isSelected() << std::endl;
 
         window.display();
     }
