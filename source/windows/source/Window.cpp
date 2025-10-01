@@ -97,8 +97,8 @@ bool Mephi::Window::OnMousePress(Mephi::EventMouseButton event) {
     for (auto child = children_.rbegin(); child != children_.rend(); ++child) {
         if ((*child)->OnMousePress(childEvent)) {
             isSelected_ = false;
-            // auto forward_it = child.base();
-            // std::rotate(forward_it - 1, forward_it, children_.end());
+            auto it = child.base();
+            std::rotate(it - 1, it, children_.end());
             
             return true;
         }

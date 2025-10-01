@@ -8,7 +8,6 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/Graphics/Color.hpp>
 #include <SFML/Graphics/Shape.hpp>
-#include <functional>
 
 #include "common/ErrorHandle.hpp"
 #include "windows/buttons/Button.hpp"

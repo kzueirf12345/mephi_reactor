@@ -3,6 +3,7 @@ add_library(windows STATIC
     source/Reactor.cpp
     source/Plot.cpp
     source/buttons/Button.cpp
+    source/Clock.cpp
 )
 
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")

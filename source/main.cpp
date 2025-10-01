@@ -75,6 +75,8 @@ int main()
     );
 
     reactor->GenerateMolecules(500, 10);
+
+    auto* reactorPtr = reactor.get();
     
     globWindow.AddChild(std::move(reactor));
     
@@ -87,8 +89,8 @@ int main()
         1,
         Mephi::Vector2d(150, 150),
         0,
-        [&globWindow](){ 
-            return dynamic_cast<Mephi::Reactor*>(&globWindow[REACTOR])->GetMoleculeManager().GetCircleCnt();
+        [&reactorPtr](){ 
+            return reactorPtr->GetMoleculeManager().GetCircleCnt();
         }
     );
     
@@ -103,8 +105,8 @@ int main()
         1,
         Mephi::Vector2d(150, 150),
         0,
-        [&globWindow](){ 
-            return dynamic_cast<Mephi::Reactor*>(&globWindow[REACTOR])->GetMoleculeManager().GetSquareCnt();
+        [&reactorPtr](){ 
+            return reactorPtr->GetMoleculeManager().GetSquareCnt();
         }
     );
     
@@ -119,8 +121,8 @@ int main()
         1,
         Mephi::Vector2d(150, 150),
         0,
-        [&globWindow](){ 
-            return dynamic_cast<Mephi::Reactor*>(&globWindow[REACTOR])->GetTemp().Average();
+        [&reactorPtr](){ 
+            return reactorPtr->GetTemp().Average();
         }
     );
     
@@ -140,7 +142,7 @@ int main()
             Mephi::Vector2d(100, 50),
             sf::Color(220, 20, 60)
         ),
-        &dynamic_cast<Mephi::Reactor*>(&globWindow[REACTOR])->GetTemp().left,
+        &reactorPtr->GetTemp().left,
         100,
         "Left"
     );
@@ -153,7 +155,7 @@ int main()
             Mephi::Vector2d(100, 50),
             sf::Color(220, 20, 60)
         ),
-        &dynamic_cast<Mephi::Reactor*>(&globWindow[REACTOR])->GetTemp().right,
+        &reactorPtr->GetTemp().right,
         100,
         "Right"
     ); 
@@ -166,7 +168,7 @@ int main()
             Mephi::Vector2d(100, 50),
             sf::Color(220, 20, 60)
         ),
-        &dynamic_cast<Mephi::Reactor*>(&globWindow[REACTOR])->GetTemp().top,
+        &reactorPtr->GetTemp().top,
         100,
         "Top"
     );
@@ -179,7 +181,7 @@ int main()
             Mephi::Vector2d(100, 50),
             sf::Color(220, 20, 60)
         ),
-        &dynamic_cast<Mephi::Reactor*>(&globWindow[REACTOR])->GetTemp().bottom,
+        &reactorPtr->GetTemp().bottom,
         100,
         "Bottom"
     ); 
