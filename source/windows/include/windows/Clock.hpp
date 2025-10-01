@@ -9,7 +9,6 @@ namespace Mephi {
 class Clock : public Mephi::Window {
     private:
         sf::Text text_;
-
     public:
         Clock(Mephi::Rect rect, bool isDraggable = true)
             : Mephi::Window{rect, isDraggable}, text_{}

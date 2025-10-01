@@ -40,6 +40,7 @@ class Vector2: public ParentT<T> {
         [[nodiscard]] T Len2() const;
         [[nodiscard]] T Len()  const;
         [[nodiscard]] Vector2<T, ParentT> Normal() const;
+        [[nodiscard]] Vector2<T, ParentT> Mirror(Mephi::Axis axis) const;
 
         Vector2<T, ParentT> operator-() const {
             return Vector2<T, ParentT>(-this->x, -this->y);
@@ -141,8 +142,19 @@ Mephi::Vector2<T, ParentT> Mephi::Vector2<T, ParentT>::Normal() const {
     return Vector2<T, ParentT>(this->y, -this->x);
 }
 
+template <typename T, template<typename> typename ParentT>
+Vector2<T, ParentT> Mephi::Vector2<T, ParentT>::Mirror(Mephi::Axis axis) const {
+    return {
+        axis == Mephi::Axis::X ? -this->x : this->x,
+        axis == Mephi::Axis::Y ? -this->y : this->y
+    };
+}
+
 Common::Error TransformVector(Mephi::Vector2f& Vector, const Mephi::Transform Transform, 
                               const float AngleRadians = 0.01);
+
+Common::Error DrawVector(sf::RenderWindow& window, Mephi::Vector2d startDot, Mephi::Vector2d endDot,
+                         sf::Color color);
 
 //--------------------------------------------------------------------------------------------------
 
@@ -158,6 +170,7 @@ class Vector3: public ParentT<T> {
         
         [[nodiscard]] T Len2() const;
         [[nodiscard]] T Len()  const;
+        [[nodiscard]] Vector3<T, ParentT> Mirror(Mephi::Axis axis) const;
 
         Vector3<T, ParentT> operator-() const {
             return Vector3<T, ParentT>(-this->x, -this->y, -this->z);
@@ -249,6 +262,15 @@ T Mephi::Vector3<T, ParentT>::Len2() const {
 template <typename T, template<typename> typename ParentT>
 T Mephi::Vector3<T, ParentT>::Len() const {
     return std::sqrt(this->Len2());
+}
+
+template <typename T, template<typename> typename ParentT>
+Vector3<T, ParentT> Mephi::Vector3<T, ParentT>::Mirror(Mephi::Axis axis) const {
+    return {
+        axis == Mephi::Axis::X ? -this->x : this->x,
+        axis == Mephi::Axis::Y ? -this->y : this->y,
+        axis == Mephi::Axis::Z ? -this->z : this->z
+    };
 }
 
 Common::Error TransformVector(Mephi::Vector3f& Vector, const Mephi::Transform Transform, 

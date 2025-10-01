@@ -28,6 +28,8 @@
 #include "windows/buttons/AdjustButton.hpp"
 #include "windows/Clock.hpp"
 
+//TODO adapter
+
 constexpr unsigned int WINDOW_WIDTH    = 1720;
 constexpr unsigned int WINDOW_HEIGHT   = 900;
 constexpr unsigned int FRAMERATE_LIMIT = 15;
