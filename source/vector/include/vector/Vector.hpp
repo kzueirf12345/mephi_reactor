@@ -41,6 +41,8 @@ class Vector2: public ParentT<T> {
         [[nodiscard]] T Len()  const;
         [[nodiscard]] Vector2<T, ParentT> Normal() const;
         [[nodiscard]] Vector2<T, ParentT> Mirror(Mephi::Axis axis) const;
+        [[nodiscard]] Vector2<T, ParentT> Clump(const Mephi::Vector2<T, ParentT>& minVec, 
+                                                const Mephi::Vector2<T, ParentT>& maxVec) const;
 
         Vector2<T, ParentT> operator-() const {
             return Vector2<T, ParentT>(-this->x, -this->y);
@@ -150,6 +152,15 @@ Vector2<T, ParentT> Mephi::Vector2<T, ParentT>::Mirror(Mephi::Axis axis) const {
     };
 }
 
+template <typename T, template<typename> typename ParentT>
+Vector2<T, ParentT> Mephi::Vector2<T, ParentT>::Clump(const Mephi::Vector2<T, ParentT>& minVec, 
+                                                      const Mephi::Vector2<T, ParentT>& maxVec) const {
+    return {
+        std::max(std::min(this->x, maxVec.x), minVec.x),
+        std::max(std::min(this->y, maxVec.y), minVec.y)
+    };
+}
+
 Common::Error TransformVector(Mephi::Vector2f& Vector, const Mephi::Transform Transform, 
                               const float AngleRadians = 0.01);
 
@@ -171,6 +182,8 @@ class Vector3: public ParentT<T> {
         [[nodiscard]] T Len2() const;
         [[nodiscard]] T Len()  const;
         [[nodiscard]] Vector3<T, ParentT> Mirror(Mephi::Axis axis) const;
+        [[nodiscard]] Vector3<T, ParentT> Clump(const Mephi::Vector3<T, ParentT>& minVec, 
+                                                const Mephi::Vector3<T, ParentT>& maxVec) const;
 
         Vector3<T, ParentT> operator-() const {
             return Vector3<T, ParentT>(-this->x, -this->y, -this->z);
@@ -270,6 +283,16 @@ Vector3<T, ParentT> Mephi::Vector3<T, ParentT>::Mirror(Mephi::Axis axis) const {
         axis == Mephi::Axis::X ? -this->x : this->x,
         axis == Mephi::Axis::Y ? -this->y : this->y,
         axis == Mephi::Axis::Z ? -this->z : this->z
+    };
+}
+
+template <typename T, template<typename> typename ParentT>
+Vector3<T, ParentT> Mephi::Vector3<T, ParentT>::Clump(const Mephi::Vector3<T, ParentT>& minVec, 
+                                                      const Mephi::Vector3<T, ParentT>& maxVec) const {
+    return {
+        std::max(std::min(this->x, maxVec.x), minVec.x),
+        std::max(std::min(this->y, maxVec.y), minVec.y),
+        std::max(std::min(this->z, maxVec.z), minVec.z)
     };
 }
 

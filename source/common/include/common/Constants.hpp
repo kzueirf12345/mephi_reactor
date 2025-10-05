@@ -1,7 +1,16 @@
 #ifndef MEPHI_REACTOR_SOURCE_COMMON_INCLUDE_COMMON_CONSTANTS_HPP
 #define MEPHI_REACTOR_SOURCE_COMMON_INCLUDE_COMMON_CONSTANTS_HPP
 
+#include <SFML/Config.hpp>
+#include <SFML/Graphics/RenderWindow.hpp>
+#include <SFML/System/Clock.hpp>
+#include <SFML/Window/Event.hpp>
+#include <SFML/Window/Keyboard.hpp>
+#include <SFML/Graphics.hpp>
 #include <SFML/Graphics/Color.hpp>
+#include <SFML/System/Vector2.hpp>
+#include <SFML/Window/VideoMode.hpp>
+#include <SFML/Window/WindowStyle.hpp>
 
 namespace Common 
 {
@@ -36,9 +45,19 @@ namespace TokyoNightColors {
     static const sf::Color AccentPink(0xf7, 0x76, 0x8e);
     static const sf::Color TextPrimary(0xc0, 0xca, 0xf5);
     static const sf::Color TextSecondary(0xa9, 0xb1, 0xd6);
+
+    static const sf::Color ScrollbarBackground(0x24, 0x25, 0x38);
 }
 
 namespace TNC = TokyoNightColors;
+
+extern sf::Font GLOBAL_FONT;
+
+constexpr unsigned int WINDOW_WIDTH    = 1720;
+constexpr unsigned int WINDOW_HEIGHT   = 900;
+constexpr unsigned int FRAMERATE_LIMIT = 20;
+
+constexpr double MAX_MOLECULE_SPEED = 10;
 
 }
 

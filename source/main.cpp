@@ -30,28 +30,19 @@
 #include "windows/buttons/DeleteMoleculesButton.hpp"
 #include "windows/buttons/AdjustButton.hpp"
 #include "windows/Clock.hpp"
-
-constexpr unsigned int WINDOW_WIDTH    = 1720;
-constexpr unsigned int WINDOW_HEIGHT   = 900;
-constexpr unsigned int FRAMERATE_LIMIT = 20;
+#include "windows/ScrollBar.hpp"
 
 sf::Font Common::GLOBAL_FONT = {};
-
-enum GlobWindowIndexses {
-    REACTOR = 0
-};
 
 int main()
 {
     // =======================INITS=====================
 
-    constexpr double MAX_MOLECULE_SPEED = 10;
-
     sf::RenderWindow window(
-        sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT),
+        sf::VideoMode(Common::WINDOW_WIDTH, Common::WINDOW_HEIGHT),
         "Mephi reactor!!! (I eto glavni factor, i mi tam hranim edu)"
     );
-    window.setFramerateLimit(FRAMERATE_LIMIT);
+    window.setFramerateLimit(Common::FRAMERATE_LIMIT);
     
     if (!Common::GLOBAL_FONT.loadFromFile("./data/Font.ttf")) {
         std::cerr << "Can't load font" << std::endl;
@@ -61,7 +52,7 @@ int main()
     Mephi::Window globWindow(
         Mephi::Rect(
             Mephi::Vector2d(0, 0),
-            Mephi::Vector2d(WINDOW_WIDTH, WINDOW_HEIGHT)
+            Mephi::Vector2d(Common::WINDOW_WIDTH, Common::WINDOW_HEIGHT)
         ),
         false
     );
@@ -93,6 +84,20 @@ int main()
             return reactorPtr->GetMoleculeManager().GetCircleCnt();
         }
     );
+
+    auto* circlePlotPtr = circlePlot.get();
+
+    auto scrollXCirclePlot = std::make_unique<Mephi::ScrollBar>(
+        Mephi::Rect(
+            Mephi::Vector2d(0, 0),
+            Mephi::Vector2d(circlePlot->GetRect().Width(), 0.1 * circlePlot->GetRect().Height())
+        ),
+        [&circlePlotPtr](int percentageChange) { return circlePlotPtr->ChangeScaleX(percentageChange); }
+    );
+
+    auto* scrollXCirclePlotPtr = scrollXCirclePlot.get();
+
+    circlePlot->AddChild(std::move(scrollXCirclePlot));
     
     globWindow.AddChild(std::move(circlePlot));
 
@@ -192,7 +197,7 @@ int main()
         "Add mol",
         reactorPtr,
         10,
-        MAX_MOLECULE_SPEED
+        Common::MAX_MOLECULE_SPEED
     ); 
 
     buttonPanel->AddChild(std::move(AddMoleculesButton));
@@ -268,6 +273,9 @@ int main()
 
         ERROR_HANDLE(globWindow.Draw(window));
         ERROR_HANDLE(globWindow.Update());
+
+        std::cerr << "Plot " << circlePlotPtr->isSelected() << std::endl;
+        std::cerr << "Scroll " << scrollXCirclePlotPtr->isSelected() << std::endl;
 
         window.display();
     }

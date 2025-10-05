@@ -64,8 +64,6 @@ std::string ErrorToString(const enum Common::Error Error);
 //         }                                                                                           \
 //     } while(0)
 
-extern sf::Font GLOBAL_FONT;
-
 }
 
 #endif /*MEPHI_REACTOR_SOURCE_COMMON_INCLUDE_COMMON_ERROR_HANDLE_HPP*/

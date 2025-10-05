@@ -33,17 +33,18 @@ class Window {
         
         Mephi::Vector2d prevMousePos_;
 
-        Common::Error SetParent_(Mephi::Window* const parent);
         Common::Error UpdateParents_(Mephi::Window* const root);
 
-        public:
         [[nodiscard]] Mephi::Vector2d AbsoluteCoord() const noexcept;
+
+        public:
         explicit Window(Mephi::Rect rect, bool isDraggable = true)
             : rect_{std::move(rect)}, parent_(nullptr), children_{}, 
               isHovered_{false}, isInderectHovered_{false}, isDraggable_{isDraggable}, 
               prevMousePos_{{0, 0}}, isSelected_{false}
         {}
 
+        Common::Error SetParent(Mephi::Window* const parent);
         Common::Error AddChild(std::unique_ptr<Mephi::Window> child);
 
         virtual Common::Error Draw  (sf::RenderWindow& window) const;
@@ -61,10 +62,11 @@ class Window {
         [[nodiscard]] bool         IsHovered()  const noexcept { return         isHovered_; }
         [[nodiscard]] bool IsInderectHovered()  const noexcept { return isInderectHovered_; }
         [[nodiscard]] bool         isSelected() const noexcept { return         isSelected_; }
-        [[nodiscard]] const sf::Color& GetFillColor()    const noexcept {return rect_.GetFillColor();}
-        [[nodiscard]]       sf::Color& GetFillColor()          noexcept {return rect_.GetFillColor();}
-        [[nodiscard]] const sf::Color& GetOutlineColor() const noexcept {return rect_.GetOutlineColor();}
-        [[nodiscard]]       sf::Color& GetOutlineColor()       noexcept {return rect_.GetOutlineColor();}
+        [[nodiscard]] const sf::Color&   GetFillColor()    const noexcept {return rect_.GetFillColor();}
+        [[nodiscard]]       sf::Color&   GetFillColor()          noexcept {return rect_.GetFillColor();}
+        [[nodiscard]] const sf::Color&   GetOutlineColor() const noexcept {return rect_.GetOutlineColor();}
+        [[nodiscard]]       sf::Color&   GetOutlineColor()       noexcept {return rect_.GetOutlineColor();}
+        [[nodiscard]] const Mephi::Rect& GetRect()         const noexcept {return rect_;}
 
         virtual ~Window() = default;
 };

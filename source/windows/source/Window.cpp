@@ -37,14 +37,14 @@ Common::Error Mephi::Window::Update() {
     return Common::Error::SUCCESS;
 }
 
-Common::Error Mephi::Window::SetParent_(Mephi::Window* const parent) {
+Common::Error Mephi::Window::SetParent(Mephi::Window* const parent) {
     parent_ = parent;
     return Common::Error::SUCCESS;
 }
 
 Common::Error Mephi::Window::UpdateParents_(Mephi::Window* const root) {
     for (auto& child : root->children_) {
-        ERROR_HANDLE(child->SetParent_(root));
+        ERROR_HANDLE(child->SetParent(root));
         ERROR_HANDLE(UpdateParents_(child.get()));
     }
 
@@ -52,7 +52,7 @@ Common::Error Mephi::Window::UpdateParents_(Mephi::Window* const root) {
 }
 
 Common::Error Mephi::Window::AddChild(std::unique_ptr<Mephi::Window> child) {
-    ERROR_HANDLE(child->SetParent_(this));
+    ERROR_HANDLE(child->SetParent(this));
     children_.push_back(std::move(child));
 
     ERROR_HANDLE(UpdateParents_(children_.back().get()));
@@ -102,7 +102,7 @@ bool Mephi::Window::OnMousePress(Mephi::EventMouseButton event) {
             
             return true;
         }
-    }
+    } 
 
     if (isDraggable_ 
      && isInderectHovered_
@@ -118,6 +118,12 @@ bool Mephi::Window::OnMousePress(Mephi::EventMouseButton event) {
 bool Mephi::Window::OnMouseDrag(Mephi::EventCoord event) {
     if (isDraggable_ && isSelected_) {
         rect_.GetLeftCorner() += event.coord - prevMousePos_;
+        if (parent_) {
+            rect_.GetLeftCorner() = rect_.GetLeftCorner().Clump(
+                {0, 0}, 
+                parent_->GetRect().GetSize() - rect_.GetSize()
+            );
+        }
         prevMousePos_ = event.coord;
         return true;
     }

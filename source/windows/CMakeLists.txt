@@ -6,7 +6,8 @@ add_library(windows STATIC
     source/Clock.cpp
     source/buttons/AddMoleculesButton.cpp
     source/buttons/DeleteMoleculesButton.cpp
-)
+    source/ScrollBar.cpp
+    )
 
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     add_compile_options(
