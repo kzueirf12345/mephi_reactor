@@ -46,6 +46,7 @@ class Reactor: public Mephi::Window {
         [[nodiscard]] const Mephi::MoleculeManager& GetMoleculeManager() const noexcept {return moleculeManager_;}
         
         Common::Error GenerateMolecules(const size_t count, const double maxSpeed);
+        Common::Error DeleteMolecules  (const size_t count);
 
         virtual Common::Error Update() override final;
         virtual Common::Error Draw(sf::RenderWindow& window) const override final;

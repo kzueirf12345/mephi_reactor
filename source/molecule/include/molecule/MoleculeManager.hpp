@@ -55,12 +55,14 @@ class MoleculeManager{
 
         Common::Error GenerateMolecules(const size_t count, const double maxSpeed, 
                                         const Mephi::Rect& rect);
+        Common::Error DeleteMolecules  (const size_t count);
 
-        [[nodiscard]]       size_t                                         GetCircleCnt() const noexcept {return circleCnt_;}
-        [[nodiscard]]       size_t                                         GetSquareCnt() const noexcept {return squareCnt_;}
-        [[nodiscard]] const std::vector<std::unique_ptr<Mephi::Molecule>>& GetMolecules() const noexcept {return molecules_;}
-        [[nodiscard]]       double                                         TotalEnergy() const noexcept;
-        [[nodiscard]]       double                                         TotalMass()   const noexcept;
+        [[nodiscard]]       size_t                                         GetMoleculesCnt() const noexcept {return molecules_.size();}
+        [[nodiscard]]       size_t                                         GetCircleCnt()    const noexcept {return circleCnt_;}
+        [[nodiscard]]       size_t                                         GetSquareCnt()    const noexcept {return squareCnt_;}
+        [[nodiscard]] const std::vector<std::unique_ptr<Mephi::Molecule>>& GetMolecules()    const noexcept {return molecules_;}
+        [[nodiscard]]       double                                         TotalEnergy()     const noexcept;
+        [[nodiscard]]       double                                         TotalMass()       const noexcept;
 } ;
 
 }

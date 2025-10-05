@@ -13,6 +13,13 @@ Common::Error Mephi::Reactor::GenerateMolecules(const size_t count, const double
     return Common::Error::SUCCESS;
 }
 
+Common::Error Mephi::Reactor::DeleteMolecules(const size_t count) {
+
+    ERROR_HANDLE(moleculeManager_.DeleteMolecules(count));
+
+    return Common::Error::SUCCESS;
+}
+
 Common::Error Mephi::Reactor::Draw(sf::RenderWindow& window) const {
 
     ERROR_HANDLE(this->Mephi::Window::Draw(window));
@@ -108,13 +115,13 @@ Common::Error Mephi::Reactor::HandleWallCollisions(Mephi::Molecule& molecule, co
 Common::Error Mephi::Reactor::Update() {
     ERROR_HANDLE(Mephi::Window::Update());
 
+    ERROR_HANDLE(moleculeManager_.HandleInteraction_());
+
     for (const auto& molecule : moleculeManager_.GetMolecules()) {
         ERROR_HANDLE(molecule->Update());
         
         ERROR_HANDLE(HandleWallCollisions(*molecule.get()));
     }
-
-    ERROR_HANDLE(moleculeManager_.HandleInteraction_());
 
     return Common::Error::SUCCESS;
 }

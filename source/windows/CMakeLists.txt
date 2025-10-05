@@ -4,6 +4,8 @@ add_library(windows STATIC
     source/Plot.cpp
     source/buttons/Button.cpp
     source/Clock.cpp
+    source/buttons/AddMoleculesButton.cpp
+    source/buttons/DeleteMoleculesButton.cpp
 )
 
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")

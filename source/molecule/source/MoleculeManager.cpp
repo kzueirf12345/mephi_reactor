@@ -205,6 +205,23 @@ Common::Error Mephi::MoleculeManager::GenerateMolecules(const size_t count, cons
     return Common::Error::SUCCESS;
 }
 
+Common::Error Mephi::MoleculeManager::DeleteMolecules(const size_t count) {
+    if (count <= molecules_.size())
+    {
+        size_t removedSquareCnt = 0;
+        const auto it = molecules_.rbegin();
+        for (size_t i = 0; i < count; ++i) {
+            removedSquareCnt += (dynamic_cast<Mephi::MoleculeSquare*>((*(molecules_.rbegin() + i)).get()) != NULL);
+        }
+        circleCnt_ -= count - removedSquareCnt;
+        squareCnt_ -= removedSquareCnt;
+
+        molecules_.resize(molecules_.size() - count);
+    }
+
+    return Common::Error::SUCCESS;
+}
+
 double Mephi::MoleculeManager::TotalEnergy() const noexcept{
     double energy = 0;
     for (const auto& molecule : molecules_) {

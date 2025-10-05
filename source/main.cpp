@@ -25,6 +25,8 @@
 #include "windows/Reactor.hpp"
 #include "windows/Window.hpp"
 #include "windows/Plot.hpp"
+#include "windows/buttons/AddMoleculesButton.hpp"
+#include "windows/buttons/DeleteMoleculesButton.hpp"
 #include "windows/buttons/AdjustButton.hpp"
 #include "windows/Clock.hpp"
 
@@ -32,7 +34,7 @@
 
 constexpr unsigned int WINDOW_WIDTH    = 1720;
 constexpr unsigned int WINDOW_HEIGHT   = 900;
-constexpr unsigned int FRAMERATE_LIMIT = 15;
+constexpr unsigned int FRAMERATE_LIMIT = 20;
 
 sf::Font Common::GLOBAL_FONT = {};
 
@@ -43,6 +45,8 @@ enum GlobWindowIndexses {
 int main()
 {
     // =======================INITS=====================
+
+    constexpr double MAX_MOLECULE_SPEED = 10;
 
     sf::RenderWindow window(
         sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT),
@@ -76,7 +80,7 @@ int main()
         0.1
     );
 
-    reactor->GenerateMolecules(500, 10);
+    reactor->GenerateMolecules(500, MAX_MOLECULE_SPEED);
 
     auto* reactorPtr = reactor.get();
     
@@ -189,6 +193,33 @@ int main()
     ); 
 
     buttonPanel->AddChild(std::move(tempBottomButton));
+
+    auto AddMoleculesButton = std::make_unique<Mephi::AddMoleculesButton> (
+        Mephi::Rect(
+            Mephi::Vector2d(25, 250), 
+            Mephi::Vector2d(150, 100),
+            sf::Color(220, 20, 60)
+        ),
+        "Add mol",
+        reactorPtr,
+        10,
+        MAX_MOLECULE_SPEED
+    ); 
+
+    buttonPanel->AddChild(std::move(AddMoleculesButton));
+
+    auto DeleteMoleculesButton = std::make_unique<Mephi::DeleteMoleculesButton> (
+        Mephi::Rect(
+            Mephi::Vector2d(200, 250), 
+            Mephi::Vector2d(150, 100),
+            sf::Color(220, 20, 60)
+        ),
+        "Delete mol",
+        reactorPtr,
+        10
+    ); 
+
+    buttonPanel->AddChild(std::move(DeleteMoleculesButton));
     
     globWindow.AddChild(std::move(buttonPanel));
 
@@ -250,10 +281,6 @@ int main()
 
         ERROR_HANDLE(globWindow.Draw(window));
         ERROR_HANDLE(globWindow.Update());
-
-        // std::cerr << dynamic_cast<Mephi::Reactor*>(&globWindow[REACTOR])->GetTemp().Average() << std::endl;
-        // std::cerr << "is Hovered " << globWindow[1].IsHovered() << std::endl;
-        // std::cerr << "is Selected " << globWindow[1].isSelected() << std::endl;
 
         window.display();
     }
