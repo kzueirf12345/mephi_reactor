@@ -20,8 +20,8 @@ class MoleculeSquare: public Mephi::Molecule {
     private:
     public:
         MoleculeSquare(const Mephi::Vector2d& startCoord, const Mephi::Vector2d& startSpeed, 
-                       double startMass, const sf::Color& color)
-            : Mephi::Molecule{startCoord, startSpeed, startMass, color}
+                       double startMass)
+            : Mephi::Molecule{startCoord, startSpeed, startMass, Common::TNC::MoleculeSquare}
         {
             radius_ += START_RADIUS;
         }

@@ -12,6 +12,8 @@
 #include <SFML/Graphics/Color.hpp>
 #include <SFML/Graphics/Shape.hpp>
 
+#include "common/Constants.hpp"
+#include "figures/Rect.hpp"
 #include "windows/Window.hpp"
 
 namespace Mephi
@@ -31,15 +33,14 @@ class Button: public Mephi::Window {
     public:
         Button(const Mephi::Rect& rect, 
                const std::string& textString,
-               bool isDraggable = false,
-               const sf::Color& pressedColor = sf::Color(139, 0, 0)) 
-            : Mephi::Window{rect, isDraggable}, defaultColor_(rect.GetFillColor()), pressedColor_{pressedColor}, 
-              text_{}, isPressed_{false}
+               bool isDraggable = false) 
+            : Mephi::Window{rect, isDraggable}, defaultColor_(Common::TNC::ButtonIdle), 
+              pressedColor_{Common::TNC::ButtonPressed}, text_{}, isPressed_{false}
         {
             text_.setFont(Common::GLOBAL_FONT);
             text_.setString(textString);
             text_.setCharacterSize(14);
-            text_.setFillColor(sf::Color::Black);
+            text_.setFillColor(Common::TNC::TextPrimary);
             text_.setStyle(sf::Text::Bold);
 
             sf::FloatRect textRect = text_.getLocalBounds();

@@ -16,6 +16,7 @@
 #include <iostream>
 #include <memory>
 
+#include "common/Constants.hpp"
 #include "common/ErrorHandle.hpp"
 #include "events/EventCoord.hpp"
 #include "events/EventMouseButton.hpp"
@@ -51,7 +52,6 @@ int main()
         "Mephi reactor!!! (I eto glavni factor, i mi tam hranim edu)"
     );
     window.setFramerateLimit(FRAMERATE_LIMIT);
-    const sf::Color WINDOW_BG_COLOR(20, 20, 20);
     
     if (!Common::GLOBAL_FONT.loadFromFile("./data/Font.ttf")) {
         std::cerr << "Can't load font" << std::endl;
@@ -61,19 +61,17 @@ int main()
     Mephi::Window globWindow(
         Mephi::Rect(
             Mephi::Vector2d(0, 0),
-            Mephi::Vector2d(WINDOW_WIDTH, WINDOW_HEIGHT),
-            WINDOW_BG_COLOR
+            Mephi::Vector2d(WINDOW_WIDTH, WINDOW_HEIGHT)
         ),
         false
     );
 
+    globWindow.GetFillColor() = Common::TNC::ProgramBackground;
+
     auto reactor = std::make_unique<Mephi::Reactor> (
         Mephi::Rect(
             Mephi::Vector2d(100, 100),
-            Mephi::Vector2d(1000, 350),
-            sf::Color::Cyan, 
-            sf::Color::Black, 
-            5
+            Mephi::Vector2d(1000, 350)
         ),
         0.1
     );
@@ -141,8 +139,7 @@ int main()
     auto tempLeftButton = std::make_unique<Mephi::AdjustButton<double>> (
         Mephi::Rect(
             Mephi::Vector2d(25, 100),
-            Mephi::Vector2d(100, 50),
-            sf::Color(220, 20, 60)
+            Mephi::Vector2d(100, 50)
         ),
         &reactorPtr->GetTemp().left,
         100,
@@ -154,8 +151,7 @@ int main()
     auto tempRightButton = std::make_unique<Mephi::AdjustButton<double>> (
         Mephi::Rect(
             Mephi::Vector2d(325, 100),
-            Mephi::Vector2d(100, 50),
-            sf::Color(220, 20, 60)
+            Mephi::Vector2d(100, 50)
         ),
         &reactorPtr->GetTemp().right,
         100,
@@ -167,8 +163,7 @@ int main()
     auto tempTopButton = std::make_unique<Mephi::AdjustButton<double>> (
         Mephi::Rect(
             Mephi::Vector2d(175, 25),
-            Mephi::Vector2d(100, 50),
-            sf::Color(220, 20, 60)
+            Mephi::Vector2d(100, 50)
         ),
         &reactorPtr->GetTemp().top,
         100,
@@ -180,8 +175,7 @@ int main()
     auto tempBottomButton = std::make_unique<Mephi::AdjustButton<double>> (
         Mephi::Rect(
             Mephi::Vector2d(175, 175), 
-            Mephi::Vector2d(100, 50),
-            sf::Color(220, 20, 60)
+            Mephi::Vector2d(100, 50)
         ),
         &reactorPtr->GetTemp().bottom,
         100,
@@ -192,9 +186,8 @@ int main()
 
     auto AddMoleculesButton = std::make_unique<Mephi::AddMoleculesButton> (
         Mephi::Rect(
-            Mephi::Vector2d(25, 250), 
-            Mephi::Vector2d(150, 100),
-            sf::Color(220, 20, 60)
+            Mephi::Vector2d(25, 300), 
+            Mephi::Vector2d(175, 100)
         ),
         "Add mol",
         reactorPtr,
@@ -206,9 +199,8 @@ int main()
 
     auto DeleteMoleculesButton = std::make_unique<Mephi::DeleteMoleculesButton> (
         Mephi::Rect(
-            Mephi::Vector2d(200, 250), 
-            Mephi::Vector2d(150, 100),
-            sf::Color(220, 20, 60)
+            Mephi::Vector2d(250, 300), 
+            Mephi::Vector2d(175, 100)
         ),
         "Delete mol",
         reactorPtr,
@@ -222,8 +214,7 @@ int main()
     auto Clock = std::make_unique<Mephi::Clock>(
         Mephi::Rect(
             Mephi::Vector2d(0, 0), 
-            Mephi::Vector2d(200, 200),
-            sf::Color(0x1a, 0x1b, 0x26)
+            Mephi::Vector2d(200, 200)
         )
     );
 

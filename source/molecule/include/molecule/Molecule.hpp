@@ -11,6 +11,7 @@
 
 #include "common/ErrorHandle.hpp"
 #include "vector/Vector.hpp"
+#include "common/Constants.hpp"
 
 namespace Mephi
 {
@@ -25,9 +26,9 @@ class Molecule {
     public:
         static constexpr double START_RADIUS = 1;
         Molecule(const Mephi::Vector2d& startCoord, const Mephi::Vector2d& startSpeed, 
-                 double startMass, const sf::Color& color)
-            : coord_{startCoord}, speed_{startSpeed}, mass_{startMass}, color_{color}, 
-              radius_(startMass)
+                 double startMass, sf::Color color = Common::TNC::MoleculeDebug)
+            : coord_{startCoord}, speed_{startSpeed}, mass_{startMass}, 
+              color_{color}, radius_(startMass)
         {}
 
         [[nodiscard]] virtual size_t GetTypeId() const noexcept;

@@ -35,12 +35,14 @@ class Plot : public Mephi::Window{
     public:
         Plot(const Mephi::Rect& rect, double scaleX, double scaleY, 
              const Mephi::Vector2d& OriginOffset,
-             double startXSegVal = 0, TGetYValFoo getYValFoo = NULL,
-             const sf::Color& dotColor = sf::Color::Red)
+             double startXSegVal = 0, TGetYValFoo getYValFoo = NULL)
         : Mephi::Window{rect}, scaleX_{scaleX}, scaleY_{scaleY}, 
-          originOffset_{OriginOffset}, segDots_{}, dotColor_{dotColor}, 
+          originOffset_{OriginOffset}, segDots_{}, dotColor_{Common::TNC::GraphDot}, 
           maxModY_{0}, maxModX_{0}, xSegVal_{startXSegVal}, getYValFoo_{getYValFoo}
-        {}
+        {
+            rect_.GetFillColor() = Common::TNC::GraphBackground;
+            rect_.GetOutlineColor() = Common::TNC::GraphAxes;
+        }
 
         Common::Error PushDot(const Mephi::Vector2d& segDot);
         Common::Error PushDot(const double ySegVal);

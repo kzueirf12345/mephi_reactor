@@ -8,6 +8,7 @@
 #include <SFML/Graphics/Color.hpp>
 #include <SFML/Graphics/Shape.hpp>
 
+#include "common/Constants.hpp"
 #include "windows/Window.hpp"
 #include "molecule/MoleculeManager.hpp"
 
@@ -38,7 +39,9 @@ class Reactor: public Mephi::Window {
                          Mephi::MoleculeManager moleculeManager = std::move(Mephi::MoleculeManager()))
             : Mephi::Window{std::move(rect)}, moleculeManager_{std::move(moleculeManager)}, wallEnergy_{0}, 
               accom_{accom}
-        {}
+        {
+            rect_.GetFillColor() = Common::TNC::ReactorBackground;
+        }
 
         [[nodiscard]] const Mephi::Sides& GetTemp()  const noexcept {return wallEnergy_;}
         [[nodiscard]]       Mephi::Sides& GetTemp()        noexcept {return wallEnergy_;}

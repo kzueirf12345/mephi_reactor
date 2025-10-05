@@ -86,8 +86,7 @@ Common::Error Mephi::MoleculeManager::HandleInteractionCC_(size_t moleculeInd1, 
     molecules_.push_back(std::make_unique<Mephi::MoleculeSquare>(
         (circle1.GetCoord() + circle2.GetCoord()) / 2., 
         (circle1.GetSpeed() + circle2.GetSpeed()) / 2.,
-        2,
-        sf::Color::Blue
+        2
     ));
     toRemove.push_back(false);
     
@@ -133,8 +132,7 @@ Common::Error Mephi::MoleculeManager::HandleInteractionSS_(size_t moleculeInd1, 
 
         molecules_.push_back(std::make_unique<Mephi::MoleculeCircle>(
             midPos + addPos,
-            centerMassSpeed + relSpeed,
-            sf::Color::Red
+            centerMassSpeed + relSpeed
         ));
         toRemove.push_back(false);
     }
@@ -197,7 +195,7 @@ Common::Error Mephi::MoleculeManager::GenerateMolecules(const size_t count, cons
         const double angle = distAngle(gen);
         const Mephi::Vector2d randomSpeed(speed * std::cos(angle), speed * std::sin(angle));
         
-        const Mephi::MoleculeCircle molecule(randomCoord, randomSpeed, sf::Color::Red);
+        const Mephi::MoleculeCircle molecule(randomCoord, randomSpeed);
         
         molecules_.push_back(std::make_unique<Mephi::MoleculeCircle>(molecule));
     }

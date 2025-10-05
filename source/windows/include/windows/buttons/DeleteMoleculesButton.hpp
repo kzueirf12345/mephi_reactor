@@ -21,9 +21,8 @@ class DeleteMoleculesButton: public Mephi::Button {
     public:
         DeleteMoleculesButton(const Mephi::Rect& rect, const std::string& textString,
                            Mephi::Reactor* reactor = nullptr, size_t count = 0,
-                           bool isDraggable = false,
-                           const sf::Color& pressedColor = sf::Color(139, 0, 0)) 
-            : Mephi::Button{rect, textString, isDraggable, pressedColor},
+                           bool isDraggable = false) 
+            : Mephi::Button{rect, textString, isDraggable},
               reactor_{reactor}, count_{count}
         {}
 

@@ -19,9 +19,8 @@ namespace Mephi
 class MoleculeCircle: public Mephi::Molecule {
     private:
     public:
-        MoleculeCircle(const Mephi::Vector2d& startCoord, const Mephi::Vector2d& startSpeed, 
-                       const sf::Color& color)
-            : Mephi::Molecule{startCoord, startSpeed, 1, color}
+        MoleculeCircle(const Mephi::Vector2d& startCoord, const Mephi::Vector2d& startSpeed)
+            : Mephi::Molecule{startCoord, startSpeed, 1, Common::TNC::MoleculeCircle}
         {
             radius_ += START_RADIUS;
         }

@@ -10,6 +10,7 @@
 
 #include "common/ErrorHandle.hpp"
 #include "vector/Vector.hpp"
+#include "common/Constants.hpp"
 
 namespace Mephi
 {
@@ -23,12 +24,10 @@ class Rect {
         const double thickness_;
     public:
         Rect(const Mephi::Vector2d&  leftCorner, 
-             const Mephi::Vector2d&  size, 
-             const sf::Color&         fillColor = sf::Color(240, 240, 240), 
-             const sf::Color&      outlineColor = sf::Color::Black,
+             const Mephi::Vector2d&  size,
              const double             thickness = 1)
-            : leftCorner_{leftCorner}, size_{size}, fillColor_{fillColor}, 
-              outlineColor_{outlineColor}, thickness_(thickness)
+            : leftCorner_{leftCorner}, size_{size}, fillColor_{Common::TNC::WindowBackground}, 
+              outlineColor_{Common::TNC::WindowBorder}, thickness_(thickness)
         {}
 
         [[nodiscard]] sf::RectangleShape GetSFRect() const;
@@ -42,6 +41,7 @@ class Rect {
         [[nodiscard]] const sf::Color&       GetFillColor()    const noexcept {return fillColor_;}
         [[nodiscard]]       sf::Color&       GetFillColor()          noexcept {return fillColor_;}
         [[nodiscard]] const sf::Color&       GetOutlineColor() const noexcept {return outlineColor_;}
+        [[nodiscard]]       sf::Color&       GetOutlineColor()       noexcept {return outlineColor_;}
         [[nodiscard]]       double           Width()           const noexcept {return size_.x;}
         [[nodiscard]]       double           Height()          const noexcept {return size_.y;}
 

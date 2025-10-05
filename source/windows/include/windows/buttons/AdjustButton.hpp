@@ -27,9 +27,8 @@ class AdjustButton: public Mephi::Button {
 
     public:
         AdjustButton(const Mephi::Rect& rect, T* const obj, T changeRate, const std::string& textString,
-                     bool isDraggable = false,
-                     const sf::Color& pressedColor = sf::Color(139, 0, 0)) 
-            : Mephi::Button{rect, textString, isDraggable, pressedColor}, obj_{obj}, 
+                     bool isDraggable = false) 
+            : Mephi::Button{rect, textString, isDraggable}, obj_{obj}, 
               changeRate_(std::move(changeRate)), prevTime_{std::chrono::steady_clock::duration::zero()}
         {}
 

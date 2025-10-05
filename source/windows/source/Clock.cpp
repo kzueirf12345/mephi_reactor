@@ -93,7 +93,16 @@ Common::Error Mephi::Clock::DrawDots(sf::RenderWindow& window) const {
     return Common::Error::SUCCESS;
 }
 
-Common::Error Mephi::Clock::Update() {
+Common::Error Mephi::Clock::DrawText(sf::RenderWindow& window) const {
+    sf::Text printText = text_;
+    printText.setPosition(static_cast<sf::Vector2f>(AbsoluteCoord()) + printText.getPosition());
+
+    window.draw(printText);
+
+    return Common::Error::SUCCESS;
+}
+
+Common::Error Mephi::Clock::UpdateText() {
     constexpr size_t TIME_STRING_SIZE_ = 80;
     char timeString_[TIME_STRING_SIZE_];
 
@@ -110,56 +119,17 @@ Common::Error Mephi::Clock::Update() {
     return Common::Error::SUCCESS;
 }
 
+Common::Error Mephi::Clock::Update() {
+    ERROR_HANDLE(UpdateText());
+    return Common::Error::SUCCESS;
+}
+
 Common::Error Mephi::Clock::Draw(sf::RenderWindow& window) const {
     Mephi::Window::Draw(window);
 
     ERROR_HANDLE(DrawDots(window));
-
-    sf::Text printText = text_;
-    printText.setPosition(static_cast<sf::Vector2f>(AbsoluteCoord()) + printText.getPosition());
-
-    window.draw(printText);
-
+    ERROR_HANDLE(DrawText(window));
     ERROR_HANDLE(DrawArrows(window));
-
 
     return Common::Error::SUCCESS;
 }
-
-// Common::Error Mephi::Clock::DrawVector(sf::RenderWindow& window, Mephi::Vector2d vector,
-//                                        sf::Color color) const {
-
-//     vector = {vector.x, -vector.y};
-//     const Mephi::Vector2d center(rect_.Width() / 2, rect_.Height() / 2);
-
-//     sf::VertexArray Line(sf::PrimitiveType::LinesStrip, 2);
-//     sf::VertexArray Tip (sf::PrimitiveType::LinesStrip, 3);
-
-//     Line[0].color = Line[1].color                = color;
-//     Tip[0].color  = Tip[1].color  = Tip[2].color = color;
-
-//     Line[0].position = static_cast<sf::Vector2f>(AbsoluteCoord() + center);
-//     Line[1].position = static_cast<sf::Vector2f>(AbsoluteCoord() + center + vector);
-//     Tip[1].position  = Line[1].position;
-
-//     constexpr double TIP_SCALE = 0.1;
-
-//     const Mephi::Vector2d ScaledTendril(-vector * TIP_SCALE);
-//     const Mephi::Vector2d NormalTendril(ScaledTendril.Normal());
-//     const Mephi::Vector2d    TanTendril(vector + 2. * ScaledTendril);
-
-//     Tip[0].position = static_cast<sf::Vector2f>(TanTendril + NormalTendril);
-//     Tip[2].position = static_cast<sf::Vector2f>(TanTendril - NormalTendril);
-
-//     Tip[0].position = static_cast<sf::Vector2f>(
-//         AbsoluteCoord() + center + Mephi::Vector2d(Tip[0].position)
-//     );
-//     Tip[2].position = static_cast<sf::Vector2f>(
-//         AbsoluteCoord() + center + Mephi::Vector2d(Tip[2].position)
-//     );
-
-//     window.draw(Line);
-//     window.draw(Tip);
-    
-//     return Common::Error::SUCCESS;
-// }
