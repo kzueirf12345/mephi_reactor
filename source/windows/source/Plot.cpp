@@ -153,3 +153,8 @@ Common::Error Mephi::Plot::ChangeScaleX(int percent) {
     std::cerr << "IN " << __PRETTY_FUNCTION__ << std::endl;
     return Common::Error::SUCCESS;
 }
+
+Common::Error Mephi::Plot::ChangeScaleY(int percent) {
+    std::cerr << "IN " << __PRETTY_FUNCTION__ << std::endl;
+    return Common::Error::SUCCESS;
+}

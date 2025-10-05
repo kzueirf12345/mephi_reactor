@@ -98,6 +98,22 @@ int main()
     auto* scrollXCirclePlotPtr = scrollXCirclePlot.get();
 
     circlePlot->AddChild(std::move(scrollXCirclePlot));
+
+    auto scrollYCirclePlot = std::make_unique<Mephi::ScrollBar>(
+        Mephi::Rect(
+            Mephi::Vector2d(0, scrollXCirclePlotPtr->GetRect().Height()),
+            Mephi::Vector2d(
+                0.1 * circlePlot->GetRect().Width(), 
+                circlePlot->GetRect().Height() - scrollXCirclePlotPtr->GetRect().Height()
+            )
+        ),
+        [&circlePlotPtr](int percentageChange) { return circlePlotPtr->ChangeScaleY(percentageChange); },
+        false
+    );
+
+    auto* scrollYCirclePlotPtr = scrollYCirclePlot.get();
+
+    circlePlot->AddChild(std::move(scrollYCirclePlot));
     
     globWindow.AddChild(std::move(circlePlot));
 
@@ -274,8 +290,8 @@ int main()
         ERROR_HANDLE(globWindow.Draw(window));
         ERROR_HANDLE(globWindow.Update());
 
-        std::cerr << "Plot " << circlePlotPtr->isSelected() << std::endl;
-        std::cerr << "Scroll " << scrollXCirclePlotPtr->isSelected() << std::endl;
+        // std::cerr << "Plot " << circlePlotPtr->isSelected() << std::endl;
+        // std::cerr << "Scroll " << scrollXCirclePlotPtr->isSelected() << std::endl;
 
         window.display();
     }

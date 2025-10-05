@@ -45,6 +45,7 @@ class Plot : public Mephi::Window{
         }
 
         Common::Error ChangeScaleX(int percent);
+        Common::Error ChangeScaleY(int percent);
 
         Common::Error PushDot(const Mephi::Vector2d& segDot);
         Common::Error PushDot(const double ySegVal);

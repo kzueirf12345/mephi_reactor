@@ -1,6 +1,6 @@
 #include "windows/ScrollBar.hpp"
 #include "common/Constants.hpp"
-#include "common/ErrorHandle.hpp"
+#include "vector/Vector.hpp"
 #include "windows/Window.hpp"
 #include "windows/buttons/Button.hpp"
 #include <memory>
@@ -9,13 +9,27 @@ Mephi::ScrollBar::ScrollBar(Mephi::Rect rect, ActionT action, bool isHorizontal,
     : Mephi::Window{std::move(rect), isDraggable}, action_{std::move(action)}, 
       isHorizontal_(std::move(isHorizontal)), percentage_{0}
 {
+
+    const Mephi::Vector2d buttonSize (
+        ( isHorizontal ? BUTTON_SIZE_PERCENT_ : 1) * rect_.Width(),
+        (!isHorizontal ? BUTTON_SIZE_PERCENT_ : 1) * rect_.Height()
+    );
+
+    if (isHorizontal) {
+        rect_.GetLeftCorner().x += buttonSize.x;
+        rect_.GetSize().x -= 2 * buttonSize.x;
+    } else {
+        rect_.GetLeftCorner().y += buttonSize.y;
+        rect_.GetSize().y -= 2 * buttonSize.y;
+    }
+
     std::unique_ptr<Mephi::Window> upButton = std::make_unique<Mephi::Button>(
         Mephi::Rect(
-            Mephi::Vector2d(0, 0),
             Mephi::Vector2d(
-                ( isHorizontal ? BUTTON_SIZE_PERCENT_ : 1) * rect.Width(),
-                (!isHorizontal ? BUTTON_SIZE_PERCENT_ : 1) * rect.Height()
-            )
+                ( isHorizontal ? rect_.Width(): 0), 
+                (!isHorizontal ? -buttonSize.y : 0)
+            ),
+            buttonSize
         ), 
         "U"
     ); 
@@ -24,13 +38,10 @@ Mephi::ScrollBar::ScrollBar(Mephi::Rect rect, ActionT action, bool isHorizontal,
     std::unique_ptr<Mephi::Window> downButton = std::make_unique<Mephi::Button>(
         Mephi::Rect(
             Mephi::Vector2d(
-                ( isHorizontal ? 1 - BUTTON_SIZE_PERCENT_ : 0) * rect.Width(), 
-                (!isHorizontal ? 1 - BUTTON_SIZE_PERCENT_ : 0) * rect.Height()
+                ( isHorizontal ? -buttonSize.x   : 0), 
+                (!isHorizontal ? rect_.Height() : 0)
             ),
-            Mephi::Vector2d(
-                ( isHorizontal ? BUTTON_SIZE_PERCENT_ : 1) * rect.Width(),
-                (!isHorizontal ? BUTTON_SIZE_PERCENT_ : 1) * rect.Height()
-            )
+            buttonSize
         ), 
         "D"
     ); 
@@ -39,14 +50,8 @@ Mephi::ScrollBar::ScrollBar(Mephi::Rect rect, ActionT action, bool isHorizontal,
 
     std::unique_ptr<Mephi::Window> thumbButton = std::make_unique<Mephi::Button>(
         Mephi::Rect(
-            Mephi::Vector2d(
-                ( isHorizontal ? BUTTON_SIZE_PERCENT_ : 0) * rect.Width(), 
-                (!isHorizontal ? BUTTON_SIZE_PERCENT_ : 0) * rect.Height()
-            ),
-            Mephi::Vector2d(
-                ( isHorizontal ? BUTTON_SIZE_PERCENT_ : 1) * rect.Width(),
-                (!isHorizontal ? BUTTON_SIZE_PERCENT_ : 1) * rect.Height()
-            )
+            Mephi::Vector2d(0, 0),
+            buttonSize
         ), 
         "",
         true
