@@ -30,8 +30,6 @@
 #include "windows/buttons/AdjustButton.hpp"
 #include "windows/Clock.hpp"
 
-//TODO adapter
-
 constexpr unsigned int WINDOW_WIDTH    = 1720;
 constexpr unsigned int WINDOW_HEIGHT   = 900;
 constexpr unsigned int FRAMERATE_LIMIT = 20;
@@ -79,8 +77,6 @@ int main()
         ),
         0.1
     );
-
-    reactor->GenerateMolecules(500, MAX_MOLECULE_SPEED);
 
     auto* reactorPtr = reactor.get();
     
@@ -225,9 +221,9 @@ int main()
 
     auto Clock = std::make_unique<Mephi::Clock>(
         Mephi::Rect(
-            Mephi::Vector2d(175, 175), 
+            Mephi::Vector2d(0, 0), 
             Mephi::Vector2d(200, 200),
-            sf::Color(220, 20, 60)
+            sf::Color(0x1a, 0x1b, 0x26)
         )
     );
 

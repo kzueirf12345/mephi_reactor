@@ -70,7 +70,7 @@ Common::Error Mephi::TransformVector(Mephi::Vector3f& Vector, const Mephi::Trans
 }
 
 Common::Error Mephi::DrawVector(sf::RenderWindow& window, Mephi::Vector2d startDot, Mephi::Vector2d endDot,
-                         sf::Color color) {
+                                sf::Color color) {
 
     const Mephi::Vector2d vector(endDot.x - startDot.x, 
                                  endDot.y - startDot.y);
