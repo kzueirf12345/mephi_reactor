@@ -92,7 +92,7 @@ int main()
             Mephi::Vector2d(0, 0),
             Mephi::Vector2d(circlePlot->GetRect().Width(), 0.1 * circlePlot->GetRect().Height())
         ),
-        [&circlePlotPtr](int percentageChange) { return circlePlotPtr->ChangeScaleX(percentageChange); }
+        [&circlePlotPtr](double percentage) { return circlePlotPtr->ChangeScaleX(percentage); }
     );
 
     auto* scrollXCirclePlotPtr = scrollXCirclePlot.get();
@@ -107,7 +107,7 @@ int main()
                 circlePlot->GetRect().Height() - scrollXCirclePlotPtr->GetRect().Height()
             )
         ),
-        [&circlePlotPtr](int percentageChange) { return circlePlotPtr->ChangeScaleY(percentageChange); },
+        [&circlePlotPtr](double percentage) { return circlePlotPtr->ChangeScaleY(percentage); },
         false
     );
 
@@ -258,11 +258,10 @@ int main()
                         Mephi::EventCoord(Mephi::Vector2d(sf::Mouse::getPosition(window)))
                     );
 
-                    if (sf::Mouse::isButtonPressed(Mephi::EventMouseButton::MOVE_BUTTON_)) {
-                        globWindow.OnMouseDrag(
-                            Mephi::EventCoord(Mephi::Vector2d(sf::Mouse::getPosition(window)))
-                        );
-                    }
+                    globWindow.OnMouseDrag(
+                        Mephi::EventCoord(Mephi::Vector2d(sf::Mouse::getPosition(window)))
+                    );
+                    
                     break;
 
                 case sf::Event::MouseButtonPressed:

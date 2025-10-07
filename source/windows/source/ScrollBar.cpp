@@ -1,5 +1,7 @@
 #include "windows/ScrollBar.hpp"
 #include "common/Constants.hpp"
+#include "common/ErrorHandle.hpp"
+#include "events/EventMouseButton.hpp"
 #include "vector/Vector.hpp"
 #include "windows/Window.hpp"
 #include "windows/buttons/Button.hpp"
@@ -66,8 +68,61 @@ Mephi::ScrollBar::ScrollBar(Mephi::Rect rect, ActionT action, bool isHorizontal,
     rect_.GetFillColor() = Common::TNC::ScrollbarBackground;
 }
 
-// Common::Error Mephi::ScrollBar::Draw(sf::RenderWindow& window) const {
-//     ERROR_HANDLE(Mephi::Window::Draw(window));
+bool Mephi::ScrollBar::OnMousePress(Mephi::EventMouseButton event) {
 
-//     return Common::Error::SUCCESS;
-// }
+    Mephi::EventMouseButton childEvent(event);
+    childEvent.coord -= rect_.GetLeftCorner();
+
+    if (event.button == THUMB_DRAG_BUTTON_) {
+        childEvent.button = Mephi::EventMouseButton::MOVE_BUTTON_;
+        if (thumbButton_->OnMousePress(childEvent)) {
+            return true;
+        }
+    }
+
+    if (event.button == Mephi::EventMouseButton::MOVE_BUTTON_) {
+        return false;
+    }
+
+    return Mephi::Window::OnMousePress(event);
+}
+
+bool Mephi::ScrollBar::OnMouseUnpress(Mephi::EventMouseButton event) {
+    Mephi::EventMouseButton childEvent(event);
+    childEvent.coord -= rect_.GetLeftCorner();
+
+    if (event.button == THUMB_DRAG_BUTTON_) {
+        childEvent.button = Mephi::EventMouseButton::MOVE_BUTTON_;
+        if (thumbButton_->OnMouseUnpress(childEvent)) {
+            return true;
+        }
+    } 
+
+    if (event.button == Mephi::EventMouseButton::MOVE_BUTTON_) {
+        return false;
+    }
+
+    return Mephi::Window::OnMouseUnpress(event);
+}
+
+bool Mephi::ScrollBar::OnMouseDrag(Mephi::EventCoord event) {
+    if (Mephi::Window::OnMouseDrag(event)) {
+        const double curThumbCoord = (
+            isHorizontal_ 
+          ? thumbButton_->GetRect().GetLeftCorner().x 
+          : thumbButton_->GetRect().GetLeftCorner().y
+        );
+        const double maxThumbCoord = (
+            isHorizontal_ 
+          ? rect_.Width()  - thumbButton_->GetRect().Width()
+          : rect_.Height() - thumbButton_->GetRect().Height()
+        );
+        percentage_ = curThumbCoord / maxThumbCoord;
+        std::cerr << "scroll percent " << percentage_ << std::endl;
+        ERROR_HANDLE(action_(percentage_));
+        return true;
+    }
+
+    return false;
+}
+
