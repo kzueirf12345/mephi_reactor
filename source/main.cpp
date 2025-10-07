@@ -87,7 +87,7 @@ int main()
 
     auto* circlePlotPtr = circlePlot.get();
 
-    auto scrollXCirclePlot = std::make_unique<Mephi::ScrollBar>(
+    auto scrollScaleXCirclePlot = std::make_unique<Mephi::ScrollBar>(
         Mephi::Rect(
             Mephi::Vector2d(0, 0),
             Mephi::Vector2d(circlePlot->GetRect().Width(), 0.1 * circlePlot->GetRect().Height())
@@ -95,25 +95,64 @@ int main()
         [&circlePlotPtr](double percentage) { return circlePlotPtr->ChangeScaleX(percentage); }
     );
 
-    auto* scrollXCirclePlotPtr = scrollXCirclePlot.get();
+    auto* scrollScaleXCirclePlotPtr = scrollScaleXCirclePlot.get();
 
-    circlePlot->AddChild(std::move(scrollXCirclePlot));
+    circlePlot->AddChild(std::move(scrollScaleXCirclePlot));
 
-    auto scrollYCirclePlot = std::make_unique<Mephi::ScrollBar>(
+    auto scrollScaleYCirclePlot = std::make_unique<Mephi::ScrollBar>(
         Mephi::Rect(
-            Mephi::Vector2d(0, scrollXCirclePlotPtr->GetRect().Height()),
+            Mephi::Vector2d(0, scrollScaleXCirclePlotPtr->GetRect().Height()),
             Mephi::Vector2d(
                 0.1 * circlePlot->GetRect().Width(), 
-                circlePlot->GetRect().Height() - scrollXCirclePlotPtr->GetRect().Height()
+                circlePlot->GetRect().Height() - scrollScaleXCirclePlotPtr->GetRect().Height()
             )
         ),
         [&circlePlotPtr](double percentage) { return circlePlotPtr->ChangeScaleY(percentage); },
         false
     );
 
-    auto* scrollYCirclePlotPtr = scrollYCirclePlot.get();
+    auto* scrollScaleYCirclePlotPtr = scrollScaleYCirclePlot.get();
 
-    circlePlot->AddChild(std::move(scrollYCirclePlot));
+    circlePlot->AddChild(std::move(scrollScaleYCirclePlot));
+
+    auto scrollViewXCirclePlot = std::make_unique<Mephi::ScrollBar>(
+        Mephi::Rect(
+            Mephi::Vector2d(
+                0.1 * circlePlot->GetRect().Width(), 
+                0.9 * circlePlot->GetRect().Height()
+            ),
+            Mephi::Vector2d(
+                0.9 * circlePlot->GetRect().Width(), 
+                0.1 * circlePlot->GetRect().Height()
+            )
+        ),
+        [&circlePlotPtr](double percentage) { return circlePlotPtr->ChangeViewX(percentage); }
+    );
+
+    auto* scrollViewXCirclePlotPtr = scrollViewXCirclePlot.get();
+
+    circlePlot->AddChild(std::move(scrollViewXCirclePlot));
+
+    auto scrollViewYCirclePlot = std::make_unique<Mephi::ScrollBar>(
+        Mephi::Rect(
+            Mephi::Vector2d(
+                0.9 * circlePlot->GetRect().Width(), 
+                scrollScaleXCirclePlotPtr->GetRect().Height()
+            ),
+            Mephi::Vector2d(
+                0.1 * circlePlot->GetRect().Width(), 
+                circlePlot->GetRect().Height() 
+                    - scrollScaleXCirclePlotPtr->GetRect().Height()
+                    - scrollViewXCirclePlotPtr->GetRect().Height()
+            )
+        ),
+        [&circlePlotPtr](double percentage) { return circlePlotPtr->ChangeViewY(percentage); },
+        false
+    );
+
+    auto* scrollViewYCirclePlotPtr = scrollViewYCirclePlot.get();
+
+    circlePlot->AddChild(std::move(scrollViewYCirclePlot));
     
     globWindow.AddChild(std::move(circlePlot));
 

@@ -25,7 +25,7 @@ Mephi::ScrollBar::ScrollBar(Mephi::Rect rect, ActionT action, bool isHorizontal,
         rect_.GetSize().y -= 2 * buttonSize.y;
     }
 
-    std::unique_ptr<Mephi::Window> upButton = std::make_unique<Mephi::Button>(
+    std::unique_ptr<Mephi::Window> incButton = std::make_unique<Mephi::Button>(
         Mephi::Rect(
             Mephi::Vector2d(
                 ( isHorizontal ? rect_.Width(): 0), 
@@ -33,11 +33,11 @@ Mephi::ScrollBar::ScrollBar(Mephi::Rect rect, ActionT action, bool isHorizontal,
             ),
             buttonSize
         ), 
-        "U"
+        "+"
     ); 
-    upButton_ = dynamic_cast<Mephi::Button*>(upButton.get());
+    incButton_ = dynamic_cast<Mephi::Button*>(incButton.get());
 
-    std::unique_ptr<Mephi::Window> downButton = std::make_unique<Mephi::Button>(
+    std::unique_ptr<Mephi::Window> decButton = std::make_unique<Mephi::Button>(
         Mephi::Rect(
             Mephi::Vector2d(
                 ( isHorizontal ? -buttonSize.x   : 0), 
@@ -45,14 +45,17 @@ Mephi::ScrollBar::ScrollBar(Mephi::Rect rect, ActionT action, bool isHorizontal,
             ),
             buttonSize
         ), 
-        "D"
+        "-"
     ); 
 
-    downButton_ = dynamic_cast<Mephi::Button*>(downButton.get());
+    decButton_ = dynamic_cast<Mephi::Button*>(decButton.get());
 
     std::unique_ptr<Mephi::Window> thumbButton = std::make_unique<Mephi::Button>(
         Mephi::Rect(
-            Mephi::Vector2d(0, 0),
+            Mephi::Vector2d(
+                0, 
+                (!isHorizontal ? rect_.Height() - buttonSize.y: 0)
+            ),
             buttonSize
         ), 
         "",
@@ -61,8 +64,8 @@ Mephi::ScrollBar::ScrollBar(Mephi::Rect rect, ActionT action, bool isHorizontal,
 
     thumbButton_ = dynamic_cast<Mephi::Button*>(thumbButton.get());
 
-    AddChild(std::move(   upButton));
-    AddChild(std::move( downButton));
+    AddChild(std::move(   incButton));
+    AddChild(std::move( decButton));
     AddChild(std::move(thumbButton));
 
     rect_.GetFillColor() = Common::TNC::ScrollbarBackground;
@@ -118,7 +121,9 @@ bool Mephi::ScrollBar::OnMouseDrag(Mephi::EventCoord event) {
           : rect_.Height() - thumbButton_->GetRect().Height()
         );
         percentage_ = curThumbCoord / maxThumbCoord;
-        std::cerr << "scroll percent " << percentage_ << std::endl;
+        if (!isHorizontal_) {
+            percentage_ = 1 - percentage_;
+        }
         ERROR_HANDLE(action_(percentage_));
         return true;
     }

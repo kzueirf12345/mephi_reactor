@@ -15,14 +15,26 @@ namespace Mephi
 
 class Plot : public Mephi::Window{
     private:
-        double scaleX_, maxScaleX_, minScaleX_;
-        double scaleY_, maxScaleY_, minScaleY_;
+        double scaleX_;
+        double scaleY_;
         Mephi::Vector2d originOffset_;
         std::vector<Mephi::Vector2d> segDots_;
         sf::Color dotColor_;
         double maxModY_;
         double maxModX_;
         double xSegVal_;
+
+        // Диапазоны данных (автоматически обновляются при PushDot)
+        double dataMinX_ = 0.0;
+        double dataMaxX_ = 0.0;
+        double dataMinY_ = 0.0;
+        double dataMaxY_ = 0.0;
+
+        // Флаги: управляется ли масштаб/сдвиг вручную
+        bool manualScaleX_ = false;
+        bool manualScaleY_ = false;
+        bool manualViewX_  = false;
+        bool manualViewY_  = false;
 
         using TGetYValFoo = std::function<double()>;
         TGetYValFoo getYValFoo_;
@@ -35,18 +47,12 @@ class Plot : public Mephi::Window{
     public:
         Plot(const Mephi::Rect& rect, double scaleX, double scaleY, 
              const Mephi::Vector2d& OriginOffset,
-             double startXSegVal = 0, TGetYValFoo getYValFoo = NULL)
-        : Mephi::Window{rect}, scaleX_{scaleX}, scaleY_{scaleY}, 
-          originOffset_{OriginOffset}, segDots_{}, dotColor_{Common::TNC::GraphDot}, 
-          maxModY_{0}, maxModX_{0}, xSegVal_{startXSegVal}, getYValFoo_{getYValFoo},
-          minScaleX_{0.001}, maxScaleX_{10}, minScaleY_{0.001}, maxScaleY_{10}
-        {
-            rect_.GetFillColor() = Common::TNC::GraphBackground;
-            rect_.GetOutlineColor() = Common::TNC::GraphAxes;
-        }
+             double startXSegVal = 0, TGetYValFoo getYValFoo = NULL);
 
         Common::Error ChangeScaleX(double percentage);
         Common::Error ChangeScaleY(double percentage);
+        Common::Error ChangeViewX(double percentage);
+        Common::Error ChangeViewY(double percentage);
 
         Common::Error PushDot(const Mephi::Vector2d& segDot);
         Common::Error PushDot(const double ySegVal);

@@ -6,6 +6,23 @@
 #include <SFML/Graphics/VertexArray.hpp>
 #include <SFML/System/Vector2.hpp>
 
+Mephi::Plot::Plot(const Mephi::Rect& rect, double scaleX, double scaleY, 
+     const Mephi::Vector2d& OriginOffset, double startXSegVal, TGetYValFoo getYValFoo)
+    : Mephi::Window{rect}, 
+      scaleX_{scaleX}, scaleY_{scaleY}, 
+      originOffset_{OriginOffset}, 
+      segDots_{}, 
+      dotColor_{Common::TNC::GraphDot}, 
+      maxModY_{0}, maxModX_{0}, 
+      xSegVal_{startXSegVal}, 
+      getYValFoo_{getYValFoo},
+      dataMinX_{0}, dataMaxX_{0},
+      dataMinY_{0}, dataMaxY_{0}
+{
+    rect_.GetFillColor() = Common::TNC::GraphBackground;
+    rect_.GetOutlineColor() = Common::TNC::GraphAxes;
+}
+
 Mephi::Vector2d Mephi::Plot::Seg2Pix(const Mephi::Vector2d& segDot) const {
     return Mephi::Vector2d(segDot.x * scaleX_, -segDot.y * scaleY_) 
          + originOffset_ 
@@ -21,15 +38,37 @@ Mephi::Vector2d Mephi::Plot::Pix2Seg(const Mephi::Vector2d& pixDot) const {
 
 Common::Error Mephi::Plot::PushDot(const Mephi::Vector2d& segDot) {
     segDots_.push_back(segDot);
-    maxModY_ = std::max(maxModY_, std::abs(segDot.y));
-    maxModX_ = std::max(maxModX_, std::abs(segDot.x));
 
-    scaleY_ = rect_.Height() / (2.5 * maxModY_);
-    scaleX_ = rect_.Width() / (2.5 * maxModX_);
+    // Обновляем диапазоны
+    if (segDots_.size() == 1) {
+        dataMinX_ = dataMaxX_ = segDot.x;
+        dataMinY_ = dataMaxY_ = segDot.y;
+    } else {
+        dataMinX_ = std::min(dataMinX_, segDot.x);
+        dataMaxX_ = std::max(dataMaxX_, segDot.x);
+        dataMinY_ = std::min(dataMinY_, segDot.y);
+        dataMaxY_ = std::max(dataMaxY_, segDot.y);
+    }
+
+    double rangeX = std::max(dataMaxX_ - dataMinX_, 1e-6);
+    double rangeY = std::max(dataMaxY_ - dataMinY_, 1e-6);
+
+    if (!manualScaleX_) {
+        scaleX_ = rect_.Width()  / (rangeX * 1.2);
+    }
+    if (!manualScaleY_) {
+        scaleY_ = rect_.Height() / (rangeY * 1.2);
+    }
+
+    if (!manualViewX_) {
+        originOffset_.x = -dataMinX_ * scaleX_ + rect_.Width()  * 0.1;
+    }
+    if (!manualViewY_) {
+        originOffset_.y =  dataMaxY_ * scaleY_ + rect_.Height() * 0.1;
+    }
 
     return Common::Error::SUCCESS;
 }
-
 Common::Error Mephi::Plot::PushDot(const double ySegVal) {
 
     ERROR_HANDLE(PushDot(Mephi::Vector2d(xSegVal_, ySegVal)));
@@ -148,11 +187,72 @@ Common::Error Mephi::Plot::Update() {
 }
 
 Common::Error Mephi::Plot::ChangeScaleX(double percentage) {
-    //TODO
+    const double dataRangeX = dataMaxX_ - dataMinX_;
+    if (std::abs(percentage - 0.0) < 1e-6 || !dataRangeX) {
+        manualScaleX_ = false;
+        return Common::Error::SUCCESS;
+    }
+
+    manualScaleX_ = true;
+
+    const double scaleToFit = rect_.Width() / (dataRangeX);
+
+    const double minScale = scaleToFit / 2;
+    const double maxScale = scaleToFit * 2; 
+
+    scaleX_ = minScale + percentage * (maxScale - minScale);
+
     return Common::Error::SUCCESS;
 }
 
 Common::Error Mephi::Plot::ChangeScaleY(double percentage) {
-    //TODO
+    const double dataRangeY = dataMaxY_ - dataMinY_;
+    if (std::abs(percentage - 0.0) < 1e-6 || !dataRangeY) {
+        manualScaleY_ = false;
+        return Common::Error::SUCCESS;
+    }
+
+    manualScaleY_ = true;
+
+    const double scaleToFit = rect_.Width() / (dataRangeY);
+
+    const double minScale = scaleToFit / 2;
+    const double maxScale = scaleToFit * 2; 
+
+    scaleY_ = minScale + percentage * (maxScale - minScale);
+
+    return Common::Error::SUCCESS;
+}
+
+Common::Error Mephi::Plot::ChangeViewX(double percentage) {
+    const double dataRangeX = dataMaxX_ - dataMinX_;
+    if (std::abs(percentage - 0) < 1e-6 || !dataRangeX) {
+        manualViewX_ = false;
+        return Common::Error::SUCCESS;
+    }
+
+    manualViewX_ = true;
+
+    const double maxShiftInSeg = dataRangeX;
+    const double targetMinX = dataMinX_ + percentage * maxShiftInSeg;
+
+    originOffset_.x = -targetMinX * scaleX_;
+
+    return Common::Error::SUCCESS;
+}
+
+Common::Error Mephi::Plot::ChangeViewY(double percentage) {
+    const double dataRangeY = dataMaxY_ - dataMinY_;
+    if (std::abs(percentage - 0) < 1e-6 || !dataRangeY) {
+        manualViewY_ = false;
+        return Common::Error::SUCCESS;
+    }
+    manualViewY_ = true;
+
+    const double maxShiftInSeg = dataRangeY;
+    const double targetMinY = dataMinY_ - (1 + percentage) * maxShiftInSeg;
+
+    originOffset_.y = -targetMinY * scaleY_;
+
     return Common::Error::SUCCESS;
 }

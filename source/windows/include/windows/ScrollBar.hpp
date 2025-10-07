@@ -23,7 +23,7 @@ class ScrollBar: public Mephi::Window {
 
         double percentage_;
         bool isHorizontal_;
-        Mephi::Button* upButton_, *downButton_, *thumbButton_;
+        Mephi::Button* incButton_, *decButton_, *thumbButton_;
 
     public:
         ScrollBar(Mephi::Rect rect, ActionT action, bool isHorizontal = true, 
