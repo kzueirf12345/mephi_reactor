@@ -1,6 +1,5 @@
 add_library(events STATIC
     source/EventCoord.cpp
-    source/EventMouseButton.cpp
 )
 
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")

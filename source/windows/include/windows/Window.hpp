@@ -7,6 +7,7 @@
 #include <SFML/Window/Mouse.hpp>
 
 #include "common/ErrorHandle.hpp"
+#include "events/EventKeyboardButton.hpp"
 #include "events/EventMouseButton.hpp"
 #include "figures/Rect.hpp"
 #include "vector/Vector.hpp"
@@ -29,6 +30,7 @@ class Window {
         bool isSelected_;
         bool isHovered_;
         bool isInderectHovered_;
+        bool isFocused_; // TODO handle it
         
         Mephi::Vector2d prevMousePos_;
 
@@ -49,20 +51,22 @@ class Window {
         virtual Common::Error Draw  (sf::RenderWindow& window) const;
         virtual Common::Error Update();
 
+        Common::Error Move(Mephi::Vector2d shift);
 
-        Common::Error HandleEvents (sf::RenderWindow& window);
-        virtual bool OnMouseMove   (Mephi::EventCoord       event);
-        virtual bool OnMousePress  (Mephi::EventMouseButton event);
-        virtual bool OnMouseUnpress(Mephi::EventMouseButton event);
-        virtual bool OnMouseDrag   (Mephi::EventCoord       event);
+        Common::Error HandleEvents  (sf::RenderWindow& window);
+        // virtual bool OnKeyboardPress(Mephi::EventKeyboardButton event) = 0;
+        virtual bool OnMouseMove    (Mephi::EventCoord          event);
+        virtual bool OnMousePress   (Mephi::EventMouseButton    event);
+        virtual bool OnMouseUnpress (Mephi::EventMouseButton    event);
+        virtual bool OnMouseDrag    (Mephi::EventCoord          event);
 
-        Window& operator [](size_t ind) { return *children_[ind].get(); } 
-
-        const Window& operator [](size_t ind) const { return *children_[ind].get(); } 
+        [[nodiscard]]       Window& operator [](size_t ind)       { return *children_[ind].get(); } 
+        [[nodiscard]] const Window& operator [](size_t ind) const { return *children_[ind].get(); } 
 
         [[nodiscard]] bool                   IsHovered()          const noexcept { return         isHovered_; }
         [[nodiscard]] bool                   IsInderectHovered()  const noexcept { return isInderectHovered_; }
-        [[nodiscard]] bool                   isSelected()         const noexcept { return         isSelected_; }
+        [[nodiscard]] bool                   IsSelected()         const noexcept { return        isSelected_; }
+        [[nodiscard]] bool                   IsFocused()          const noexcept { return         isFocused_; }
         [[nodiscard]] const sf::Color&       GetFillColor()       const noexcept {return rect_.GetFillColor();}
         [[nodiscard]]       sf::Color&       GetFillColor()             noexcept {return rect_.GetFillColor();}
         [[nodiscard]] const sf::Color&       GetOutlineColor()    const noexcept {return rect_.GetOutlineColor();}

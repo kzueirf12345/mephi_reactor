@@ -17,6 +17,7 @@ class ScrollBar: public Mephi::Window {
 
     private:
         static constexpr double BUTTON_SIZE_PERCENT_ = 0.1; 
+        static constexpr double MIN_SHIFT_ = 0.05;
     
         ActionT action_;
 
@@ -25,13 +26,16 @@ class ScrollBar: public Mephi::Window {
         Mephi::Button* incButton_, *decButton_, *thumbButton_;
 
         Common::Error Move(double shiftPercent);
+
     public:
         ScrollBar(Mephi::Rect rect, ActionT action, bool isHorizontal = true, 
                   bool isDraggable = false);
 
-        virtual bool OnMousePress   (Mephi::EventMouseButton event) override final;
-        virtual bool OnMouseUnpress (Mephi::EventMouseButton event) override final;
-        virtual bool OnMouseDrag    (Mephi::EventCoord       event) override final;
+        virtual Common::Error Update() override final;
+        // virtual bool OnKeyboardPress(Mephi::EventKeyboardButton event) override final;
+        virtual bool OnMousePress   (Mephi::EventMouseButton    event) override final;
+        virtual bool OnMouseUnpress (Mephi::EventMouseButton    event) override final;
+        virtual bool OnMouseDrag    (Mephi::EventCoord          event) override final;
 };
 
 }

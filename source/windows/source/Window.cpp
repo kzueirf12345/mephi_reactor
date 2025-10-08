@@ -81,6 +81,11 @@ Common::Error Mephi::Window::Update() {
     return Common::Error::SUCCESS;
 }
 
+Common::Error Mephi::Window::Move(Mephi::Vector2d shift) {
+    rect_.GetLeftCorner() += shift;
+    return Common::Error::SUCCESS;
+}
+
 Common::Error Mephi::Window::SetParent(Mephi::Window* const parent) {
     parent_ = parent;
     return Common::Error::SUCCESS;
@@ -107,6 +112,7 @@ Mephi::Window* Mephi::Window::AddChild(std::unique_ptr<Mephi::Window> child) {
 
     return children_.back().get();
 }
+
 
 bool Mephi::Window::OnMouseMove(Mephi::EventCoord event) {
     isInderectHovered_ = rect_.OnMe(event.coord);
