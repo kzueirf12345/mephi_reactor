@@ -12,7 +12,7 @@ namespace Mephi
 
 class ScrollBar: public Mephi::Window {
     public:
-        static const sf::Mouse::Button THUMB_DRAG_BUTTON_ = sf::Mouse::Button::Left;
+        static const sf::Mouse::Button CONTROL_BUTTON_ = sf::Mouse::Button::Left;
         using ActionT = std::function<Common::Error(double)>; 
 
     private:
@@ -24,6 +24,9 @@ class ScrollBar: public Mephi::Window {
         double percentage_;
         bool isHorizontal_;
         Mephi::Button* incButton_, *decButton_, *thumbButton_;
+
+        bool isPressedInc_;
+        bool isPressedDec_;
 
         Common::Error Move(double shiftPercent);
 

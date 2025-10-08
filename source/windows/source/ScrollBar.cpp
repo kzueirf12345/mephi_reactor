@@ -6,10 +6,11 @@
 #include "windows/Window.hpp"
 #include "windows/buttons/Button.hpp"
 #include <memory>
+#include <cassert>
 
 Mephi::ScrollBar::ScrollBar(Mephi::Rect rect, ActionT action, bool isHorizontal, bool isDraggable)
     : Mephi::Window{std::move(rect), isDraggable}, action_{std::move(action)}, 
-      isHorizontal_(std::move(isHorizontal)), percentage_{0}
+      isHorizontal_(std::move(isHorizontal)), percentage_{0}, isPressedInc_{false}, isPressedDec_{false}
 {
 
     const Mephi::Vector2d buttonSize (
@@ -87,11 +88,12 @@ Common::Error Mephi::ScrollBar::Move(double shiftPercent) {
 }
 
 Common::Error Mephi::ScrollBar::Update() {
-    if (incButton_->IsPressed()) {
+
+    // std::cerr << "inc " << isPressedInc_ << " dec " << isPressedDec_ << std::endl;
+    if (incButton_->IsPressed() || isPressedInc_) {
         ERROR_HANDLE(Move(MIN_SHIFT_));
     }
-
-    if (decButton_->IsPressed()) {
+    else if (decButton_->IsPressed() || isPressedDec_) {
         ERROR_HANDLE(Move(-MIN_SHIFT_));
     }
 
@@ -109,7 +111,29 @@ bool Mephi::ScrollBar::OnMousePress(Mephi::EventMouseButton event) {
         return false;
     }
 
-    return Mephi::Window::OnMousePress(event);
+    if (Mephi::Window::OnMousePress(event)) {
+        return true;
+    }
+
+    if (isHovered_ && event.button == CONTROL_BUTTON_) {
+        if (isHorizontal_) {
+            if (event.coord.x < thumbButton_->GetRect().GetLeftCorner().x) {
+                isPressedDec_ = true;
+            } else {
+                isPressedInc_ = true;
+            }
+        } else {
+            if (event.coord.y > thumbButton_->GetRect().GetRightCorner().y) {
+                isPressedDec_ = true;
+            } else {
+                isPressedInc_ = true;
+            }
+        }
+
+        return true;
+    }
+
+    return false;
 }
 
 bool Mephi::ScrollBar::OnMouseUnpress(Mephi::EventMouseButton event) {
@@ -117,7 +141,17 @@ bool Mephi::ScrollBar::OnMouseUnpress(Mephi::EventMouseButton event) {
         return false;
     }
 
-    return Mephi::Window::OnMouseUnpress(event);
+    if (Mephi::Window::OnMouseUnpress(event)) {
+        return true;
+    }
+
+    if (event.button == CONTROL_BUTTON_) {
+        isPressedDec_ = false;
+        isPressedInc_ = false;
+        return true;
+    }
+
+    return false;
 }
 
 bool Mephi::ScrollBar::OnMouseDrag(Mephi::EventCoord event) {
