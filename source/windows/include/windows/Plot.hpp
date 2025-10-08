@@ -24,17 +24,15 @@ class Plot : public Mephi::Window{
         double maxModX_;
         double xSegVal_;
 
-        // Диапазоны данных (автоматически обновляются при PushDot)
-        double dataMinX_ = 0.0;
-        double dataMaxX_ = 0.0;
-        double dataMinY_ = 0.0;
-        double dataMaxY_ = 0.0;
+        double dataMinX_;
+        double dataMaxX_;
+        double dataMinY_;
+        double dataMaxY_;
 
-        // Флаги: управляется ли масштаб/сдвиг вручную
-        bool manualScaleX_ = false;
-        bool manualScaleY_ = false;
-        bool manualViewX_  = false;
-        bool manualViewY_  = false;
+        bool manualScaleX_;
+        bool manualScaleY_;
+        bool manualViewX_;
+        bool manualViewY_;
 
         using TGetYValFoo = std::function<double()>;
         TGetYValFoo getYValFoo_;
@@ -45,8 +43,7 @@ class Plot : public Mephi::Window{
         sf::VertexArray CreateAxis(const bool isX) const ;
         sf::VertexArray CreateGrid(const bool isX) const ;
     public:
-        Plot(const Mephi::Rect& rect, double scaleX, double scaleY, 
-             const Mephi::Vector2d& OriginOffset,
+        Plot(const Mephi::Rect& rect, const Mephi::Vector2d& OriginOffset,
              double startXSegVal = 0, TGetYValFoo getYValFoo = NULL);
 
         Common::Error ChangeScaleX(double percentage);

@@ -10,17 +10,27 @@
 #include "vector/Vector.hpp"
 #include "molecule/MoleculeManager.hpp"
 
+Common::Error Mephi::MoleculeManager::HandleInteractionCCWrap_(Mephi::MoleculeManager* self, size_t moleculeInd1, size_t moleculeInd2, std::vector<bool>& toRemove) {
+    return self->HandleInteractionCC_(moleculeInd1, moleculeInd2, toRemove);
+}
+Common::Error Mephi::MoleculeManager::HandleInteractionSSWrap_(Mephi::MoleculeManager* self, size_t moleculeInd1, size_t moleculeInd2, std::vector<bool>& toRemove) {
+    return self->HandleInteractionSS_(moleculeInd1, moleculeInd2, toRemove);
+}
+Common::Error Mephi::MoleculeManager::HandleInteractionCSWrap_(Mephi::MoleculeManager* self, size_t moleculeInd1, size_t moleculeInd2, std::vector<bool>& toRemove) {
+    return self->HandleInteractionCS_(moleculeInd1, moleculeInd2, toRemove);
+}
+
 const Mephi::MoleculeManager::FHandleInteraction 
     Mephi::MoleculeManager::handleIntercationFuncsTable_
         [Mephi::MoleculeManager::MoleculeType::SIZE]
         [Mephi::MoleculeManager::MoleculeType::SIZE] = {
     {
-        &Mephi::MoleculeManager::HandleInteractionCC_,
-        &Mephi::MoleculeManager::HandleInteractionCS_
+        Mephi::MoleculeManager::HandleInteractionCCWrap_,
+        Mephi::MoleculeManager::HandleInteractionCSWrap_
     },
     {
-        &Mephi::MoleculeManager::HandleInteractionCS_,
-        &Mephi::MoleculeManager::HandleInteractionSS_
+        Mephi::MoleculeManager::HandleInteractionCSWrap_,
+        Mephi::MoleculeManager::HandleInteractionSSWrap_
     }
 };
 
@@ -34,7 +44,7 @@ Mephi::MoleculeManager::MoleculeType Mephi::MoleculeManager::HashCode2MoleculeTy
         return Mephi::MoleculeManager::MoleculeType::SQUARE;
     }
 
-    return Mephi::MoleculeManager::MoleculeType::UNKNOWN;
+    return Mephi::MoleculeManager::MoleculeType::SIZE;
 };
 
 Common::Error Mephi::MoleculeManager::Draw(sf::RenderWindow& window) const {
@@ -57,8 +67,8 @@ Common::Error Mephi::MoleculeManager::HandleInteraction_() {
             if (Mephi::IsIntersect(*molecules_[i], *molecules_[j])) {
                 Mephi::MoleculeManager::MoleculeType id1 = HashCode2MoleculeType(molecules_[i].get()->GetTypeId());
                 Mephi::MoleculeManager::MoleculeType id2 = HashCode2MoleculeType(molecules_[j].get()->GetTypeId());
-
-                (this->*handleIntercationFuncsTable_[id1][id2])(i, j, toRemove);
+                
+                (handleIntercationFuncsTable_[id1][id2])(this, i, j, toRemove);
             }
         }
     }

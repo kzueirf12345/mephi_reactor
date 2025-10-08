@@ -8,6 +8,50 @@
 #include <SFML/Window/Mouse.hpp>
 #include <cstdlib>
 #include <memory>
+#include <cassert>
+
+Common::Error Mephi::Window::HandleEvents (sf::RenderWindow& window) {
+    sf::Event event;
+    while (window.pollEvent(event))
+    {
+        switch (event.type) {
+            case sf::Event::Closed:
+                window.close();
+                break;
+            
+            case sf::Event::MouseMoved:
+                OnMouseMove(
+                    Mephi::EventCoord(Mephi::Vector2d(sf::Mouse::getPosition(window)))
+                );
+
+                OnMouseDrag(
+                    Mephi::EventCoord(Mephi::Vector2d(sf::Mouse::getPosition(window)))
+                );
+                
+                break;
+
+            case sf::Event::MouseButtonPressed:
+                OnMousePress(Mephi::EventMouseButton(
+                    Mephi::Vector2d(sf::Mouse::getPosition(window)),
+                    event.mouseButton.button
+                ));
+                
+                break;
+
+            case sf::Event::MouseButtonReleased:
+                OnMouseUnpress(Mephi::EventMouseButton(
+                    Mephi::Vector2d(sf::Mouse::getPosition(window)),
+                    event.mouseButton.button
+                ));
+                break;
+
+            default:
+                break;
+        }
+    }
+
+    return Common::Error::SUCCESS;
+}
 
 Mephi::Vector2d Mephi::Window::AbsoluteCoord() const noexcept {
     if (parent_ == nullptr)
@@ -51,13 +95,17 @@ Common::Error Mephi::Window::UpdateParents_(Mephi::Window* const root) {
     return Common::Error::SUCCESS;
 }
 
-Common::Error Mephi::Window::AddChild(std::unique_ptr<Mephi::Window> child) {
-    ERROR_HANDLE(child->SetParent(this));
+Mephi::Window* Mephi::Window::AddChild(std::unique_ptr<Mephi::Window> child) {
+    if (child->SetParent(this)) {
+        return nullptr;
+    }
     children_.push_back(std::move(child));
 
-    ERROR_HANDLE(UpdateParents_(children_.back().get()));
+    if (UpdateParents_(children_.back().get())) {
+        return nullptr;
+    }
 
-    return Common::Error::SUCCESS;
+    return children_.back().get();
 }
 
 bool Mephi::Window::OnMouseMove(Mephi::EventCoord event) {

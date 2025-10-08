@@ -15,11 +15,10 @@
 #include <X11/Xlib.h>
 #include <iostream>
 #include <memory>
+#include <cassert>
 
 #include "common/Constants.hpp"
 #include "common/ErrorHandle.hpp"
-#include "events/EventCoord.hpp"
-#include "events/EventMouseButton.hpp"
 #include "molecule/MoleculeManager.hpp"
 #include "vector/Vector.hpp"
 #include "figures/Rect.hpp"
@@ -33,6 +32,8 @@
 #include "windows/ScrollBar.hpp"
 
 sf::Font Common::GLOBAL_FONT = {};
+
+static std::unique_ptr<Mephi::Window> CreateGlobWindow();
 
 int main()
 {
@@ -49,7 +50,35 @@ int main()
         return EXIT_FAILURE;
     }
 
-    Mephi::Window globWindow(
+    auto globWindow = CreateGlobWindow();
+    if (!globWindow) {
+        return EXIT_FAILURE;
+    }
+
+    //=======================CYCLE==========================
+
+    while (window.isOpen())
+    {
+        ERROR_HANDLE(globWindow->HandleEvents(window));
+
+        window.clear();
+
+        ERROR_HANDLE(globWindow->Draw(window));
+        ERROR_HANDLE(globWindow->Update());
+
+        window.display();
+    }
+
+    return EXIT_SUCCESS;
+}
+
+static Common::Error AddPlotScrollBars(Mephi::Plot* plot);
+
+std::unique_ptr<Mephi::Window> CreateGlobWindow() {
+
+// ----------------------- GLOB WINDOW -----------------------
+
+    auto globWindow = std::make_unique<Mephi::Window>(
         Mephi::Rect(
             Mephi::Vector2d(0, 0),
             Mephi::Vector2d(Common::WINDOW_WIDTH, Common::WINDOW_HEIGHT)
@@ -57,7 +86,9 @@ int main()
         false
     );
 
-    globWindow.GetFillColor() = Common::TNC::ProgramBackground;
+    globWindow->GetFillColor() = Common::TNC::ProgramBackground;
+
+// ----------------------- REACTOR -----------------------
 
     auto reactor = std::make_unique<Mephi::Reactor> (
         Mephi::Rect(
@@ -66,127 +97,66 @@ int main()
         ),
         0.1
     );
-
-    auto* reactorPtr = reactor.get();
     
-    globWindow.AddChild(std::move(reactor));
+    auto* reactorPtr = dynamic_cast<Mephi::Reactor*>(globWindow->AddChild(std::move(reactor)));
+
+// ----------------------- PLOTS -----------------------
     
     auto circlePlot = std::make_unique<Mephi::Plot> (
         Mephi::Rect(
             Mephi::Vector2d(100, 500),
             Mephi::Vector2d(300, 300)
         ),
-        1, 
-        1,
         Mephi::Vector2d(150, 150),
         0,
-        [&reactorPtr](){ 
+        [reactorPtr](){ 
             return reactorPtr->GetMoleculeManager().GetCircleCnt();
         }
     );
 
-    auto* circlePlotPtr = circlePlot.get();
+    auto* circlePlotPtr = dynamic_cast<Mephi::Plot*>(globWindow->AddChild(std::move(circlePlot)));
 
-    auto scrollScaleXCirclePlot = std::make_unique<Mephi::ScrollBar>(
-        Mephi::Rect(
-            Mephi::Vector2d(0, 0),
-            Mephi::Vector2d(circlePlot->GetRect().Width(), 0.1 * circlePlot->GetRect().Height())
-        ),
-        [&circlePlotPtr](double percentage) { return circlePlotPtr->ChangeScaleX(percentage); }
-    );
+    if (AddPlotScrollBars(circlePlotPtr)) {
+        return nullptr;
+    }
 
-    auto* scrollScaleXCirclePlotPtr = scrollScaleXCirclePlot.get();
-
-    circlePlot->AddChild(std::move(scrollScaleXCirclePlot));
-
-    auto scrollScaleYCirclePlot = std::make_unique<Mephi::ScrollBar>(
-        Mephi::Rect(
-            Mephi::Vector2d(0, scrollScaleXCirclePlotPtr->GetRect().Height()),
-            Mephi::Vector2d(
-                0.1 * circlePlot->GetRect().Width(), 
-                circlePlot->GetRect().Height() - scrollScaleXCirclePlotPtr->GetRect().Height()
-            )
-        ),
-        [&circlePlotPtr](double percentage) { return circlePlotPtr->ChangeScaleY(percentage); },
-        false
-    );
-
-    auto* scrollScaleYCirclePlotPtr = scrollScaleYCirclePlot.get();
-
-    circlePlot->AddChild(std::move(scrollScaleYCirclePlot));
-
-    auto scrollViewXCirclePlot = std::make_unique<Mephi::ScrollBar>(
-        Mephi::Rect(
-            Mephi::Vector2d(
-                0.1 * circlePlot->GetRect().Width(), 
-                0.9 * circlePlot->GetRect().Height()
-            ),
-            Mephi::Vector2d(
-                0.9 * circlePlot->GetRect().Width(), 
-                0.1 * circlePlot->GetRect().Height()
-            )
-        ),
-        [&circlePlotPtr](double percentage) { return circlePlotPtr->ChangeViewX(percentage); }
-    );
-
-    auto* scrollViewXCirclePlotPtr = scrollViewXCirclePlot.get();
-
-    circlePlot->AddChild(std::move(scrollViewXCirclePlot));
-
-    auto scrollViewYCirclePlot = std::make_unique<Mephi::ScrollBar>(
-        Mephi::Rect(
-            Mephi::Vector2d(
-                0.9 * circlePlot->GetRect().Width(), 
-                scrollScaleXCirclePlotPtr->GetRect().Height()
-            ),
-            Mephi::Vector2d(
-                0.1 * circlePlot->GetRect().Width(), 
-                circlePlot->GetRect().Height() 
-                    - scrollScaleXCirclePlotPtr->GetRect().Height()
-                    - scrollViewXCirclePlotPtr->GetRect().Height()
-            )
-        ),
-        [&circlePlotPtr](double percentage) { return circlePlotPtr->ChangeViewY(percentage); },
-        false
-    );
-
-    auto* scrollViewYCirclePlotPtr = scrollViewYCirclePlot.get();
-
-    circlePlot->AddChild(std::move(scrollViewYCirclePlot));
-    
-    globWindow.AddChild(std::move(circlePlot));
-
-    auto squarePlot = std::make_unique<Mephi::Plot> (
+    auto squarePlot = std::make_unique<Mephi::Plot>(
         Mephi::Rect(
             Mephi::Vector2d(450, 500),
             Mephi::Vector2d(300, 300)
         ),
-        1, 
-        1,
         Mephi::Vector2d(150, 150),
         0,
-        [&reactorPtr](){ 
+        [reactorPtr]() {
             return reactorPtr->GetMoleculeManager().GetSquareCnt();
         }
     );
-    
-    globWindow.AddChild(std::move(squarePlot));
 
-    auto tempPlot = std::make_unique<Mephi::Plot> (
+    auto* squarePlotPtr = dynamic_cast<Mephi::Plot*>(globWindow->AddChild(std::move(squarePlot)));
+
+    if (AddPlotScrollBars(squarePlotPtr)) {
+        return nullptr;
+    }
+
+    auto tempPlot = std::make_unique<Mephi::Plot>(
         Mephi::Rect(
             Mephi::Vector2d(800, 500),
             Mephi::Vector2d(300, 300)
         ),
-        1, 
-        1,
         Mephi::Vector2d(150, 150),
         0,
-        [&reactorPtr](){ 
+        [reactorPtr]() {
             return reactorPtr->GetTemp().Average();
         }
     );
-    
-    globWindow.AddChild(std::move(tempPlot));
+
+    auto* tempPlotPtr = dynamic_cast<Mephi::Plot*>(globWindow->AddChild(std::move(tempPlot)));
+
+    if (AddPlotScrollBars(tempPlotPtr)) {
+        return nullptr;
+    }
+
+// ----------------------- WALL TEMP BUTTONS -----------------------
 
     auto buttonPanel = std::make_unique<Mephi::Window> (
         Mephi::Rect(
@@ -195,6 +165,8 @@ int main()
         ),
         true
     );
+
+    auto* buttonPanelPtr = globWindow->AddChild(std::move(buttonPanel));
 
     auto tempLeftButton = std::make_unique<Mephi::AdjustButton<double>> (
         Mephi::Rect(
@@ -206,7 +178,7 @@ int main()
         "Left"
     );
 
-    buttonPanel->AddChild(std::move(tempLeftButton));
+    buttonPanelPtr->AddChild(std::move(tempLeftButton));
 
     auto tempRightButton = std::make_unique<Mephi::AdjustButton<double>> (
         Mephi::Rect(
@@ -218,7 +190,7 @@ int main()
         "Right"
     ); 
 
-    buttonPanel->AddChild(std::move(tempRightButton));
+    buttonPanelPtr->AddChild(std::move(tempRightButton));
 
     auto tempTopButton = std::make_unique<Mephi::AdjustButton<double>> (
         Mephi::Rect(
@@ -230,7 +202,7 @@ int main()
         "Top"
     );
 
-    buttonPanel->AddChild(std::move(tempTopButton));
+    buttonPanelPtr->AddChild(std::move(tempTopButton));
 
     auto tempBottomButton = std::make_unique<Mephi::AdjustButton<double>> (
         Mephi::Rect(
@@ -242,7 +214,9 @@ int main()
         "Bottom"
     ); 
 
-    buttonPanel->AddChild(std::move(tempBottomButton));
+    buttonPanelPtr->AddChild(std::move(tempBottomButton));
+
+// ----------------------- MOLECULES BUTTONS -----------------------
 
     auto AddMoleculesButton = std::make_unique<Mephi::AddMoleculesButton> (
         Mephi::Rect(
@@ -255,7 +229,7 @@ int main()
         Common::MAX_MOLECULE_SPEED
     ); 
 
-    buttonPanel->AddChild(std::move(AddMoleculesButton));
+    buttonPanelPtr->AddChild(std::move(AddMoleculesButton));
 
     auto DeleteMoleculesButton = std::make_unique<Mephi::DeleteMoleculesButton> (
         Mephi::Rect(
@@ -267,9 +241,7 @@ int main()
         10
     ); 
 
-    buttonPanel->AddChild(std::move(DeleteMoleculesButton));
-    
-    globWindow.AddChild(std::move(buttonPanel));
+    buttonPanelPtr->AddChild(std::move(DeleteMoleculesButton));
 
     auto Clock = std::make_unique<Mephi::Clock>(
         Mephi::Rect(
@@ -278,61 +250,89 @@ int main()
         )
     );
 
-    globWindow.AddChild(std::move(Clock));
+    globWindow->AddChild(std::move(Clock));
 
-    //=======================CYCLE==========================
+    return globWindow;
+}
 
-    while (window.isOpen())
-    {
-        sf::Event event;
-        while (window.pollEvent(event))
-        {
-            switch (event.type) {
-                case sf::Event::Closed:
-                    window.close();
-                    break;
-                
-                case sf::Event::MouseMoved:
-                    globWindow.OnMouseMove(
-                        Mephi::EventCoord(Mephi::Vector2d(sf::Mouse::getPosition(window)))
-                    );
+Common::Error AddPlotScrollBars(Mephi::Plot* plot) {
+    assert(plot);
 
-                    globWindow.OnMouseDrag(
-                        Mephi::EventCoord(Mephi::Vector2d(sf::Mouse::getPosition(window)))
-                    );
-                    
-                    break;
+// ----------------------- SCROLL SCALE X PLOT -----------------------
 
-                case sf::Event::MouseButtonPressed:
-                    globWindow.OnMousePress(Mephi::EventMouseButton(
-                        Mephi::Vector2d(sf::Mouse::getPosition(window)),
-                        event.mouseButton.button
-                    ));
-                    
-                    break;
+    auto scrollScaleXPlot = std::make_unique<Mephi::ScrollBar>(
+        Mephi::Rect(
+            Mephi::Vector2d(0, 0),
+            Mephi::Vector2d(plot->GetRect().Width(), 0.1 * plot->GetRect().Height())
+        ),
+        [plot](double percentage) { return plot->ChangeScaleX(percentage); }
+    );
 
-                case sf::Event::MouseButtonReleased:
-                    globWindow.OnMouseUnpress(Mephi::EventMouseButton(
-                        Mephi::Vector2d(sf::Mouse::getPosition(window)),
-                        event.mouseButton.button
-                    ));
-                    break;
+    auto* scrollScaleXPlotPtr = dynamic_cast<Mephi::ScrollBar*>(
+        plot->AddChild(std::move(scrollScaleXPlot))
+    );
 
-                default:
-                    break;
-            }
-        }
+// ----------------------- SCROLL SCALE Y PLOT -----------------------
 
-        window.clear();
+    auto scrollScaleYPlot = std::make_unique<Mephi::ScrollBar>(
+        Mephi::Rect(
+            Mephi::Vector2d(0, scrollScaleXPlotPtr->GetRect().Height()),
+            Mephi::Vector2d(
+                0.1 * plot->GetRect().Width(), 
+                plot->GetRect().Height() - scrollScaleXPlotPtr->GetRect().Height()
+            )
+        ),
+        [plot](double percentage) { return plot->ChangeScaleY(percentage); },
+        false
+    );
 
-        ERROR_HANDLE(globWindow.Draw(window));
-        ERROR_HANDLE(globWindow.Update());
+    auto* scrollScaleYPlotPtr = dynamic_cast<Mephi::ScrollBar*>(
+        plot->AddChild(std::move(scrollScaleYPlot))
+    );
 
-        // std::cerr << "Plot " << circlePlotPtr->isSelected() << std::endl;
-        // std::cerr << "Scroll " << scrollXCirclePlotPtr->isSelected() << std::endl;
+// ----------------------- SCROLL VIEW X PLOT -----------------------
 
-        window.display();
-    }
+    auto scrollViewXPlot = std::make_unique<Mephi::ScrollBar>(
+        Mephi::Rect(
+            Mephi::Vector2d(
+                0.1 * plot->GetRect().Width(), 
+                0.9 * plot->GetRect().Height()
+            ),
+            Mephi::Vector2d(
+                0.9 * plot->GetRect().Width(), 
+                0.1 * plot->GetRect().Height()
+            )
+        ),
+        [plot](double percentage) { return plot->ChangeViewX(percentage); }
+    );
 
-    return EXIT_SUCCESS;
+    auto* scrollViewXPlotPtr = dynamic_cast<Mephi::ScrollBar*>(
+        plot->AddChild(std::move(scrollViewXPlot))
+    );
+
+// ----------------------- SCROLL VIEW Y PLOT -----------------------
+
+    auto scrollViewYPlot = std::make_unique<Mephi::ScrollBar>(
+        Mephi::Rect(
+            Mephi::Vector2d(
+                0.9 * plot->GetRect().Width(), 
+                scrollScaleXPlotPtr->GetRect().Height()
+            ),
+            Mephi::Vector2d(
+                0.1 * plot->GetRect().Width(), 
+                plot->GetRect().Height() 
+                    - scrollScaleXPlotPtr->GetRect().Height()
+                    - scrollViewXPlotPtr->GetRect().Height()
+            )
+        ),
+        [plot](double percentage) { return plot->ChangeViewY(percentage); },
+        false
+    );
+
+    auto* scrollViewYPlotPtr = dynamic_cast<Mephi::ScrollBar*>(
+        plot->AddChild(std::move(scrollViewYPlot))
+    );
+
+
+    return Common::Error::SUCCESS;
 }

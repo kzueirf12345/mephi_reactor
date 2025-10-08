@@ -6,10 +6,10 @@
 #include <SFML/Graphics/VertexArray.hpp>
 #include <SFML/System/Vector2.hpp>
 
-Mephi::Plot::Plot(const Mephi::Rect& rect, double scaleX, double scaleY, 
-     const Mephi::Vector2d& OriginOffset, double startXSegVal, TGetYValFoo getYValFoo)
+Mephi::Plot::Plot(const Mephi::Rect& rect, const Mephi::Vector2d& OriginOffset, 
+                  double startXSegVal, TGetYValFoo getYValFoo)
     : Mephi::Window{rect}, 
-      scaleX_{scaleX}, scaleY_{scaleY}, 
+      scaleX_{1}, scaleY_{1}, 
       originOffset_{OriginOffset}, 
       segDots_{}, 
       dotColor_{Common::TNC::GraphDot}, 
@@ -17,7 +17,9 @@ Mephi::Plot::Plot(const Mephi::Rect& rect, double scaleX, double scaleY,
       xSegVal_{startXSegVal}, 
       getYValFoo_{getYValFoo},
       dataMinX_{0}, dataMaxX_{0},
-      dataMinY_{0}, dataMaxY_{0}
+      dataMinY_{0}, dataMaxY_{0},
+      manualScaleX_{false}, manualScaleY_{false},
+      manualViewX_{false}, manualViewY_{false}
 {
     rect_.GetFillColor() = Common::TNC::GraphBackground;
     rect_.GetOutlineColor() = Common::TNC::GraphAxes;
@@ -39,7 +41,6 @@ Mephi::Vector2d Mephi::Plot::Pix2Seg(const Mephi::Vector2d& pixDot) const {
 Common::Error Mephi::Plot::PushDot(const Mephi::Vector2d& segDot) {
     segDots_.push_back(segDot);
 
-    // Обновляем диапазоны
     if (segDots_.size() == 1) {
         dataMinX_ = dataMaxX_ = segDot.x;
         dataMinY_ = dataMaxY_ = segDot.y;
@@ -214,7 +215,7 @@ Common::Error Mephi::Plot::ChangeScaleY(double percentage) {
 
     manualScaleY_ = true;
 
-    const double scaleToFit = rect_.Width() / (dataRangeY);
+    const double scaleToFit = rect_.Height() / (dataRangeY);
 
     const double minScale = scaleToFit / 2;
     const double maxScale = scaleToFit * 2; 

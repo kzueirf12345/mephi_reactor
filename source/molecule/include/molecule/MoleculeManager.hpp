@@ -25,16 +25,19 @@ class MoleculeManager{
 
     public:
         enum MoleculeType {
-            UNKNOWN = -1    ,
             CIRCLE  = 0     ,
-            SQUARE          ,
-            SIZE
+            SQUARE  = 1     ,
+            SIZE    = 2
         };
         MoleculeType HashCode2MoleculeType(const size_t hash_code);
 
     private:
 
-        using FHandleInteraction = Common::Error(MoleculeManager::*)(size_t, size_t, std::vector<bool>& toRemove);
+        using FHandleInteraction = std::function<Common::Error(Mephi::MoleculeManager*, size_t, size_t, std::vector<bool>& toRemove)>;
+
+        static Common::Error HandleInteractionCCWrap_(MoleculeManager* self, size_t moleculeInd1, size_t moleculeInd2, std::vector<bool>& toRemove);
+        static Common::Error HandleInteractionSSWrap_(MoleculeManager* self, size_t moleculeInd1, size_t moleculeInd2, std::vector<bool>& toRemove);
+        static Common::Error HandleInteractionCSWrap_(MoleculeManager* self, size_t moleculeInd1, size_t moleculeInd2, std::vector<bool>& toRemove);
 
         Common::Error HandleInteractionCC_(size_t moleculeInd1, size_t moleculeInd2, std::vector<bool>& toRemove);
         Common::Error HandleInteractionSS_(size_t moleculeInd1, size_t moleculeInd2, std::vector<bool>& toRemove);
