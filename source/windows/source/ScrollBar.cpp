@@ -88,8 +88,6 @@ Common::Error Mephi::ScrollBar::Move(double shiftPercent) {
 }
 
 Common::Error Mephi::ScrollBar::Update() {
-
-    // std::cerr << "inc " << isPressedInc_ << " dec " << isPressedDec_ << std::endl;
     if (incButton_->IsPressed() || isPressedInc_) {
         ERROR_HANDLE(Move(MIN_SHIFT_));
     }
@@ -102,9 +100,44 @@ Common::Error Mephi::ScrollBar::Update() {
     return Common::Error::SUCCESS;
 }
 
-// bool Mephi::ScrollBar::OnKeyboardPress(Mephi::EventKeyboardButton event) {
+bool Mephi::ScrollBar::OnKeyboardPress(Mephi::EventKeyboardButton event) {
+    if (isHovered_ && event.button == INC_KEYBOARD_BUTTON_) {
+        isPressedInc_ = true;
+        return true;
+    }
 
-// }
+    if (isHovered_ && event.button == DEC_KEYBOARD_BUTTON_) {
+        isPressedDec_ = true;
+        return true;
+    }
+    
+
+    if (isHovered_ && event.button == FULL_KEYBOARD_BUTTON_) {
+        Move(1 - percentage_);
+        return true;
+    }
+
+    if (isHovered_ && event.button == ZERO_KEYBOARD_BUTTON_) {
+        Move(-percentage_);
+        return true;
+    }
+
+    return Mephi::Window::OnKeyboardPress(event);
+}
+
+bool Mephi::ScrollBar::OnKeyboardUnpress(Mephi::EventKeyboardButton event) {
+    if (event.button == INC_KEYBOARD_BUTTON_) {
+        isPressedInc_ = false;
+        return true;
+    }
+
+    if (event.button == DEC_KEYBOARD_BUTTON_) {
+        isPressedDec_ = false;
+        return true;
+    }
+
+    return Mephi::Window::OnKeyboardUnpress(event);
+}
 
 bool Mephi::ScrollBar::OnMousePress(Mephi::EventMouseButton event) {
     if (event.button == Mephi::EventMouseButton::MOVE_BUTTON_) {

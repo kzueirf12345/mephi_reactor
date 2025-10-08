@@ -53,12 +53,13 @@ class Window {
 
         Common::Error Move(Mephi::Vector2d shift);
 
-        Common::Error HandleEvents  (sf::RenderWindow& window);
-        // virtual bool OnKeyboardPress(Mephi::EventKeyboardButton event) = 0;
-        virtual bool OnMouseMove    (Mephi::EventCoord          event);
-        virtual bool OnMousePress   (Mephi::EventMouseButton    event);
-        virtual bool OnMouseUnpress (Mephi::EventMouseButton    event);
-        virtual bool OnMouseDrag    (Mephi::EventCoord          event);
+        Common::Error HandleEvents    (sf::RenderWindow& window);
+        virtual bool OnKeyboardPress  (Mephi::EventKeyboardButton event);
+        virtual bool OnKeyboardUnpress(Mephi::EventKeyboardButton event);
+        virtual bool OnMouseMove      (Mephi::EventCoord          event);
+        virtual bool OnMousePress     (Mephi::EventMouseButton    event);
+        virtual bool OnMouseUnpress   (Mephi::EventMouseButton    event);
+        virtual bool OnMouseDrag      (Mephi::EventCoord          event);
 
         [[nodiscard]]       Window& operator [](size_t ind)       { return *children_[ind].get(); } 
         [[nodiscard]] const Window& operator [](size_t ind) const { return *children_[ind].get(); } 

@@ -9,12 +9,12 @@
 namespace Mephi 
 {
 
-class EventKeyboardButton : public Mephi::EventCoord {
+class EventKeyboardButton {
     public:
         sf::Keyboard::Key button;
 
-        EventKeyboardButton(Mephi::Vector2d coord, sf::Keyboard::Key button)
-            : Mephi::EventCoord{coord}, button{button}
+        EventKeyboardButton(sf::Keyboard::Key button)
+            : button{button}
         {}
 };
 

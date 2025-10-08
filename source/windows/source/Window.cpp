@@ -1,10 +1,12 @@
 #include "windows/Window.hpp"
 #include "common/ErrorHandle.hpp"
 #include "events/EventCoord.hpp"
+#include "events/EventKeyboardButton.hpp"
 #include "events/EventMouseButton.hpp"
 #include "vector/Vector.hpp"
 
 #include <SFML/Graphics/RectangleShape.hpp>
+#include <SFML/Window/Event.hpp>
 #include <SFML/Window/Mouse.hpp>
 #include <cstdlib>
 #include <memory>
@@ -43,6 +45,14 @@ Common::Error Mephi::Window::HandleEvents (sf::RenderWindow& window) {
                     Mephi::Vector2d(sf::Mouse::getPosition(window)),
                     event.mouseButton.button
                 ));
+                break;
+            
+            case sf::Event::KeyPressed:
+                OnKeyboardPress(Mephi::EventKeyboardButton(event.key.code));
+                break;
+
+            case sf::Event::KeyReleased:
+                OnKeyboardUnpress(Mephi::EventKeyboardButton(event.key.code));
                 break;
 
             default:
@@ -111,6 +121,26 @@ Mephi::Window* Mephi::Window::AddChild(std::unique_ptr<Mephi::Window> child) {
     }
 
     return children_.back().get();
+}
+
+bool Mephi::Window::OnKeyboardPress(Mephi::EventKeyboardButton event) {
+    for (auto child = children_.rbegin(); child != children_.rend(); ++child) {
+        if ((*child)->OnKeyboardPress(event)) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+bool Mephi::Window::OnKeyboardUnpress(Mephi::EventKeyboardButton event) {
+    for (auto child = children_.rbegin(); child != children_.rend(); ++child) {
+        if ((*child)->OnKeyboardUnpress(event)) {
+            return true;
+        }
+    }
+
+    return false;
 }
 
 
