@@ -71,6 +71,26 @@ Mephi::ScrollBar::ScrollBar(Mephi::Rect rect, ActionT action, bool isHorizontal,
     rect_.GetFillColor() = Common::TNC::ScrollbarBackground;
 }
 
+Common::Error Mephi::ScrollBar::Move(double shiftPercent) {
+    const double newPercentage = std::clamp(percentage_ + shiftPercent, 0., 1.);
+    const double realShift = newPercentage - percentage_;
+    percentage_ = newPercentage;
+
+    ERROR_HANDLE(action_(isHorizontal_ ? percentage_ : 1 - percentage_));
+
+    Mephi::EventMouseButton event(
+        Mephi::Vector2d(
+            thumbButton_->GetPrevMousePos().x + ( isHorizontal_ ? realShift : 0) * rect_.Width(),
+            thumbButton_->GetPrevMousePos().y + (!isHorizontal_ ? realShift : 0) * rect_.Height()
+        ),
+        Mephi::EventMouseButton::MOVE_BUTTON_
+    );
+
+    thumbButton_->OnMouseDrag(event);
+
+    return Common::Error::SUCCESS;
+}
+
 bool Mephi::ScrollBar::OnMousePress(Mephi::EventMouseButton event) {
 
     Mephi::EventMouseButton childEvent(event);
@@ -78,9 +98,7 @@ bool Mephi::ScrollBar::OnMousePress(Mephi::EventMouseButton event) {
 
     if (event.button == THUMB_DRAG_BUTTON_) {
         childEvent.button = Mephi::EventMouseButton::MOVE_BUTTON_;
-        if (thumbButton_->OnMousePress(childEvent)) {
-            return true;
-        }
+        thumbButton_->OnMousePress(childEvent);
     }
 
     if (event.button == Mephi::EventMouseButton::MOVE_BUTTON_) {
@@ -96,9 +114,7 @@ bool Mephi::ScrollBar::OnMouseUnpress(Mephi::EventMouseButton event) {
 
     if (event.button == THUMB_DRAG_BUTTON_) {
         childEvent.button = Mephi::EventMouseButton::MOVE_BUTTON_;
-        if (thumbButton_->OnMouseUnpress(childEvent)) {
-            return true;
-        }
+        thumbButton_->OnMouseUnpress(childEvent);
     } 
 
     if (event.button == Mephi::EventMouseButton::MOVE_BUTTON_) {
@@ -109,25 +125,26 @@ bool Mephi::ScrollBar::OnMouseUnpress(Mephi::EventMouseButton event) {
 }
 
 bool Mephi::ScrollBar::OnMouseDrag(Mephi::EventCoord event) {
-    if (Mephi::Window::OnMouseDrag(event)) {
+    if (thumbButton_->IsPressed()) {
         const double curThumbCoord = (
             isHorizontal_ 
-          ? thumbButton_->GetRect().GetLeftCorner().x 
-          : thumbButton_->GetRect().GetLeftCorner().y
+          ? event.coord.x - rect_.GetLeftCorner().x 
+          : event.coord.y - rect_.GetLeftCorner().y
         );
         const double maxThumbCoord = (
             isHorizontal_ 
           ? rect_.Width()  - thumbButton_->GetRect().Width()
           : rect_.Height() - thumbButton_->GetRect().Height()
         );
-        percentage_ = curThumbCoord / maxThumbCoord;
-        if (!isHorizontal_) {
-            percentage_ = 1 - percentage_;
-        }
-        ERROR_HANDLE(action_(percentage_));
+
+        const double curPercentage = curThumbCoord / maxThumbCoord;
+        const double shiftPercent = curPercentage - percentage_;
+
+        ERROR_HANDLE(Move(shiftPercent));
+
         return true;
     }
 
-    return false;
+    return Mephi::Window::OnMouseDrag(event);
 }
 

@@ -55,6 +55,7 @@ class Button: public Mephi::Window {
         virtual bool OnMousePress  (Mephi::EventMouseButton event) override;
         virtual bool OnMouseUnpress(Mephi::EventMouseButton event) override;
         virtual Common::Error Draw(sf::RenderWindow& window) const override final;
+        virtual bool IsPressed() const noexcept { return isPressed_; }
 
         virtual ~Button() = default;
 };

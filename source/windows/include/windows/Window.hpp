@@ -60,15 +60,16 @@ class Window {
 
         const Window& operator [](size_t ind) const { return *children_[ind].get(); } 
 
-        [[nodiscard]] bool                 IsHovered()          const noexcept { return         isHovered_; }
-        [[nodiscard]] bool                 IsInderectHovered()  const noexcept { return isInderectHovered_; }
-        [[nodiscard]] bool                 isSelected()         const noexcept { return         isSelected_; }
-        [[nodiscard]] const sf::Color&     GetFillColor()       const noexcept {return rect_.GetFillColor();}
-        [[nodiscard]]       sf::Color&     GetFillColor()             noexcept {return rect_.GetFillColor();}
-        [[nodiscard]] const sf::Color&     GetOutlineColor()    const noexcept {return rect_.GetOutlineColor();}
-        [[nodiscard]]       sf::Color&     GetOutlineColor()          noexcept {return rect_.GetOutlineColor();}
-        [[nodiscard]] const Mephi::Rect&   GetRect()            const noexcept {return rect_;}
-        [[nodiscard]]       Mephi::Window* GetLastChild()       noexcept       {return children_.back().get();}
+        [[nodiscard]] bool                   IsHovered()          const noexcept { return         isHovered_; }
+        [[nodiscard]] bool                   IsInderectHovered()  const noexcept { return isInderectHovered_; }
+        [[nodiscard]] bool                   isSelected()         const noexcept { return         isSelected_; }
+        [[nodiscard]] const sf::Color&       GetFillColor()       const noexcept {return rect_.GetFillColor();}
+        [[nodiscard]]       sf::Color&       GetFillColor()             noexcept {return rect_.GetFillColor();}
+        [[nodiscard]] const sf::Color&       GetOutlineColor()    const noexcept {return rect_.GetOutlineColor();}
+        [[nodiscard]]       sf::Color&       GetOutlineColor()          noexcept {return rect_.GetOutlineColor();}
+        [[nodiscard]] const Mephi::Rect&     GetRect()            const noexcept {return rect_;}
+        [[nodiscard]]       Mephi::Window*   GetLastChild()       noexcept       {return children_.back().get();}
+        [[nodiscard]]       Mephi::Vector2d  GetPrevMousePos()    const noexcept {return prevMousePos_;}
 
         virtual ~Window() = default;
 };

@@ -3,7 +3,6 @@
 
 #include "common/ErrorHandle.hpp"
 #include "figures/Rect.hpp"
-#include "vector/Vector.hpp"
 #include "windows/Window.hpp"
 #include "windows/buttons/Button.hpp"
 #include <SFML/Window/Mouse.hpp>
@@ -25,6 +24,7 @@ class ScrollBar: public Mephi::Window {
         bool isHorizontal_;
         Mephi::Button* incButton_, *decButton_, *thumbButton_;
 
+        Common::Error Move(double shiftPercent);
     public:
         ScrollBar(Mephi::Rect rect, ActionT action, bool isHorizontal = true, 
                   bool isDraggable = false);
